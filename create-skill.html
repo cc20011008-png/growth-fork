@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布 Skill · 成长 Fork</title>
+  <style>
+    :root { --ink:#102A43; --muted:#60758A; --line:#D9E2EC; --paper:#FFFFFF; --canvas:#F5F8FB; --blue:#2563EB; --blue-pale:#EAF1FF; --teal:#0F766E; --teal-pale:#E8F7F5; --purple:#6D28D9; --purple-pale:#F3EDFF; --orange:#C2410C; --orange-pale:#FFF3EB; --shadow:0 14px 34px rgba(16,42,67,.08); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--canvas); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; line-height:1.5; }
+    button,input,textarea { font:inherit; }
+    button { cursor:pointer; }
+    .shell { max-width:980px; margin:0 auto; padding:0 26px 56px; }
+    .nav { height:72px; display:flex; align-items:center; justify-content:space-between; }
+    .brand,.back { display:flex; align-items:center; gap:10px; font-size:14px; text-decoration:none; color:var(--ink); }
+    .mark { width:32px; height:32px; border-radius:10px; display:grid; place-items:center; color:#fff; background:var(--blue); font-size:18px; font-weight:700; }
+    .brand { font-weight:700; }.back { color:var(--muted); }
+    .hero { padding:26px 0 22px; }.eyebrow { display:inline-block; color:var(--purple); background:var(--purple-pale); border-radius:99px; padding:5px 10px; font-size:12px; font-weight:700; }
+    h1 { font-size:30px; letter-spacing:-.7px; margin:13px 0 8px; }.hero p { margin:0; color:var(--muted); font-size:14px; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:15px 0 26px; }.step { display:flex; gap:9px; align-items:center; color:#8395A7; font-size:13px; }.step i { flex:0 0 24px; height:24px; display:grid; place-items:center; border:1px solid var(--line); border-radius:50%; font-size:11px; font-style:normal; }.step.active { color:var(--blue); font-weight:700; }.step.active i { border-color:var(--blue); color:#fff; background:var(--blue); }.step.done { color:var(--teal); }.step.done i { border-color:var(--teal); background:var(--teal); color:#fff; }
+    .panel { display:none; background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:28px; box-shadow:var(--shadow); }.panel.active { display:block; }.panel h2 { margin:0 0 5px; font-size:20px; letter-spacing:-.3px; }.sub { margin:0 0 22px; color:var(--muted); font-size:13px; }
+    label { display:block; color:var(--ink); font-size:13px; font-weight:700; margin-bottom:8px; } textarea,input[type="text"] { width:100%; border:1px solid #B9C8D9; border-radius:11px; background:#fff; outline:none; color:var(--ink); padding:12px; resize:vertical; } textarea:focus,input[type="text"]:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.11); }
+    textarea { min-height:128px; }.helper { margin:7px 0 0; color:var(--muted); font-size:12px; }.examples { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }.example { border:1px solid #CFE0FF; color:var(--blue); background:#F8FBFF; border-radius:99px; padding:6px 10px; font-size:12px; }
+    .upload-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:19px; }.upload { flex:1; min-width:160px; border:1px dashed #B9C8D9; border-radius:10px; padding:10px 12px; color:var(--muted); font-size:12px; background:#FBFDFF; }
+    .actions { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:25px; }.actions .hint { color:var(--muted); font-size:12px; }.primary { border:0; border-radius:10px; padding:11px 16px; color:#fff; background:var(--blue); font-weight:700; }.primary:disabled { opacity:.48; cursor:not-allowed; }.secondary { border:1px solid var(--line); border-radius:10px; padding:10px 14px; color:var(--ink); background:#fff; font-weight:650; }
+    .interview-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:18px; }.ai-badge { flex:0 0 auto; color:var(--purple); background:var(--purple-pale); border-radius:8px; padding:5px 8px; font-size:11px; font-weight:700; }.quote { background:#F8FBFF; border-left:3px solid var(--blue); padding:10px 12px; color:#47647D; font-size:13px; margin-bottom:17px; }
+    .questions { display:grid; gap:13px; }.question { border:1px solid #E7EEF5; border-radius:12px; padding:14px; }.question label { margin-bottom:6px; }.question input { font-size:13px; padding:9px 10px; }
+    .draft-layout { display:grid; grid-template-columns:1fr 270px; gap:18px; }.skill-preview { border:1px solid #D8CCF5; background:#FCFAFF; border-radius:14px; padding:18px; }.skill-top { display:flex; justify-content:space-between; align-items:center; gap:10px; }.tag { display:inline-block; border-radius:6px; padding:3px 7px; font-size:11px; font-weight:700; }.tag.purple { color:var(--purple); background:var(--purple-pale); }.tag.teal { color:var(--teal); background:var(--teal-pale); }.skill-preview h3 { margin:12px 0 4px; font-size:19px; }.skill-preview p { margin:0; color:var(--muted); font-size:13px; }.summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:16px 0; }.summary div { border-radius:9px; background:#fff; padding:10px; }.summary span { display:block; color:var(--muted); font-size:11px; }.summary b { display:block; font-size:13px; margin-top:3px; }.tasks { display:grid; gap:8px; }.task { display:flex; align-items:center; gap:10px; border:1px solid #E9E2FA; border-radius:9px; padding:9px 10px; background:#fff; font-size:13px; }.task i { width:20px; height:20px; border-radius:50%; display:grid; place-items:center; color:var(--purple); background:var(--purple-pale); font-style:normal; font-size:11px; font-weight:700; }
+    .quality { border:1px solid #BDE5DF; background:#F4FCFA; border-radius:14px; padding:16px; }.quality h3 { margin:0 0 5px; font-size:14px; }.quality p { margin:0; color:#35645F; font-size:12px; }.score { margin:17px 0 8px; font-size:28px; font-weight:750; color:var(--teal); }.meter { height:7px; border-radius:99px; overflow:hidden; background:#DCEFEA; }.meter i { display:block; width:86%; height:100%; background:var(--teal); }.checks { display:grid; gap:8px; margin-top:15px; color:#35645F; font-size:12px; }.checks span:before { content:"✓"; margin-right:6px; color:var(--teal); font-weight:700; }
+    .test-box { margin-top:18px; border-radius:12px; padding:15px; background:var(--blue-pale); }.test-box h3 { margin:0 0 5px; font-size:14px; }.test-box p { margin:0; color:#3E5E85; font-size:12px; }.test-box button { margin-top:12px; }
+    .publish { text-align:center; padding:38px 24px; }.success-mark { width:54px; height:54px; display:grid; place-items:center; color:#fff; background:var(--teal); border-radius:50%; margin:0 auto 15px; font-size:24px; }.publish h2 { margin-bottom:7px; }.publish .sub { max-width:500px; margin:0 auto 21px; }.status { display:inline-flex; align-items:center; gap:7px; color:var(--orange); background:var(--orange-pale); padding:7px 10px; border-radius:8px; font-size:12px; font-weight:700; }.publish-card { max-width:520px; text-align:left; margin:23px auto; border:1px solid var(--line); border-radius:12px; padding:15px; }.publish-card b { display:block; font-size:14px; }.publish-card p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px); opacity:0; pointer-events:none; color:#fff; background:var(--ink); border-radius:10px; padding:11px 15px; font-size:13px; transition:.22s; }.toast.show { transform:translate(-50%,0); opacity:1; }
+    @media (max-width:680px) { .shell { padding:0 16px 34px; }.panel { padding:21px 17px; }.draft-layout { grid-template-columns:1fr; }.summary { grid-template-columns:1fr; }.steps { grid-template-columns:1fr; gap:6px; }.actions { align-items:flex-end; flex-wrap:wrap; }.actions .hint { width:100%; } h1 { font-size:26px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav"><a class="brand" href="growth-fork.html"><span class="mark">F</span><span>成长 Fork</span></a><a class="back" href="growth-fork.html">← 返回首页</a></nav>
+    <header class="hero"><span class="eyebrow">经验转 Skill</span><h1>分享一段你走通的成长经验</h1><p>你负责讲经验，AI 负责把它整理成别人也能完成的成长 Skill。</p></header>
+    <div class="steps" id="steps"><div class="step active" data-step="1"><i>1</i><span>讲一段经验</span></div><div class="step" data-step="2"><i>2</i><span>AI 整理为 Skill</span></div><div class="step" data-step="3"><i>3</i><span>试跑后发布</span></div></div>
+
+    <section class="panel active" id="panel1">
+      <h2>你做成过什么值得别人复用的事？</h2><p class="sub">不需要写 Prompt 或搭流程，像和朋友复盘一样讲出来就好。</p>
+      <label for="experience">我的经验</label>
+      <textarea id="experience" placeholder="例如：我通过运营校园公众号拿到了内容运营实习。我先整理了公众号活动的阅读量和涨粉数据，再把一次迎新活动写成了项目案例……"></textarea>
+      <p class="helper">AI 会识别你的目标、步骤、成果和适用人群，再只追问必要的信息。</p>
+      <div class="examples"><button class="example" data-text="我通过社团项目经历拿到了产品实习，想分享我是怎么把普通活动改成简历项目的。">社团经历转实习</button><button class="example" data-text="我从零开始做数学建模，7 天完成了比赛 Demo，想整理成给新手的路线。">竞赛 Demo 路线</button><button class="example" data-text="我准备保研夏令营时，整理了一套导师联系与材料准备的方法。">保研材料准备</button></div>
+      <div class="upload-row"><div class="upload">＋ 添加一篇文章 / 笔记</div><div class="upload">＋ 上传 PPT / 截图 / 作品集</div><div class="upload">＋ 语音讲述经验</div></div>
+      <div class="actions"><span class="hint">创作完成后，你可以选择先让 1–3 位同学试用。</span><button class="primary" id="startInterview">让 AI 帮我整理 →</button></div>
+    </section>
+
+    <section class="panel" id="panel2">
+      <div class="interview-head"><div><h2>我再问 3 个问题，就能帮你生成初版</h2><p class="sub">只补齐影响别人能否照着完成的关键信息。</p></div><span class="ai-badge">AI 采访中</span></div>
+      <div class="quote" id="experienceQuote">你的经验会显示在这里</div>
+      <div class="questions">
+        <div class="question"><label for="goal">1. 你最终完成了什么结果？</label><input id="goal" type="text" placeholder="例如：拿到内容运营实习面试，并完成一份简历项目案例"></div>
+        <div class="question"><label for="people">2. 什么样的同学最适合用你的方法？</label><input id="people" type="text" placeholder="例如：有校园运营经历、但没有互联网实习经验的大二或大三学生"></div>
+        <div class="question"><label for="obstacle">3. 他们最容易在哪一步卡住？</label><input id="obstacle" type="text" placeholder="例如：没有数据，不知道怎么把普通活动写出业务价值"></div>
+      </div>
+      <div class="actions"><button class="secondary" id="backToInput">← 返回修改</button><button class="primary" id="generateSkill">生成初版 Skill →</button></div>
+    </section>
+
+    <section class="panel" id="panel3">
+      <h2>这是 AI 为你整理的初版 Skill</h2><p class="sub">你只需确认内容是否符合经验，不用配置底层提示词或流程。</p>
+      <div class="draft-layout">
+        <div>
+          <div class="skill-preview"><div class="skill-top"><span class="tag purple">单 Skill</span><span class="tag teal">可运行度 86 分</span></div><h3 id="skillTitle">校园公众号经历 → 内容运营简历项目</h3><p id="skillDescription">将校园运营经验转成一条有数据、有业务价值的简历项目描述。</p><div class="summary"><div><span>适合谁</span><b id="skillPeople">新传大二 / 大三学生</b></div><div><span>最终成果</span><b id="skillGoal">简历项目 + 案例页</b></div><div><span>预计耗时</span><b>12 分钟</b></div></div><div class="tasks"><div class="task"><i>1</i><span>盘点可用的校园运营经历</span></div><div class="task"><i>2</i><span>补齐影响力数据与个人贡献</span></div><div class="task"><i>3</i><span>生成 STAR 简历项目表述</span></div><div class="task"><i>4</i><span>输出一页运营案例作品</span></div></div></div>
+          <div class="test-box"><h3>先试跑一次，再让同学试用</h3><p>你将以新用户身份走一遍 Skill，AI 会标记描述不清或无法产出成果的步骤。</p><button class="primary" id="runTest">以新用户身份试跑</button></div>
+        </div>
+        <aside class="quality"><h3>AI 结构审核</h3><p>已自动检查是否能帮助他人完成一个明确成果。</p><div class="score">86 <span style="font-size:13px;font-weight:650;">/ 100</span></div><div class="meter"><i></i></div><div class="checks"><span>目标与成果明确</span><span>任务步骤可执行</span><span>适用人群清晰</span><span>已有失败兜底建议</span></div></aside>
+      </div>
+      <div class="actions"><button class="secondary" id="backToInterview">← 继续编辑</button><span class="hint">试跑通过后，Skill 将进入小范围“试用中”状态。</span></div>
+    </section>
+
+    <section class="panel publish" id="panel4">
+      <div class="success-mark">✓</div><h2>试跑通过，Skill 已进入试用中</h2><p class="sub">邀请 1–3 位同学完成一次真实使用。收集到成果与反馈后，它将获得“已验证”标识并进入推荐池。</p><span class="status">等待真实用户验证</span><div class="publish-card"><b>校园公众号经历 → 内容运营简历项目</b><p>下一步：邀请同学试用，或直接发布到“新传学生实习”推荐池。</p></div><div class="actions" style="justify-content:center;"><button class="secondary" id="inviteBtn">邀请同学试用</button><button class="primary" id="publishBtn">发布到试用池</button></div>
+    </section>
+  </div>
+  <div class="toast" id="toast">已发布到新传学生试用池</div>
+  <script>
+    const panels = [null, document.getElementById('panel1'), document.getElementById('panel2'), document.getElementById('panel3'), document.getElementById('panel4')];
+    const steps = document.querySelectorAll('.step');
+    function showStep(n) { panels.forEach((panel, index) => { if (panel) panel.classList.toggle('active', index === n); }); steps.forEach(step => { const current = Number(step.dataset.step); step.classList.toggle('active', current === n); step.classList.toggle('done', current < n); }); window.scrollTo({top:0, behavior:'smooth'}); }
+    document.querySelectorAll('.example').forEach(button => button.addEventListener('click', () => { document.getElementById('experience').value = button.dataset.text; }));
+    document.getElementById('startInterview').addEventListener('click', () => { const experience = document.getElementById('experience').value.trim(); if (!experience) { document.getElementById('experience').focus(); return; } document.getElementById('experienceQuote').textContent = `“${experience}”`; showStep(2); });
+    document.getElementById('backToInput').addEventListener('click', () => showStep(1));
+    document.getElementById('backToInterview').addEventListener('click', () => showStep(2));
+    document.getElementById('generateSkill').addEventListener('click', () => { const goal = document.getElementById('goal').value.trim(); const people = document.getElementById('people').value.trim(); if (goal) document.getElementById('skillGoal').textContent = goal; if (people) document.getElementById('skillPeople').textContent = people; showStep(3); });
+    document.getElementById('runTest').addEventListener('click', () => showStep(4));
+    const toast = document.getElementById('toast');
+    function notice(text) { toast.textContent = text; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2400); }
+    document.getElementById('inviteBtn').addEventListener('click', () => notice('已生成试用邀请链接'));
+    document.getElementById('publishBtn').addEventListener('click', () => notice('已发布到新传学生试用池'));
+  </script>
+</body>
+</html>
