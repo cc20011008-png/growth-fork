@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学校 Skill · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    .nav-links { gap: 18px; }
+    .nav-new {
+      display: inline-block;
+      margin-left: 5px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1;
+      padding: 3px 5px;
+      border-radius: 4px;
+      vertical-align: 2px;
+      letter-spacing: .06em;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .crumb a:hover { color: var(--ink); }
+
+    .school-hero {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 18px;
+      align-items: start;
+      border-radius: 22px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+    }
+    .school-hero .school-mark { width: 64px; height: 64px; }
+    .hero-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 6px;
+      font-size: 26px;
+      letter-spacing: -.03em;
+    }
+    .verified { width: 18px; height: 18px; flex-shrink: 0; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .chip {
+      background: #ECEDEF;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .school-hero .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 62ch;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 22px;
+      margin-top: 14px;
+    }
+    .hero-stats b {
+      display: block;
+      font-family: Outfit, sans-serif;
+      font-size: 22px;
+      letter-spacing: -.04em;
+    }
+    .hero-stats span { color: var(--muted); font-size: 12px; }
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .category-tabs { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+    .category-tabs button {
+      background: #fff;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 8px 13px;
+      font-size: 13px;
+    }
+    .category-tabs button.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+    .store-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 220px;
+      flex: 0 1 280px;
+      border-radius: 999px;
+      padding: 8px 14px;
+    }
+    .store-search svg { color: var(--muted); flex-shrink: 0; }
+    .store-search input { border: 0; outline: 0; flex: 1; min-width: 0; background: transparent; font-size: 14px; }
+    .count { color: var(--muted); font-size: 13px; white-space: nowrap; }
+
+    .skill-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .skill-card {
+      border-radius: 20px;
+      padding: 18px;
+      transition: transform .18s, box-shadow .18s;
+      display: block;
+    }
+    .skill-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .skill-card:focus-visible,
+    .category-tabs button:focus-visible,
+    .store-search:focus-within {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+    .skill-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .type { font-size: 12px; font-weight: 700; color: var(--pink); }
+    .badge {
+      color: var(--pink);
+      background: var(--pink-soft);
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .skill-card h3 { margin: 0 0 6px; font-size: 16px; line-height: 1.35; }
+    .skill-card .desc { margin: 0; min-height: 39px; color: var(--muted); font-size: 13px; }
+    .author { display: flex; align-items: center; gap: 8px; margin: 15px 0; font-size: 12px; color: var(--muted); }
+    .dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 10px; font-weight: 700; color: #fff;
+    }
+    .expert-author { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
+    .expert-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      object-fit: cover; border: 2px solid #141416;
+    }
+    .expert-name { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+    .expert-role { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .stats {
+      display: flex; gap: 13px; flex-wrap: wrap;
+      padding-top: 12px; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 12px;
+    }
+    .stats b { color: var(--ink); font-weight: 700; }
+
+    .missing, .empty {
+      text-align: center;
+      padding: 56px 16px;
+      color: var(--muted);
+    }
+    .missing h1, .empty b { color: var(--ink); margin: 0 0 8px; }
+
+    @media (max-width: 960px) {
+      .school-hero { grid-template-columns: auto 1fr; }
+      .hero-actions { grid-column: 1 / -1; flex-direction: row; }
+      .skill-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 580px) {
+      .skill-grid { grid-template-columns: 1fr; }
+      .school-hero { grid-template-columns: 1fr; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .store-search { flex: 1; }
+      .category-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+      }
+      .category-tabs button { flex-shrink: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="skills.html">全部 Skill</a>
+        <a class="active" href="school-zone.html">学校专区<span class="nav-new">NEW</span></a>
+        <a href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-ink" href="create-skill.html">＋ 发布 Skill</a>
+        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+      </div>
+    </nav>
+
+    <div id="page"></div>
+  </div>
+
+  <script src="schools-data.js"></script>
+  <script>
+    const verified = `<svg class="verified" viewBox="0 0 16 16" aria-label="已认证"><circle cx="8" cy="8" r="8" fill="#FF4F9A"/><path d="M4.4 8.2l2.3 2.3 5-5.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const searchIcon = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.25" stroke="currentColor" stroke-width="1.6"/><path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+    const id = new URLSearchParams(location.search).get("id");
+    const school = schoolById(id);
+    const page = document.getElementById("page");
+
+    if (!school) {
+      document.title = "未找到学校 · 成长 Fork";
+      page.innerHTML = `
+        <div class="missing">
+          <h1 class="display">未找到这所学校</h1>
+          <p>链接可能已失效。回到学校专区查看北京高校列表。</p>
+          <a class="btn btn-ink" href="school-zone.html">返回学校专区</a>
+        </div>`;
+    } else {
+      document.title = school.name + " · 学校专区";
+      const cats = ["全部", "实习与求职", "科研与保研", "竞赛与项目", "学习与证书"];
+      const catMap = { "全部": "all", "实习与求职": "career", "科研与保研": "research", "竞赛与项目": "project", "学习与证书": "study" };
+      let category = "all";
+      let query = "";
+
+      page.innerHTML = `
+        <nav class="crumb" aria-label="面包屑">
+          <a href="school-zone.html">学校专区</a>
+          <span aria-hidden="true">/</span>
+          <span>${school.name}</span>
+        </nav>
+        <header class="school-hero glass">
+          ${renderSchoolMark(school, 64)}
+          <div>
+            <h1 class="display hero-name">${school.name} ${verified}</h1>
+            <div class="hero-tags">${school.tags.map(t => `<span class="chip">${t}</span>`).join("")}</div>
+            <p class="lead">${school.desc}</p>
+            <div class="hero-stats">
+              <div><b>${school.skillCount}</b><span>技能</span></div>
+              <div><b>${school.uses}</b><span>使用</span></div>
+              <div><b>${school.catalog.length}</b><span>热门在架</span></div>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-pink" href="create-skill.html">贡献本校 Skill</a>
+            <a class="btn btn-ghost" href="skills.html">看全部 Skill</a>
+          </div>
+        </header>
+        <div class="toolbar">
+          <div class="category-tabs" id="tabs"></div>
+          <div class="store-search glass">
+            ${searchIcon}
+            <input id="q" type="search" placeholder="搜索本校 Skill" aria-label="搜索本校 Skill">
+          </div>
+          <span class="count" id="skillCount"></span>
+        </div>
+        <div class="skill-grid" id="skillGrid"></div>
+      `;
+
+      const tabs = document.getElementById("tabs");
+      tabs.innerHTML = cats.map((c, i) => `<button type="button" data-cat="${catMap[c]}" class="${i === 0 ? "active" : ""}">${c}</button>`).join("");
+      tabs.addEventListener("click", e => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        category = btn.dataset.cat;
+        tabs.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+        render();
+      });
+      document.getElementById("q").addEventListener("input", e => { query = e.target.value; render(); });
+
+      function render() {
+        const list = school.catalog.filter(s => {
+          const catOk = category === "all" || s.category === category;
+          const q = query.trim().toLowerCase();
+          const qOk = !q || (s.title + s.desc + s.name).toLowerCase().indexOf(q) !== -1;
+          return catOk && qOk;
+        });
+        document.getElementById("skillCount").textContent = `共 ${list.length} 个`;
+        const grid = document.getElementById("skillGrid");
+        if (!list.length) {
+          grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>本校还没有这类 Skill</b>换个分类，或把你走通的经验贡献出来。</div>`;
+          return;
+        }
+        grid.innerHTML = list.map(s => `
+          <a class="skill-card" href="skill-detail.html?id=${s.id}">
+            <div class="skill-meta">
+              <span class="type">${s.typeLabel}</span>
+              <span class="badge">${s.verified}</span>
+            </div>
+            <h3>${s.title}</h3>
+            <p class="desc">${s.desc}</p>
+            ${s.expert
+              ? `<div class="expert-author">
+                  <img class="expert-avatar" src="${s.avatar}" alt="">
+                  <div>
+                    <div class="expert-name">${s.name} <span class="badge">认证专家</span></div>
+                    <div class="expert-role">${s.role}</div>
+                  </div>
+                </div>`
+              : `<div class="author"><span class="dot" style="background:${s.color}">${s.initial || s.name.slice(0,1)}</span>${s.name}</div>`}
+            <div class="stats">
+              <span><b>${s.users}</b> 人使用</span>
+              <span><b>${s.rate}</b> 完成率</span>
+              <span><b>${s.forks}</b> Fork</span>
+            </div>
+          </a>
+        `).join("");
+      }
+      render();
+    }
+  </script>
+</body>
+</html>

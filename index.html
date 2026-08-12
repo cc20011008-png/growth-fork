@@ -3,11 +3,505 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="0; url=growth-fork.html">
-  <title>成长 Fork</title>
-  <script>window.location.replace("growth-fork.html");</script>
+  <title>成长 Fork · 大学生成长 Skill 共创平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    .shell { padding-bottom: 88px; }
+
+    /* Silver chrome stage, atmosphere shows through */
+    .stage {
+      position: relative;
+      min-height: min(640px, calc(100dvh - 72px));
+      overflow: hidden;
+      border-radius: 32px;
+      border: 1px solid rgba(255,255,255,.7);
+      background:
+        radial-gradient(ellipse 48% 58% at 72% 38%, rgba(255,79,154,.10), transparent 56%),
+        radial-gradient(ellipse 70% 80% at 82% 8%, rgba(255,255,255,.62), transparent 52%),
+        linear-gradient(165deg, rgba(255,255,255,.42) 0%, rgba(220,224,230,.28) 48%, rgba(201,205,212,.32) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 28px 70px rgba(110,116,128,.14);
+    }
+    .ornament {
+      position: absolute;
+      right: -8%; top: -18%;
+      width: min(820px, 78%);
+      pointer-events: none;
+      opacity: .95;
+      z-index: 1;
+      animation: floaty 8s ease-in-out infinite;
+    }
+    .hero {
+      position: relative; z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 0.95fr;
+      align-items: center;
+      min-height: min(640px, calc(100dvh - 72px));
+      padding: 12px 28px 28px;
+      gap: 12px;
+    }
+    .hero-copy { max-width: 520px; animation: rise .7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.12;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+    .hero h1 .pink { color: var(--pink); font-style: italic; display: inline-block; padding-bottom: 4px; }
+    .hero .lead {
+      margin: 16px 0 0;
+      max-width: 28ch;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .search-row { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; max-width: 460px; }
+    .search-box {
+      display: flex; align-items: center; gap: 10px;
+      border-radius: 999px;
+      padding: 6px 6px 6px 18px;
+    }
+    .search-box input {
+      flex: 1; border: 0; outline: 0; background: transparent;
+      font-size: 14px; min-width: 0; padding: 10px 0; color: var(--ink);
+    }
+    .search-box input::placeholder { color: #8B8E98; }
+    .search-box button {
+      border: 0; border-radius: 999px;
+      background: var(--pink); color: #fff;
+      padding: 11px 18px; font-weight: 700; white-space: nowrap;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-ghost {
+      background: rgba(255,255,255,.35); color: var(--ink);
+      border: 1px solid rgba(255,255,255,.7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    .hero-visual {
+      position: relative;
+      height: 100%;
+      min-height: 480px;
+      display: grid; place-items: end center;
+      animation: rise .85s cubic-bezier(0.16, 1, 0.3, 1) .06s both;
+    }
+    .hero-visual img.girl {
+      width: min(520px, 100%);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 30px 50px rgba(20,20,22,.18));
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(12px) rotate(1.2deg); }
+    }
+
+    .hints {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      margin: 16px 4px 0;
+      color: var(--muted); font-size: 12px;
+    }
+    .hints button {
+      border: 1px solid rgba(255,255,255,.7);
+      background: rgba(255,255,255,.4);
+      color: var(--ink);
+      border-radius: 999px; padding: 6px 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .hints button:hover { border-color: var(--pink); color: var(--pink); }
+
+    .section { margin-top: 72px; }
+    .section-head { margin-bottom: 22px; }
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(24px, 2.6vw, 32px);
+      font-weight: 900;
+    }
+    .section-head p { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 42ch; }
+    .text-link { color: var(--pink); font-size: 13px; font-weight: 700; }
+
+    .path-rail {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 14px;
+    }
+    .path-tile {
+      position: relative;
+      border-radius: 26px;
+      overflow: hidden;
+      min-height: 300px;
+      color: #F7F7F9;
+      isolation: isolate;
+      transition: transform .2s ease;
+    }
+    .path-tile:hover { transform: translateY(-4px); }
+    .path-tile img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: -2;
+      transition: transform .7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .path-tile:hover img { transform: scale(1.05); }
+    .path-tile::after {
+      content: "";
+      position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(20,20,22,.08), rgba(20,20,22,.72));
+    }
+    .path-tile .body {
+      height: 100%; padding: 22px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .path-tile h3 {
+      margin: 0 0 8px; font-size: 22px; font-weight: 900; line-height: 1.25; max-width: 12ch;
+    }
+    .path-tile p { margin: 0; font-size: 13px; opacity: .88; max-width: 28ch; }
+    .path-tile .go { margin-top: 16px; font-size: 13px; font-weight: 700; color: #fff; }
+    .path-tile.featured { min-height: 340px; }
+    .path-tile.featured h3 { font-size: 28px; }
+
+    .actions {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 14px;
+    }
+    .action {
+      border-radius: 24px;
+      padding: 22px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .action h3 { margin: 0 0 4px; font-size: 17px; font-weight: 800; }
+    .action p { margin: 0; color: var(--muted); font-size: 13px; }
+    .action.ink { background: var(--ink); color: #F7F7F9; border: 0; }
+    .action.ink p { color: #A8ABB4; }
+    .action .pill {
+      flex: 0 0 auto; border-radius: 999px;
+      padding: 10px 14px; font-size: 12px; font-weight: 700;
+      background: var(--pink); color: #fff;
+    }
+    .action.ink .pill { background: #fff; color: var(--ink); }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0; }
+    .tabs button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.6);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px; font-weight: 600;
+    }
+    .tabs button.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+    .skill-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .skill-card {
+      border-radius: 20px;
+      padding: 18px;
+      display: flex; flex-direction: column; gap: 12px;
+      min-height: 198px;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .skill-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .skill-top { display: flex; gap: 12px; align-items: flex-start; }
+    .skill-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      object-fit: cover; flex: 0 0 auto;
+    }
+    .skill-icon.fallback {
+      display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 15px;
+      font-family: Outfit, sans-serif;
+      background: var(--ink);
+    }
+    .skill-card h3 { margin: 0; font-size: 15px; line-height: 1.35; font-weight: 750; }
+    .skill-card .desc {
+      margin: 0; color: var(--muted); font-size: 13px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      flex: 1;
+    }
+    .badge {
+      display: inline-flex; padding: 3px 7px; border-radius: 6px;
+      font-size: 11px; font-weight: 700;
+      background: rgba(255,79,154,.12); color: var(--pink);
+    }
+    .origin-line { margin: 0; color: var(--muted); font-size: 12px; }
+    .origin-line em { font-style: normal; color: var(--pink); font-weight: 700; }
+    .author-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: grid; place-items: center; color: #fff;
+      font-size: 10px; font-weight: 700; background: var(--ink);
+    }
+    .meta-row {
+      display: flex; justify-content: space-between;
+      padding-top: 10px; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 12px;
+    }
+    .meta-row b { color: var(--ink); }
+
+    .close {
+      margin-top: 80px;
+      border-radius: 32px;
+      padding: 48px 40px;
+      background:
+        radial-gradient(ellipse 60% 80% at 90% 20%, rgba(255,79,154,.35), transparent 50%),
+        var(--ink);
+      color: #F7F7F9;
+      display: grid;
+      grid-template-columns: 1.4fr auto;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .close img {
+      position: absolute; right: -40px; top: -80px; width: 340px; opacity: .35; pointer-events: none;
+    }
+    .close h2 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 900;
+      max-width: 14ch;
+      position: relative;
+    }
+    .close p { margin: 0; color: #B4B7C0; font-size: 14px; max-width: 40ch; position: relative; }
+    .close .btn { background: var(--pink); color: #fff; position: relative; }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-copy, .hero-visual, .ornament, .path-tile img { animation: none; transition: none; }
+    }
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; min-height: 0; padding: 8px 18px 24px; }
+      .hero-visual { min-height: 340px; order: -1; }
+      .ornament { width: 120%; right: -20%; top: -10%; }
+      .path-rail { grid-template-columns: 1fr; }
+      .path-tile, .path-tile.featured { min-height: 220px; }
+      .skill-grid { grid-template-columns: 1fr 1fr; }
+      .actions { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .close { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .shell { padding: 0 16px 56px; }
+      .skill-grid { grid-template-columns: 1fr; }
+      .close { padding: 32px 22px; }
+      .stage, .hero { border-radius: 22px; }
+    }
+  </style>
 </head>
 <body>
-  <p>正在进入 <a href="growth-fork.html">成长 Fork</a>。</p>
+  <!--
+    THESIS: Douyin Campus chrome-and-pink mist, not a teal SaaS marketplace.
+    OWN-WORLD: Mist canvas, liquid chrome 3D, bubblegum pink #FF4F9A, glass pills, italic wordmark.
+    STORY: Walk into a path, pick a verified Skill, or voice-interview experience into one.
+    FIRST VIEWPORT: Mist stage, chrome ornament, 3D girl right, manifesto + glass search left.
+    FORM: Asymmetric media hero + photo path tiles; craft bar from Douyin Campus refs.
+  -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html">
+        <img src="assets/douyin-campus-logo.png" alt="">
+        <span><em>成长 Fork</em></span>
+      </a>
+      <div class="nav-links">
+        <a class="active" href="index.html">首页</a>
+        <a href="skills.html">全部 Skill</a>
+        <a href="school-zone.html">学校专区</a>
+        <a href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
+        <a class="avatar" href="my-growth.html" aria-label="我的主页">林</a>
+      </div>
+    </nav>
+
+    <div class="stage">
+      <img class="ornament" src="assets/hero-chrome-ornament.png" alt="" width="1200" height="675">
+      <header class="hero">
+        <div class="hero-copy">
+          <h1 class="display">把走过的路<br>变成可复用的 <span class="pink">Skill</span></h1>
+          <p class="lead">同学验证过的成长路径，或用语音访谈把经验一键沉淀下来。</p>
+          <div class="search-row">
+            <div class="search-box glass">
+              <span aria-hidden="true">⌕</span>
+              <input id="searchInput" type="search" placeholder="描述你此刻要完成的任务，例如：社团经历写进简历" aria-label="描述任务以匹配 Skill">
+              <button type="button" id="searchBtn">匹配 Skill</button>
+            </div>
+            <div class="cta-row">
+              <a class="btn btn-pink" href="skills.html">进入商店</a>
+              <a class="btn btn-ghost glass" href="skills.html">看本周路径</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img class="girl" src="assets/hero-chrome-girl-user-v3.png" alt="成长助手形象" width="712" height="1024">
+        </div>
+      </header>
+    </div>
+    <div class="hints">
+      <span>热门</span>
+      <button type="button" data-q="社团经历写进简历">社团经历写进简历</button>
+      <button type="button" data-q="保研材料准备">保研材料</button>
+      <button type="button" data-q="运营实习冲刺">运营实习</button>
+    </div>
+
+    <section class="section" id="discover" aria-labelledby="discoverTitle">
+      <div class="section-head">
+        <h2 class="display" id="discoverTitle">发现适合你的路径</h2>
+        <p>按年级、目标和此刻节点推荐，而不是堆热度榜。 <a class="text-link" href="school-zone.html">北京高校专区 →</a></p>
+      </div>
+      <div class="path-rail">
+        <a class="path-tile featured" href="campus-map.html">
+          <img src="assets/path-research.jpg" alt="" loading="lazy">
+          <div class="body">
+            <h3 class="display">附近的 Skill 创作者</h3>
+            <p>在地图上找到本校同学，看他们发布和收藏的 Skill。</p>
+            <span class="go">打开附近创作者 →</span>
+          </div>
+        </a>
+        <a class="path-tile" href="skill-detail.html?id=resume">
+          <img src="assets/path-campus.jpg" alt="" loading="lazy">
+          <div class="body">
+            <h3 class="display">把社团经历写成简历亮点</h3>
+            <p>12 分钟产出一条可投递项目描述。</p>
+            <span class="go">立即开始 →</span>
+          </div>
+        </a>
+        <a class="path-tile" href="skills.html">
+          <img src="assets/path-career.jpg" alt="" loading="lazy">
+          <div class="body">
+            <h3 class="display">零项目经验如何做运营案例</h3>
+            <p>按完成率与复用度排序。</p>
+            <span class="go">查看榜单 →</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="actions">
+        <a class="action ink" href="create-skill.html">
+          <div>
+            <h3 class="display">语音访谈生成 Skill</h3>
+            <p>像通话一样复盘经验，交给 skill-creator 一键生成。</p>
+          </div>
+          <span class="pill">开始访谈</span>
+        </a>
+        <a class="action glass" href="my-growth.html">
+          <div>
+            <h3 class="display">继续你的成长路径</h3>
+            <p>内容运营实习 28 天冲刺，进度 18%</p>
+          </div>
+          <span class="pill">进入</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <div class="section-head">
+        <h2 class="display">精选成长 Skill</h2>
+        <p>先看几条高质量路径，完整目录在商店里。 <a class="text-link" href="skills.html">进入商店 →</a></p>
+      </div>
+      <div class="tabs" id="tabs" role="tablist">
+        <button type="button" class="active" data-tab="rec" role="tab">为你推荐</button>
+        <button type="button" data-tab="hot" role="tab">本周飙升</button>
+        <button type="button" data-tab="done" role="tab">高完成率</button>
+        <button type="button" data-tab="new" role="tab">最近上新</button>
+      </div>
+      <div class="skill-grid" id="skillGrid"></div>
+    </section>
+
+    <section class="close">
+      <img src="assets/hero-chrome-ornament.png" alt="" aria-hidden="true">
+      <div>
+        <h2 class="display">你走过的弯路，可以成为别人的捷径</h2>
+        <p>用网页版语音访谈讲清经验，AI 整理后交给 skill-creator 生成可运行的 Skill。</p>
+      </div>
+      <a class="btn" href="create-skill.html">开始语音访谈</a>
+    </section>
+
+    <footer>
+      <span>成长 Fork · 大学生成长 Skill 共创平台</span>
+      <span>内容由用户共创，使用前请自行判断适用性</span>
+    </footer>
+  </div>
+
+  <script>
+    const skills = [
+      { id: "resume", title: "社团经历项目化表达", desc: "把普通活动描述改写成有数据、有业务价值的简历项目。", author: "顾言", initial: "顾", users: "2,189", rate: "84%", badge: "已验证", tab: ["rec", "done", "hot"], icon: "assets/skill-icon-resume.png" },
+      { id: "career", title: "内容运营实习上岸路线", desc: "从岗位定位到面试复盘，跟着真实校园求职经验走完 28 天。", author: "林然", initial: "林", users: "1,284", rate: "76%", badge: "专家路径", tab: ["rec", "hot"], icon: null },
+      { id: "research", title: "科研入门：从读论文到找选题", desc: "适合没有科研经历的大二大三学生，完成第一份研究计划。", author: "周知", initial: "周", users: "672", rate: "68%", badge: "已验证", tab: ["rec", "done"], icon: null },
+      { id: "demo", title: "竞赛 Demo 一周共创营", desc: "选题、分工、原型和答辩，7 天把想法做成可展示成果。", author: "DemoLab", initial: "D", users: "493", rate: "71%", badge: "组合路径", tab: ["hot", "done"], icon: null },
+      { id: "exam", title: "期末复习计划生成器", desc: "根据课程难度和剩余时间，生成一份能真正完成的复习清单。", author: "Mia", initial: "M", users: "3,214", rate: "81%", badge: "高完成率", tab: ["done", "rec"], icon: null },
+      { id: "interview", title: "运营岗模拟面试追问", desc: "按真实面试节奏追问，帮你补齐案例细节与表达漏洞。", author: "阿哲", initial: "哲", users: "318", rate: "79%", badge: "新上线", tab: ["new", "hot"], icon: null },
+      { id: "resume-sysu", title: "中大迎新晚会 · 社团口径版", desc: "按中大团委口径改写社团经历，补校内可核验材料。", author: "阿乔", initial: "乔", users: "418", rate: "86%", badge: "二创", tab: ["new", "rec"], icon: "assets/skill-icon-resume.png", originTitle: "社团经历项目化表达" },
+      { id: "resume-quant", title: "没有后台数据时怎么量化", desc: "给没有后台的同学估算模板，把空经历写成有数字的项目。", author: "宁宁", initial: "宁", users: "902", rate: "81%", badge: "二创", tab: ["new", "hot"], icon: null, originTitle: "社团经历项目化表达" }
+    ];
+
+    const grid = document.getElementById("skillGrid");
+    let activeTab = "rec";
+
+    function render() {
+      const list = skills.filter(s => s.tab.includes(activeTab));
+      grid.innerHTML = list.map(s => `
+        <a class="skill-card" href="skill-detail.html?id=${s.id}">
+          <div class="skill-top">
+            ${s.icon
+              ? `<img class="skill-icon" src="${s.icon}" alt="">`
+              : `<span class="skill-icon fallback">${s.initial}</span>`}
+            <div style="min-width:0;flex:1">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
+                <h3>${s.title}</h3>
+                <span class="badge">${s.badge}</span>
+              </div>
+              <p class="desc">${s.desc}</p>
+            </div>
+          </div>
+          ${s.originTitle ? `<p class="origin-line">二创自 <em>${s.originTitle}</em></p>` : ""}
+          <div class="author-line"><span class="dot">${s.initial}</span>${s.author}</div>
+          <div class="meta-row"><span><b>${s.users}</b> 人使用</span><span>完成率 <b>${s.rate}</b></span></div>
+        </a>
+      `).join("");
+    }
+
+    document.querySelectorAll("#tabs button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#tabs button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeTab = btn.dataset.tab;
+        render();
+      });
+    });
+
+    function doSearch() {
+      const q = document.getElementById("searchInput").value.trim();
+      if (!q) { location.href = "match.html"; return; }
+      location.href = `match.html?q=${encodeURIComponent(q)}`;
+    }
+    document.getElementById("searchBtn").addEventListener("click", doSearch);
+    document.getElementById("searchInput").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+    document.querySelectorAll(".hints button").forEach(b => b.addEventListener("click", () => {
+      document.getElementById("searchInput").value = b.dataset.q;
+      doSearch();
+    }));
+
+    render();
+  </script>
 </body>
 </html>

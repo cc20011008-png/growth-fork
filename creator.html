@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创作者主页 · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    .crumb {
+      display: flex; align-items: center; gap: 8px;
+      margin: 4px 0 16px; color: var(--muted); font-size: 13px;
+    }
+    .crumb a:hover { color: var(--ink); }
+
+    .identity {
+      display: grid;
+      grid-template-columns: 96px 1fr auto;
+      gap: 20px; align-items: start;
+      border-radius: 24px; padding: 22px 24px;
+    }
+    .identity img {
+      width: 96px; height: 96px; border-radius: 50%;
+      object-fit: cover; border: 3px solid #fff;
+      box-shadow: 0 12px 28px rgba(20,20,22,.12);
+    }
+    .identity h1 { margin: 0; font-size: 28px; letter-spacing: -.03em; }
+    .role { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .bio { margin: 10px 0 0; color: var(--ink); font-size: 14px; max-width: 62ch; }
+    .facts {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      margin-top: 14px; color: var(--muted); font-size: 13px;
+    }
+    .facts b { color: var(--ink); font-weight: 700; }
+    .id-actions { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+    .btn-follow[aria-pressed="true"] {
+      background: var(--pink-soft); color: var(--pink);
+    }
+
+    .shelf { margin-top: 22px; }
+    .tabs {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tabs button {
+      border: 1px solid var(--line); background: #fff;
+      color: var(--muted); border-radius: 999px;
+      padding: 8px 14px; font-size: 13px; font-weight: 650;
+    }
+    .tabs button.active {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+    .tabs button:focus-visible, .btn:focus-visible {
+      outline: 2px solid var(--pink); outline-offset: 2px;
+    }
+
+    .skill-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .skill-card {
+      display: block;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px; padding: 16px;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .skill-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .skill-card .type { color: var(--pink); font-size: 12px; font-weight: 700; }
+    .skill-card h3 { margin: 8px 0 6px; font-size: 16px; line-height: 1.35; }
+    .skill-card p { margin: 0; color: var(--muted); font-size: 13px; }
+    .skill-card .uses {
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 12px;
+    }
+    .skill-card .uses b { color: var(--ink); }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center; padding: 40px 12px; color: var(--muted);
+    }
+    .missing { text-align: center; padding: 64px 16px; }
+
+    .bounty-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 12px; margin-bottom: 14px;
+    }
+    .bounty-head p {
+      margin: 0; max-width: 52ch; color: var(--muted); font-size: 13px; line-height: 1.55;
+    }
+    .bounty-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .points-chip {
+      font-size: 12px; font-weight: 700; color: var(--ink);
+      padding: 7px 12px; border-radius: 999px;
+      background: var(--pink-soft); border: 1px solid color-mix(in srgb, var(--pink) 28%, var(--line));
+    }
+    .bounty-form {
+      display: none; margin-bottom: 16px; padding: 16px;
+      border: 1px solid var(--line); border-radius: 16px; background: var(--paper);
+    }
+    .bounty-form.open { display: grid; gap: 12px; }
+    .bounty-form label {
+      display: grid; gap: 6px;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    .bounty-form input, .bounty-form textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px;
+      background: #fff; color: var(--ink); font: inherit; font-size: 14px;
+      padding: 10px 12px; outline: none;
+    }
+    .bounty-form textarea { min-height: 88px; resize: vertical; line-height: 1.55; }
+    .bounty-form input:focus, .bounty-form textarea:focus {
+      border-color: var(--pink); box-shadow: 0 0 0 3px var(--pink-soft);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 120px; gap: 12px; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+
+    .bounty-list { display: grid; gap: 12px; }
+    .bounty-card {
+      border: 1px solid var(--line); border-radius: 16px;
+      background: var(--paper); padding: 16px;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .bounty-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .bounty-card.closed { opacity: .7; }
+    .bounty-top {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      gap: 10px; margin-bottom: 8px;
+    }
+    .bounty-card h3 { margin: 0; font-size: 16px; line-height: 1.35; }
+    .reward {
+      flex-shrink: 0; font-size: 12px; font-weight: 800; color: var(--pink);
+      padding: 6px 10px; border-radius: 999px; background: var(--pink-soft);
+    }
+    .need { margin: 0 0 10px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .bounty-meta {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      margin-bottom: 12px; color: var(--muted); font-size: 12px;
+    }
+    .bounty-meta b { color: var(--ink); }
+    .bounty-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bounty-actions .btn { font-size: 13px; padding: 8px 12px; }
+
+    .rec-panel {
+      display: none; margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .rec-panel.open { display: block; }
+    .rec-panel .hint {
+      margin: 0 0 8px; font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    .rec-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .rec-pick {
+      text-align: left; border: 1px solid var(--line); border-radius: 12px;
+      background: #fff; padding: 10px 12px; cursor: pointer; font: inherit;
+      transition: border-color .15s, background .15s;
+    }
+    .rec-pick:hover { border-color: var(--pink); background: var(--pink-soft); }
+    .rec-pick strong { display: block; font-size: 13px; margin-bottom: 2px; }
+    .rec-pick span { font-size: 11px; color: var(--muted); }
+    .rec-list { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+    .rec-list li { font-size: 12px; color: var(--muted); }
+    .rec-list b { color: var(--ink); font-weight: 700; }
+
+    @media (max-width: 900px) {
+      .identity { grid-template-columns: 80px 1fr; }
+      .id-actions { grid-column: 1 / -1; flex-direction: row; }
+      .skill-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .identity { grid-template-columns: 1fr; }
+      .skill-grid, .rec-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="skills.html">全部 Skill</a>
+        <a href="school-zone.html">学校专区</a>
+        <a class="active" href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
+        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+      </div>
+    </nav>
+    <div id="page"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script src="creators-data.js"></script>
+  <script>
+    const toast = document.getElementById("toast");
+    function notice(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function esc(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    const id = new URLSearchParams(location.search).get("id");
+    const creator = creatorById(id);
+    const page = document.getElementById("page");
+
+    if (!creator) {
+      page.innerHTML = `<div class="missing">
+        <h1 class="display">没有找到这位创作者</h1>
+        <p>回到地图看看附近还有谁。</p>
+        <a class="btn btn-ink" href="campus-map.html">返回附近创作者</a>
+      </div>`;
+    } else {
+      document.title = creator.name + " · 成长 Fork";
+      let tab = new URLSearchParams(location.search).get("tab") === "bounty" ? "bounty" : "published";
+      let formOpen = false;
+      let openRecId = null;
+      const labels = { published: "发布的 Skill", used: "用过的 Skill", saved: "收藏的 Skill" };
+
+      function statusLabel(b) {
+        if (b.status === "delivered") return "已交付";
+        if (isClaimedByMe(b.id)) return "你已接单";
+        return "征集中";
+      }
+
+      function renderBountyPane(host) {
+        const list = bountiesFor(creator.id);
+        host.innerHTML = `
+          <div class="bounty-head">
+            <p>${esc(creator.name)} 需要什么样的 Skill？说清楚场景与产出，别人可接单制作发给 TA，或推荐合适 Skill 赚积分。</p>
+            <div class="bounty-tools">
+              <span class="points-chip" id="pointsChip">我的积分 · ${readPoints()}</span>
+              <button class="btn btn-pink" type="button" id="toggleForm">${formOpen ? "收起表单" : "发布悬赏"}</button>
+            </div>
+          </div>
+          <form class="bounty-form ${formOpen ? "open" : ""}" id="bountyForm">
+            <label>需求标题
+              <input name="title" maxlength="48" required placeholder="例如：课设怎么讲成实习作品">
+            </label>
+            <label>具体需要什么
+              <textarea name="need" maxlength="280" required placeholder="现状、卡点、希望 Skill 帮你做到哪一步"></textarea>
+            </label>
+            <div class="form-row">
+              <label>悬赏积分
+                <input name="reward" type="number" min="20" max="500" step="10" value="80">
+              </label>
+              <div class="form-actions" style="align-self:end">
+                <button class="btn btn-ghost" type="button" id="cancelForm">取消</button>
+                <button class="btn btn-ink" type="submit">发布</button>
+              </div>
+            </div>
+          </form>
+          <div class="bounty-list" id="bountyList"></div>
+        `;
+
+        const bountyList = document.getElementById("bountyList");
+        if (!list.length) {
+          bountyList.innerHTML = `<div class="empty">${esc(creator.name)} 还没有发布需求悬赏。</div>`;
+        } else {
+          bountyList.innerHTML = list.map(b => {
+            const claimed = isClaimedByMe(b.id);
+            const closed = b.status !== "open";
+            const recs = recsFor(b.id);
+            const createHref = `create-skill.html?bounty=${encodeURIComponent(b.id)}&for=${encodeURIComponent(creator.id)}`;
+            return `
+              <article class="bounty-card ${closed ? "closed" : ""}" data-bounty="${esc(b.id)}">
+                <div class="bounty-top">
+                  <h3>${esc(b.title)}</h3>
+                  <span class="reward">${b.reward} 积分</span>
+                </div>
+                <p class="need">${esc(b.need)}</p>
+                <div class="bounty-meta">
+                  <span>状态 <b>${statusLabel(b)}</b></span>
+                  <span>发布于 ${esc(b.createdAt)}</span>
+                  <span>推荐 <b>${recs.length}</b></span>
+                </div>
+                <div class="bounty-actions">
+                  ${closed ? "" : claimed
+                    ? `<a class="btn btn-ink" href="${createHref}">继续制作并发给 TA</a>
+                       <button class="btn btn-pink" type="button" data-deliver="${esc(b.id)}">标记交付 · 领 ${b.reward} 积分</button>`
+                    : `<button class="btn btn-ink" type="button" data-claim="${esc(b.id)}">接单制作</button>`}
+                  ${closed ? "" : `<button class="btn btn-ghost" type="button" data-rec="${esc(b.id)}">${openRecId === b.id ? "收起推荐" : "推荐合适 Skill"}</button>`}
+                </div>
+                <div class="rec-panel ${openRecId === b.id && !closed ? "open" : ""}" data-rec-panel="${esc(b.id)}">
+                  <p class="hint">推荐可得约 ${Math.max(15, Math.round(b.reward * 0.25))} 积分（每个 Skill 仅计一次）</p>
+                  <div class="rec-grid">
+                    ${GROWTH_RECOMMEND_SKILLS.map(s => `
+                      <button class="rec-pick" type="button" data-rec-skill="${esc(s.id)}" data-rec-title="${esc(s.title)}" data-for-bounty="${esc(b.id)}">
+                        <strong>${esc(s.title)}</strong>
+                        <span>${esc(s.typeLabel)}</span>
+                      </button>
+                    `).join("")}
+                  </div>
+                  ${recs.length ? `<ul class="rec-list">${recs.map(r => `<li><b>${esc(r.from)}</b> 推荐了「${esc(r.skillTitle)}」</li>`).join("")}</ul>` : ""}
+                </div>
+              </article>
+            `;
+          }).join("");
+        }
+
+        document.getElementById("toggleForm").addEventListener("click", () => {
+          formOpen = !formOpen;
+          render();
+        });
+        document.getElementById("cancelForm").addEventListener("click", () => {
+          formOpen = false;
+          render();
+        });
+        document.getElementById("bountyForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const title = String(fd.get("title") || "").trim();
+          const need = String(fd.get("need") || "").trim();
+          const reward = Number(fd.get("reward") || 80);
+          if (!title || !need) return;
+          postBounty(creator.id, title, need, reward);
+          formOpen = false;
+          tab = "bounty";
+          notice("悬赏已发布，等待接单或推荐");
+          render();
+        });
+
+        bountyList.addEventListener("click", (e) => {
+          const claimBtn = e.target.closest("[data-claim]");
+          if (claimBtn) {
+            const bid = claimBtn.getAttribute("data-claim");
+            claimBounty(bid, "林");
+            notice("已接单，接下来制作 Skill 发给 " + creator.name);
+            location.href = `create-skill.html?bounty=${encodeURIComponent(bid)}&for=${encodeURIComponent(creator.id)}`;
+            return;
+          }
+          const deliverBtn = e.target.closest("[data-deliver]");
+          if (deliverBtn) {
+            const result = deliverClaimedBounty(deliverBtn.getAttribute("data-deliver"));
+            if (result.ok) notice(`已交付给 ${creator.name}，获得 ${result.points} 积分`);
+            else notice("交付失败，请先接单制作");
+            render();
+            return;
+          }
+          const recToggle = e.target.closest("[data-rec]");
+          if (recToggle) {
+            const bid = recToggle.getAttribute("data-rec");
+            openRecId = openRecId === bid ? null : bid;
+            render();
+            return;
+          }
+          const pick = e.target.closest("[data-rec-skill]");
+          if (pick) {
+            const result = recommendSkillForBounty(
+              pick.getAttribute("data-for-bounty"),
+              pick.getAttribute("data-rec-skill"),
+              pick.getAttribute("data-rec-title")
+            );
+            if (result.ok) notice(`已推荐给 ${creator.name}，+${result.points} 积分（合计 ${result.total}）`);
+            else notice("你已经推荐过这个 Skill 了");
+            render();
+          }
+        });
+      }
+
+      function render() {
+        const on = isFollowing(creator.id);
+        const bountyCount = bountiesFor(creator.id).length;
+        const list = tab === "bounty" ? null : (creator[tab] || []);
+        page.innerHTML = `
+          <nav class="crumb" aria-label="面包屑">
+            <a href="campus-map.html">附近创作者</a>
+            <span aria-hidden="true">/</span>
+            <span>${esc(creator.name)}</span>
+          </nav>
+          <header class="identity glass">
+            <img src="${esc(creator.avatar)}" alt="">
+            <div>
+              <h1 class="display">${esc(creator.name)}</h1>
+              <p class="role">${esc(creator.role)} · ${esc(creator.school)}</p>
+              <p class="bio">${esc(creator.bio)}</p>
+              <div class="facts">
+                <span><b id="fanCount">${followerCount(creator)}</b> 粉丝</span>
+                <span><b>${creator.uses.toLocaleString()}</b> 人用过 TA 做的 Skill</span>
+                <span><b>${creator.published.length}</b> 个作品</span>
+                <span><b>${bountyCount}</b> 个悬赏</span>
+              </div>
+            </div>
+            <div class="id-actions">
+              <button class="btn ${on ? "btn-follow" : "btn-pink"}" type="button" id="followBtn" aria-pressed="${on}">${on ? "已关注" : "关注"}</button>
+              <a class="btn btn-ghost" href="campus-map.html">地图上看位置</a>
+            </div>
+          </header>
+          <section class="shelf">
+            <div class="tabs" id="tabs">
+              <button type="button" data-tab="published" class="${tab === "published" ? "active" : ""}">发布的 Skill · ${creator.published.length}</button>
+              <button type="button" data-tab="used" class="${tab === "used" ? "active" : ""}">用过的 Skill · ${creator.used.length}</button>
+              <button type="button" data-tab="saved" class="${tab === "saved" ? "active" : ""}">收藏的 Skill · ${creator.saved.length}</button>
+              <button type="button" data-tab="bounty" class="${tab === "bounty" ? "active" : ""}">需求悬赏 · ${bountyCount}</button>
+            </div>
+            <div id="pane"></div>
+          </section>
+        `;
+
+        const pane = document.getElementById("pane");
+        if (tab === "bounty") {
+          renderBountyPane(pane);
+        } else {
+          pane.innerHTML = `<div class="skill-grid" id="grid"></div>`;
+          const grid = document.getElementById("grid");
+          if (!list.length) {
+            grid.innerHTML = `<div class="empty">${esc(creator.name)} 还没有${labels[tab].replace("的 Skill", "")}记录。</div>`;
+          } else {
+            grid.innerHTML = list.map(s => `
+              <a class="skill-card" href="${s.href}${s.href.indexOf("?") === -1 ? "?" : "&"}school=${creator.schoolId}">
+                <span class="type">${esc(s.typeLabel)}</span>
+                <h3>${esc(s.title)}</h3>
+                <p class="uses"><b>${esc(s.users)}</b> 人使用</p>
+              </a>
+            `).join("");
+          }
+        }
+
+        document.getElementById("followBtn").addEventListener("click", () => {
+          const now = toggleFollow(creator.id);
+          notice(now ? `已关注 ${creator.name}，你是 TA 的粉丝了` : `已取消关注 ${creator.name}`);
+          render();
+        });
+        document.getElementById("tabs").addEventListener("click", e => {
+          const btn = e.target.closest("[data-tab]");
+          if (!btn) return;
+          tab = btn.dataset.tab;
+          formOpen = false;
+          openRecId = null;
+          render();
+        });
+      }
+      render();
+    }
+  </script>
+</body>
+</html>

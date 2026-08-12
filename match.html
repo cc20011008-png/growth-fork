@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>任务匹配 · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    body { background: transparent; }
+    .shell { max-width: 980px; padding-bottom: 110px; }
+
+    .page-head { margin: 8px 0 18px; }
+    .page-head h1 {
+      margin: 0;
+      font-size: clamp(26px, 3.4vw, 36px);
+      font-weight: 900;
+      line-height: 1.2;
+    }
+    .page-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 48ch;
+    }
+
+    /* Stage: living task brief */
+    .stage-panel {
+      padding: 22px;
+      border-radius: 24px;
+    }
+    .stage-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .stage-top h2 { margin: 0; font-size: 16px; font-weight: 800; }
+    .profile-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      border: 1px solid rgba(20,20,22,.12);
+      background: rgba(255,255,255,.55);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px; font-weight: 650;
+    }
+    .chip.active {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+    .chip:focus-visible, .btn:focus-visible, .match-row:focus-visible,
+    .ai-btn:focus-visible, .dock-btn:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+
+    .editor {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      padding: 14px 14px 48px;
+    }
+    .editor textarea {
+      width: 100%; min-height: 118px; resize: vertical;
+      border: 0; outline: 0; background: transparent;
+      font-size: 15px; line-height: 1.65; color: var(--ink);
+    }
+    .editor textarea::placeholder { color: #8B8E98; }
+    .editor-foot {
+      position: absolute; left: 14px; right: 14px; bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .char-count { color: var(--muted); font-size: 12px; }
+    .ai-btn {
+      border: 0; border-radius: 999px;
+      background: var(--pink); color: #fff;
+      padding: 9px 14px; font-size: 13px; font-weight: 750;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ai-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .ai-btn svg { width: 14px; height: 14px; }
+    .ai-btn.busy { animation: pulseSoft 1s ease-in-out infinite; }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .refine-sheet {
+      display: none;
+      margin-top: 14px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,79,154,.18);
+      background: rgba(255,255,255,.55);
+      animation: sheetIn .35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .refine-sheet.show { display: block; }
+    @keyframes sheetIn {
+      from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    .diag {
+      padding: 14px 16px;
+      background: var(--pink-soft);
+      border-bottom: 1px solid rgba(255,79,154,.14);
+    }
+    .diag h3 { margin: 0 0 6px; font-size: 13px; font-weight: 800; color: var(--pink-deep); }
+    .diag ul { margin: 0; padding-left: 18px; color: var(--ink); font-size: 13px; }
+    .diag li { margin-bottom: 4px; }
+    .refined { padding: 14px 16px 16px; }
+    .refined h3 { margin: 0 0 8px; font-size: 13px; font-weight: 800; }
+    .refined pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+    }
+    .refine-actions {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 14px;
+    }
+    .btn-adopt {
+      border: 0; border-radius: 12px;
+      background: var(--pink); color: #fff;
+      padding: 10px 14px; font-size: 13px; font-weight: 750;
+    }
+    .btn-append {
+      border: 1px solid rgba(20,20,22,.12);
+      border-radius: 12px;
+      background: #fff; color: var(--ink);
+      padding: 10px 14px; font-size: 13px; font-weight: 700;
+    }
+    .btn-match {
+      border: 0; border-radius: 12px;
+      background: var(--ink); color: #fff;
+      padding: 10px 14px; font-size: 13px; font-weight: 750;
+      margin-left: auto;
+    }
+
+    .why-bar {
+      margin-top: 12px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+      color: var(--muted); font-size: 12px;
+    }
+    .why-bar span {
+      background: rgba(255,255,255,.55);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+    }
+    .why-bar b { color: var(--ink); font-weight: 750; }
+
+    /* Tray: matches + combo */
+    .tray {
+      margin-top: 22px;
+      display: none;
+    }
+    .tray.show { display: block; }
+    .tray-head {
+      display: flex; align-items: end; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .tray-head h2 { margin: 0; font-size: 18px; font-weight: 900; }
+    .tray-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; max-width: 48ch; }
+
+    .combo {
+      margin-bottom: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+    }
+    .combo h3 { margin: 0 0 10px; font-size: 14px; font-weight: 800; }
+    .combo-path {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .combo-step {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px; font-weight: 700;
+    }
+    .combo-step i {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--pink-soft); color: var(--pink);
+      display: grid; place-items: center;
+      font-style: normal; font-size: 11px; font-weight: 800;
+    }
+    .combo-arrow { color: var(--muted); font-size: 14px; }
+    .combo-note { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+
+    .match-list { display: grid; gap: 10px; }
+    .match-row {
+      display: grid;
+      grid-template-columns: 28px 44px minmax(0, 1fr) auto;
+      gap: 12px; align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      text-align: left;
+      color: inherit;
+      transition: transform .18s, box-shadow .18s;
+      width: 100%;
+      cursor: pointer;
+    }
+    .match-row:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .match-row.selected {
+      box-shadow:
+        inset 0 0 0 1.5px var(--pink),
+        0 14px 32px rgba(255,79,154,.12);
+    }
+    .check {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 1.5px solid rgba(20,20,22,.2);
+      background: #fff;
+      display: grid; place-items: center;
+    }
+    .match-row.selected .check {
+      background: var(--pink); border-color: var(--pink); color: #fff;
+    }
+    .check svg { width: 12px; height: 12px; opacity: 0; }
+    .match-row.selected .check svg { opacity: 1; }
+    .match-ico {
+      width: 44px; height: 44px; border-radius: 12px;
+      object-fit: cover;
+      display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 16px;
+      font-family: Outfit, "Noto Sans SC", sans-serif;
+      background: var(--ink);
+    }
+    .match-body h3 { margin: 0; font-size: 15px; font-weight: 800; }
+    .match-body .why { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+    .score-grid {
+      display: grid; grid-template-columns: repeat(2, auto); gap: 4px 10px;
+      font-size: 11px; color: var(--muted); text-align: right;
+    }
+    .score-grid b { color: var(--ink); font-family: Outfit, "Noto Sans SC", sans-serif; }
+    .risk-ok { color: #1F7A4D; }
+    .risk-warn { color: #9A5B00; }
+
+    .empty-tray {
+      padding: 28px 18px;
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .dock {
+      position: fixed; left: 50%; bottom: 22px; z-index: 40;
+      transform: translateX(-50%);
+      width: min(920px, calc(100% - 28px));
+      display: none;
+      align-items: center; justify-content: space-between; gap: 14px;
+      padding: 12px 14px 12px 18px;
+      border-radius: 18px;
+    }
+    .dock.show { display: flex; }
+    .dock p { margin: 0; font-size: 13px; color: var(--muted); }
+    .dock p b { color: var(--ink); }
+    .dock-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dock-btn {
+      border: 0; border-radius: 12px;
+      padding: 11px 16px; font-size: 13px; font-weight: 750;
+    }
+    .dock-btn.primary { background: var(--pink); color: #fff; }
+    .dock-btn.primary:disabled { opacity: .45; cursor: not-allowed; }
+    .dock-btn.ghost {
+      background: #EEF0F3; color: var(--ink);
+    }
+
+    @media (max-width: 720px) {
+      .match-row { grid-template-columns: 28px 40px minmax(0, 1fr); }
+      .score-grid { grid-column: 2 / -1; text-align: left; margin-top: 2px; }
+      .btn-match { margin-left: 0; width: 100%; }
+      .dock { flex-direction: column; align-items: stretch; }
+      .dock-actions { width: 100%; }
+      .dock-btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    THESIS: Route from a living task brief, not from Skill name search.
+    OWN-WORLD: chrome/pink stage above, selectable match tray below, sticky dock.
+    STORY: Write rough need → AI 完善 → match with why → pick combo → 加入我的成长.
+    FIRST VIEWPORT: nav + title + stage editor with AI完善; tray reveals after match.
+    FORM: Stage + tray (surface seed a456b4e6, candidate 6).
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="skills.html">全部 Skill</a>
+        <a href="school-zone.html">学校专区</a>
+        <a href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <a class="back" href="index.html">← 返回首页</a>
+    </nav>
+
+    <header class="page-head">
+      <h1 class="display">先说清此刻要完成什么</h1>
+      <p>AI 帮你补全需求，再按任务适配、能力缺口与风险约束匹配 Skill。货架解决有什么，这里解决此刻该用什么。</p>
+    </header>
+
+    <section class="stage-panel glass" aria-labelledby="stageTitle">
+      <div class="stage-top">
+        <h2 id="stageTitle">你的任务</h2>
+        <div class="profile-row" role="group" aria-label="你此刻的阶段">
+          <button type="button" class="chip active" data-profile="fresh">大一 · 经历少</button>
+          <button type="button" class="chip" data-profile="intern">有实习 · 要量化</button>
+          <button type="button" class="chip" data-profile="research">科研转产研</button>
+        </div>
+      </div>
+
+      <div class="editor">
+        <label class="sr-only" for="taskInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">描述任务</label>
+        <textarea id="taskInput" maxlength="1000" placeholder="例如：急求线上运营实习！！大三可长期三个月以上，有用户增长和新媒经验，希望 AI 或 3C 方向…"></textarea>
+        <div class="editor-foot">
+          <span class="char-count"><span id="charCount">0</span>/1000</span>
+          <button type="button" class="ai-btn" id="aiRefineBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.6 4.8L18 9.4l-4.4 1.6L12 16l-1.6-4.999L6 9.4l4.4-1.6L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
+            AI 完善
+          </button>
+        </div>
+      </div>
+
+      <div class="refine-sheet" id="refineSheet" aria-live="polite">
+        <div class="diag">
+          <h3>AI 诊断：这些信息还不够清楚</h3>
+          <ul id="diagList"></ul>
+        </div>
+        <div class="refined">
+          <h3>完善后的任务描述</h3>
+          <pre id="refinedText"></pre>
+          <div class="refine-actions">
+            <button type="button" class="btn-adopt" id="adoptBtn">一键采用</button>
+            <button type="button" class="btn-append" id="appendBtn">追加到末尾</button>
+            <button type="button" class="btn-match" id="matchBtn">用完善后的需求匹配</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-bar" id="signalBar" hidden></div>
+    </section>
+
+    <section class="tray" id="tray" aria-labelledby="trayTitle">
+      <div class="tray-head">
+        <div>
+          <h2 class="display" id="trayTitle">为你匹配的 Skill</h2>
+          <p id="traySub">按质量、任务适配、你的阶段与风险约束排序。可多选组成路径。</p>
+        </div>
+      </div>
+
+      <div class="combo glass" id="comboBox" hidden>
+        <h3>建议组合顺序</h3>
+        <div class="combo-path" id="comboPath"></div>
+        <p class="combo-note" id="comboNote"></p>
+      </div>
+
+      <div class="match-list" id="matchList"></div>
+      <div class="empty-tray glass" id="emptyTray" hidden>没有足够匹配的 Skill。试着补充年级、目标岗位或可验证成果，或去许愿池留下需求。</div>
+    </section>
+  </div>
+
+  <div class="dock glass" id="dock" role="region" aria-label="已选 Skill">
+    <p id="dockLabel">已选 <b>0</b> 个 Skill</p>
+    <div class="dock-actions">
+      <button type="button" class="dock-btn ghost" id="clearBtn">清空</button>
+      <button type="button" class="dock-btn primary" id="addBtn" disabled>加入我的成长</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const catalog = [
+      {
+        id: "resume", title: "社团经历项目化表达", author: "顾言", letter: "顾",
+        icon: "assets/skill-icon-resume.png", color: "#141416",
+        desc: "把社团活动改写成有数据的简历项目。",
+        tags: ["简历", "社团", "STAR", "实习求职"],
+        keywords: ["简历", "社团", "经历", "活动", "项目化", "star"],
+        quality: 92, safe: true, users: 2189, rate: 84,
+        stages: { fresh: 96, intern: 70, research: 55 },
+        delta: "适合经历少、需要结构指导的同学"
+      },
+      {
+        id: "resume-quant", title: "没有后台数据时怎么量化", author: "宁宁", letter: "宁",
+        icon: null, color: "#FF4F9A",
+        desc: "没有后台权限时的估算模板与证据等级。",
+        tags: ["量化", "简历", "二创"],
+        keywords: ["量化", "数据", "后台", "数字", "简历", "成果"],
+        quality: 88, safe: true, users: 902, rate: 81,
+        stages: { fresh: 72, intern: 98, research: 60 },
+        delta: "适合已有经历、缺可验证数字的同学"
+      },
+      {
+        id: "resume-sysu", title: "中大迎新晚会 · 社团口径版", author: "阿乔", letter: "乔",
+        icon: "assets/skill-icon-resume.png", color: "#141416",
+        desc: "按中大团委口径改写，补校内可核验材料。",
+        tags: ["中大", "社团", "二创"],
+        keywords: ["中大", "迎新", "团委", "学生会", "校内"],
+        quality: 86, safe: true, users: 418, rate: 86,
+        stages: { fresh: 80, intern: 74, research: 50 },
+        delta: "校情适配：中大迎新 / 团委口径"
+      },
+      {
+        id: "career", title: "内容运营实习上岸路线", author: "林然", letter: "林",
+        icon: null, color: "#FF4F9A",
+        desc: "28 天定位、作品、投递与面试复盘。",
+        tags: ["运营", "实习", "求职"],
+        keywords: ["运营", "实习", "内容", "投递", "岗位", "28"],
+        quality: 90, safe: true, users: 1284, rate: 76,
+        stages: { fresh: 68, intern: 88, research: 58 },
+        delta: "端到端求职路径，可作主 Skill"
+      },
+      {
+        id: "career-xhs", title: "小红书内容实习 28 天", author: "乐乐", letter: "乐",
+        icon: null, color: "#FF4F9A",
+        desc: "笔记结构、封面实验与平台机制追问。",
+        tags: ["小红书", "运营", "二创"],
+        keywords: ["小红书", "笔记", "内容", "运营", "实习", "投流"],
+        quality: 84, safe: true, users: 367, rate: 73,
+        stages: { fresh: 62, intern: 90, research: 48 },
+        delta: "平台向：小红书内容实习"
+      },
+      {
+        id: "interview", title: "运营岗模拟面试追问", author: "阿哲", letter: "哲",
+        icon: null, color: "#141416",
+        desc: "按真实面试节奏追问项目细节。",
+        tags: ["面试", "运营"],
+        keywords: ["面试", "追问", "模拟", "运营", "表达"],
+        quality: 80, safe: true, users: 318, rate: 79,
+        stages: { fresh: 58, intern: 92, research: 55 },
+        delta: "投递后补齐表达与抗压"
+      },
+      {
+        id: "research", title: "科研入门：从读论文到找选题", author: "周知", letter: "周",
+        icon: null, color: "#141416",
+        desc: "精读笔记、选题卡片与研究计划草稿。",
+        tags: ["科研", "保研", "论文"],
+        keywords: ["科研", "论文", "选题", "保研", "研究"],
+        quality: 87, safe: true, users: 672, rate: 68,
+        stages: { fresh: 60, intern: 55, research: 96 },
+        delta: "科研冷启动"
+      },
+      {
+        id: "demo", title: "竞赛 Demo 一周共创营", author: "DemoLab", letter: "D",
+        icon: null, color: "#141416",
+        desc: "7 天选题、原型与答辩材料。",
+        tags: ["竞赛", "Demo", "项目"],
+        keywords: ["竞赛", "demo", "原型", "答辩", "组队"],
+        quality: 82, safe: true, users: 493, rate: 71,
+        stages: { fresh: 74, intern: 70, research: 78 },
+        delta: "把想法压成可演示成果"
+      },
+      {
+        id: "exam", title: "期末复习计划生成器", author: "Mia", letter: "M",
+        icon: null, color: "#FF4F9A",
+        desc: "按难度与剩余天数生成可执行清单。",
+        tags: ["期末", "学习"],
+        keywords: ["期末", "复习", "考试", "计划", "课程"],
+        quality: 89, safe: true, users: 3214, rate: 81,
+        stages: { fresh: 90, intern: 75, research: 70 },
+        delta: "学习节点突击"
+      },
+      {
+        id: "exam-lab", title: "实验课期末双线突击", author: "郝然", letter: "郝",
+        icon: null, color: "#141416",
+        desc: "实验报告与笔试分开排期。",
+        tags: ["实验课", "期末", "二创"],
+        keywords: ["实验", "报告", "期末", "理工", "笔试"],
+        quality: 78, safe: true, users: 241, rate: 77,
+        stages: { fresh: 70, intern: 68, research: 82 },
+        delta: "理工实验课双线"
+      }
+    ];
+
+    const state = {
+      profile: "fresh",
+      refined: "",
+      gaps: [],
+      signals: null,
+      results: [],
+      selected: new Set()
+    };
+
+    const taskInput = document.getElementById("taskInput");
+    const charCount = document.getElementById("charCount");
+    const refineSheet = document.getElementById("refineSheet");
+    const tray = document.getElementById("tray");
+    const toast = document.getElementById("toast");
+
+    function notice(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function syncCount() {
+      charCount.textContent = String(taskInput.value.length);
+    }
+
+    function normalize(text) {
+      return (text || "").toLowerCase().replace(/\s+/g, "");
+    }
+
+    function detectDomain(text) {
+      const t = normalize(text);
+      if (/科研|论文|保研|选题|夏令营/.test(t)) return "research";
+      if (/竞赛|demo|原型|组队|建模/.test(t)) return "project";
+      if (/期末|复习|考试|实验课/.test(t)) return "study";
+      if (/面试|追问/.test(t)) return "interview";
+      if (/运营|实习|求职|岗位|投递|小红书|内容/.test(t)) return "career";
+      if (/简历|社团|经历|量化|项目描述/.test(t)) return "resume";
+      return "general";
+    }
+
+    function diagnose(text, profile) {
+      const t = text.trim();
+      const gaps = [];
+      if (t.length < 18) gaps.push("任务描述过短，匹配只能猜大类，建议写清目标与现状。");
+      if (!/(大一|大二|大三|大四|研|实习|应届)/.test(t) && profile === "fresh") {
+        gaps.push("缺少年级 / 起点，无法判断该给「经历挖掘」还是「成果量化」。");
+      }
+      if (!/(周|小时|天|长期|兼职|全职|可实习)/.test(t) && /实习|求职|运营/.test(t)) {
+        gaps.push("缺少可投入时间与强度预期。");
+      }
+      if (!/(简历|作品|面试|投递|计划|Demo|研究计划|笔记)/i.test(t)) {
+        gaps.push("缺少期望交付物（简历条目、作品、面试通过、计划草稿等）。");
+      }
+      if (/简历|经历/.test(t) && !/(数据|量化|成果|到场|阅读|预算|排名)/.test(t) && profile !== "fresh") {
+        gaps.push("提到经历但缺少可验证成果或数字线索。");
+      }
+      if (/运营|实习/.test(t) && !/(岗位|内容|用户|增长|小红书|抖音|3C|AI)/.test(t)) {
+        gaps.push("缺少目标岗位方向或行业偏好。");
+      }
+      if (!gaps.length) gaps.push("信息基本够用；仍可补充失败过的卡点，方便组合兜底 Skill。");
+      return gaps.slice(0, 4);
+    }
+
+    function refineTask(text, profile) {
+      const raw = text.trim() || "想找一份能积累作品的线上运营实习。";
+      const domain = detectDomain(raw);
+      const stageLine = {
+        fresh: "当前阶段：在校低年级，经历偏少，需要结构指导与可迁移案例。",
+        intern: "当前阶段：已有实习 / 项目经历，重点是把成果量化成可投递表述。",
+        research: "当前阶段：科研背景转向产研 / 业务，需要能力翻译与岗位语言。"
+      }[profile];
+
+      let body = "";
+      if (domain === "career" || domain === "interview") {
+        body = [
+          "目标：找到一份可长期实习（建议 3 个月以上）的线上运营 / 内容岗位。",
+          "偏好行业：AI、消费电子（3C）或内容平台。",
+          "可投入：每周约 20–30 小时，可配合面试与试岗。",
+          "已有基础：用户增长 / 新媒体相关校园或实习经历，需要整理成作品与简历项目。",
+          "期望交付：可投递简历条目 + 2–3 个内容作品结构 + 一轮模拟面试追问。",
+          "卡点：岗位画像不清、作品不够结构化、面试细节经不起追问。"
+        ].join("\n");
+      } else if (domain === "resume") {
+        body = [
+          "目标：把现有社团 / 校园经历改写成可投递的简历项目。",
+          profile === "fresh"
+            ? "现状：经历散、缺少结构，需要先挖掘事实再写 STAR。"
+            : "现状：有事实但缺数字与证据等级，需要量化与核验材料。",
+          "期望交付：1–2 条结构化简历 bullet + 一页案例提纲。",
+          "约束：不编造无法核验的数据；没有后台时使用可公开替代证据。"
+        ].join("\n");
+      } else if (domain === "research") {
+        body = [
+          "目标：完成科研入门闭环——精读 → 选题 → 一页研究计划。",
+          "现状：兴趣宽、选题散，需要收束到可检验问题。",
+          "期望交付：精读笔记卡 + 2 个候选问题 + 研究计划草稿。",
+          "时间盒：4 周内可完成的最小路径。"
+        ].join("\n");
+      } else if (domain === "study") {
+        body = [
+          "目标：在剩余天数内完成可执行的期末复习 / 实验报告计划。",
+          "约束：区分保底与加分任务，实验课与笔试尽量分线排期。",
+          "期望交付：每日可勾选清单 + 中断后可重排的节奏。"
+        ].join("\n");
+      } else if (domain === "project") {
+        body = [
+          "目标：在有限时间内完成可演示的竞赛 / 项目 Demo。",
+          "期望交付：选题收敛、关键路径原型、答辩叙事。",
+          "约束：每天有可演示增量，避免完美主义拖垮进度。"
+        ].join("\n");
+      } else {
+        body = [
+          "目标：完成当前成长节点上的一个可验证成果。",
+          "现状：" + raw,
+          "期望交付：可跟着执行的 Skill 路径，以及对应产出物。",
+          "请补充：年级、剩余时间、已有材料、最怕卡住的一步。"
+        ].join("\n");
+      }
+
+      return `${stageLine}\n\n原始诉求：${raw}\n\n完善后的任务：\n${body}`;
+    }
+
+    function scoreSkill(skill, text, profile) {
+      const t = normalize(text);
+      let task = 28;
+      skill.keywords.forEach(k => {
+        if (t.includes(normalize(k))) task += 12;
+      });
+      skill.tags.forEach(tag => {
+        if (t.includes(normalize(tag))) task += 6;
+      });
+      task = Math.min(100, task);
+
+      const user = skill.stages[profile] || 60;
+      const quality = skill.quality;
+      const risk = skill.safe ? 96 : 55;
+      const total = Math.round(quality * 0.28 + task * 0.34 + user * 0.26 + risk * 0.12);
+      return { total, quality, task, user, risk };
+    }
+
+    function whyLine(skill, scores, profile) {
+      const bits = [];
+      if (scores.task >= 70) bits.push("任务贴合");
+      if (scores.user >= 85) bits.push(profile === "fresh" ? "适合经历少的阶段" : profile === "intern" ? "贴合量化缺口" : "贴合能力翻译");
+      else if (scores.user >= 70) bits.push("阶段可用");
+      if (scores.quality >= 88) bits.push("高质量验证");
+      if (skill.delta) bits.push(skill.delta);
+      return bits.slice(0, 3).join(" · ");
+    }
+
+    function buildCombo(results, profile, text) {
+      if (!results.length) return null;
+      const ids = results.map(r => r.id);
+      const has = id => ids.includes(id);
+      const t = normalize(text || "");
+      let order = [];
+      let note = "";
+
+      if (has("resume") || has("resume-quant") || has("career") || has("interview") || has("career-xhs")) {
+        if (profile === "fresh" && has("resume")) order.push("resume");
+        if (profile === "intern" && has("resume-quant")) order.push("resume-quant");
+        if (profile === "fresh" && has("resume-quant") && !order.includes("resume-quant")) order.push("resume-quant");
+        if (has("career-xhs") && /小红书|笔记/.test(t)) order.push("career-xhs");
+        else if (has("career")) order.push("career");
+        if (has("interview")) order.push("interview");
+        if (has("resume-sysu") && /中大|团委|迎新/.test(t)) order.unshift("resume-sysu");
+        note = "先补经历表达 → 再跑求职路径 → 最后用模拟面试验收。平台会保留前一步产出作为后一步上下文。";
+      } else if (has("research")) {
+        order = ["research"].concat(ids.filter(id => id !== "research").slice(0, 2));
+        note = "科研路径以精读与选题为主 Skill；其余作为材料或表达补丁。";
+      } else if (has("exam") || has("exam-lab")) {
+        order = ids.filter(id => id === "exam-lab" || id === "exam").concat(ids.filter(id => id !== "exam" && id !== "exam-lab").slice(0, 1));
+        note = "学习突击按时间盒执行；有实验课时优先双线排期。";
+      } else {
+        order = ids.slice(0, 3);
+        note = "按匹配分从高到低串联；可取消暂不需要的 Skill。";
+      }
+
+      order = order.filter((id, i, arr) => arr.indexOf(id) === i && has(id)).slice(0, 4);
+      if (!order.length) order = ids.slice(0, 3);
+      return { order, note };
+    }
+
+    function renderSignals(text, profile) {
+      const domain = detectDomain(text);
+      const domainLabel = {
+        resume: "简历表达", career: "实习求职", interview: "面试追问",
+        research: "科研保研", study: "学习突击", project: "竞赛项目", general: "综合成长"
+      }[domain];
+      const profileLabel = { fresh: "经历挖掘优先", intern: "成果量化优先", research: "能力翻译优先" }[profile];
+      const bar = document.getElementById("signalBar");
+      bar.hidden = false;
+      bar.innerHTML = `
+        <span>任务域 <b>${domainLabel}</b></span>
+        <span>阶段策略 <b>${profileLabel}</b></span>
+        <span>推荐依据 <b>质量 · 适配 · 阶段 · 风险</b></span>
+      `;
+    }
+
+    function iconHtml(skill) {
+      return skill.icon
+        ? `<img class="match-ico" src="${skill.icon}" alt="">`
+        : `<div class="match-ico" style="background:${skill.color}">${skill.letter}</div>`;
+    }
+
+    function renderMatches(results, text) {
+      tray.classList.add("show");
+      const list = document.getElementById("matchList");
+      const empty = document.getElementById("emptyTray");
+      const comboBox = document.getElementById("comboBox");
+      document.getElementById("dock").classList.add("show");
+
+      if (!results.length) {
+        list.innerHTML = "";
+        empty.hidden = false;
+        comboBox.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+
+      const combo = buildCombo(results, state.profile, text);
+      if (combo) {
+        comboBox.hidden = false;
+        document.getElementById("comboPath").innerHTML = combo.order.map((id, i) => {
+          const s = catalog.find(x => x.id === id);
+          return `${i ? `<span class="combo-arrow" aria-hidden="true">→</span>` : ""}<span class="combo-step"><i>${i + 1}</i>${s.title}</span>`;
+        }).join("");
+        document.getElementById("comboNote").textContent = combo.note;
+        state.selected = new Set(combo.order.slice(0, Math.min(3, combo.order.length)));
+      }
+
+      list.innerHTML = results.map(r => {
+        const selected = state.selected.has(r.id);
+        return `
+          <button type="button" class="match-row glass ${selected ? "selected" : ""}" data-id="${r.id}" aria-pressed="${selected}">
+            <span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span>
+            ${iconHtml(r)}
+            <div class="match-body">
+              <h3>${r.title}</h3>
+              <p class="why">${r.why}</p>
+            </div>
+            <div class="score-grid">
+              <span>综合 <b>${r.scores.total}</b></span>
+              <span>任务 <b>${r.scores.task}</b></span>
+              <span>质量 <b>${r.scores.quality}</b></span>
+              <span class="${r.safe ? "risk-ok" : "risk-warn"}">${r.safe ? "风险低" : "需注意"}</span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      list.querySelectorAll(".match-row").forEach(row => {
+        row.addEventListener("click", () => {
+          const id = row.dataset.id;
+          if (state.selected.has(id)) state.selected.delete(id);
+          else state.selected.add(id);
+          row.classList.toggle("selected", state.selected.has(id));
+          row.setAttribute("aria-pressed", String(state.selected.has(id)));
+          syncDock();
+        });
+      });
+      syncDock();
+    }
+
+    function syncDock() {
+      const n = state.selected.size;
+      document.getElementById("dockLabel").innerHTML = `已选 <b>${n}</b> 个 Skill`;
+      document.getElementById("addBtn").disabled = n === 0;
+    }
+
+    function runRefine() {
+      const text = taskInput.value.trim();
+      if (!text) {
+        taskInput.focus();
+        notice("先写一句你现在要完成的事");
+        return;
+      }
+      const btn = document.getElementById("aiRefineBtn");
+      btn.disabled = true;
+      btn.classList.add("busy");
+      btn.lastChild.textContent = " 分析中…";
+      setTimeout(() => {
+        state.gaps = diagnose(text, state.profile);
+        state.refined = refineTask(text, state.profile);
+        document.getElementById("diagList").innerHTML = state.gaps.map(g => `<li>${g}</li>`).join("");
+        document.getElementById("refinedText").textContent = state.refined;
+        refineSheet.classList.add("show");
+        renderSignals(text, state.profile);
+        btn.disabled = false;
+        btn.classList.remove("busy");
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.6 4.8L18 9.4l-4.4 1.6L12 16l-1.6-4.999L6 9.4l4.4-1.6L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg> AI 完善`;
+        refineSheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 650);
+    }
+
+    function runMatch(sourceText) {
+      const text = (sourceText || taskInput.value || state.refined || "").trim();
+      if (!text) {
+        notice("先完善或输入任务描述");
+        return;
+      }
+      renderSignals(text, state.profile);
+      const scored = catalog.map(skill => {
+        const scores = scoreSkill(skill, text, state.profile);
+        return {
+          ...skill,
+          scores,
+          why: whyLine(skill, scores, state.profile)
+        };
+      }).filter(s => s.scores.task >= 48 && s.scores.total >= 64)
+        .sort((a, b) => b.scores.total - a.scores.total)
+        .slice(0, 6);
+
+      state.results = scored;
+      renderMatches(scored, text);
+      tray.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        state.profile = chip.dataset.profile;
+        if (tray.classList.contains("show")) runMatch(state.refined || taskInput.value);
+        else if (refineSheet.classList.contains("show")) {
+          state.gaps = diagnose(taskInput.value, state.profile);
+          state.refined = refineTask(taskInput.value, state.profile);
+          document.getElementById("diagList").innerHTML = state.gaps.map(g => `<li>${g}</li>`).join("");
+          document.getElementById("refinedText").textContent = state.refined;
+          renderSignals(taskInput.value, state.profile);
+        }
+      });
+    });
+
+    taskInput.addEventListener("input", syncCount);
+    document.getElementById("aiRefineBtn").addEventListener("click", runRefine);
+    document.getElementById("adoptBtn").addEventListener("click", () => {
+      taskInput.value = state.refined;
+      syncCount();
+      notice("已采用完善后的描述");
+    });
+    document.getElementById("appendBtn").addEventListener("click", () => {
+      const base = taskInput.value.trim();
+      taskInput.value = base ? `${base}\n\n——\n${state.refined}` : state.refined;
+      syncCount();
+      notice("已追加到末尾");
+    });
+    document.getElementById("matchBtn").addEventListener("click", () => {
+      if (state.refined) taskInput.value = state.refined;
+      syncCount();
+      runMatch(state.refined);
+    });
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      state.selected.clear();
+      document.querySelectorAll(".match-row").forEach(row => {
+        row.classList.remove("selected");
+        row.setAttribute("aria-pressed", "false");
+      });
+      syncDock();
+    });
+    document.getElementById("addBtn").addEventListener("click", () => {
+      if (!state.selected.size) return;
+      const picked = [...state.selected].map(id => {
+        const s = catalog.find(x => x.id === id);
+        return { id, title: s.title, author: s.author };
+      });
+      try {
+        localStorage.setItem("growthForkMatch", JSON.stringify({
+          at: Date.now(),
+          profile: state.profile,
+          task: taskInput.value.trim(),
+          skills: picked
+        }));
+      } catch (_) {}
+      notice(`已加入 ${picked.length} 个 Skill，正在打开我的成长`);
+      setTimeout(() => { location.href = "my-growth.html?from=match"; }, 700);
+    });
+
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q");
+    if (q) {
+      taskInput.value = q;
+      syncCount();
+      runRefine();
+      const once = setInterval(() => {
+        if (!refineSheet.classList.contains("show")) return;
+        clearInterval(once);
+        setTimeout(() => runMatch(state.refined), 280);
+      }, 80);
+      setTimeout(() => clearInterval(once), 4000);
+    } else {
+      syncCount();
+    }
+  </script>
+</body>
+</html>

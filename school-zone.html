@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学校专区 · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    .nav-links { gap: 18px; }
+    .nav-new {
+      display: inline-block;
+      margin-left: 5px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1;
+      padding: 3px 5px;
+      border-radius: 4px;
+      vertical-align: 2px;
+      letter-spacing: .06em;
+    }
+
+    .boards {
+      display: grid;
+      grid-template-columns: 1.2fr .92fr 1.15fr;
+      gap: 14px;
+      margin: 8px 0 28px;
+    }
+    .board {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      padding: 18px 18px 12px;
+      min-height: 268px;
+    }
+    .board h2 {
+      margin: 0 0 14px;
+      font-size: 16px;
+      letter-spacing: -.02em;
+    }
+    .board-featured { padding-right: 148px; }
+    .board-mascot {
+      position: absolute;
+      right: -28px;
+      bottom: -52px;
+      width: 188px;
+      height: auto;
+      pointer-events: none;
+      object-fit: contain;
+      animation: mascot-float 7s ease-in-out infinite;
+    }
+    @keyframes mascot-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .board-mascot { animation: none; }
+    }
+
+    .board-featured .rank-row { grid-template-columns: 22px 1fr; }
+    .rank-row {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+      color: inherit;
+    }
+    .rank-row:first-of-type { border-top: 0; }
+    .rank-row:hover .rank-name { color: var(--pink); }
+    .rank-no {
+      font-family: Outfit, sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .rank-row:nth-child(-n+3) .rank-no { color: var(--pink); }
+    .rank-name {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .rank-meta {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .rank-stat {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .join-grid, .hot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+    }
+    .join-item, .hot-item {
+      display: grid;
+      grid-template-columns: 18px 28px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+      min-width: 0;
+    }
+    .join-grid .join-item:nth-child(-n+2),
+    .hot-grid .hot-item:nth-child(-n+2) { border-top: 0; }
+    .join-item:hover .join-name,
+    .hot-item:hover .hot-title { color: var(--pink); }
+    .join-item .school-mark, .hot-item .school-mark { width: 28px; height: 28px; }
+    .join-name, .hot-title {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hot-sub {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pills button {
+      background: #fff;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pills button.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+    .pills button:focus-visible,
+    .school-search:focus-within,
+    .rank-row:focus-visible,
+    .school-card:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+    .how-join {
+      background: none;
+      border: 0;
+      color: var(--pink);
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+      padding: 4px;
+    }
+
+    .school-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    .school-search svg { flex-shrink: 0; color: var(--muted); }
+    .school-search input {
+      border: 0;
+      outline: 0;
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      font-size: 14px;
+    }
+    .school-search input::placeholder { color: #8A8E98; }
+    .hint {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .count-line {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .school-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .school-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      padding: 18px;
+      min-height: 188px;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .school-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .card-title h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .verified {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0 10px;
+    }
+    .chip {
+      background: #ECEDEF;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .school-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+    .card-foot {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .card-foot b { color: var(--ink); font-weight: 700; }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--muted);
+    }
+    .empty b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 6px; }
+    .empty button {
+      margin-top: 14px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    dialog.join-dialog {
+      width: min(440px, calc(100vw - 32px));
+      border: 0;
+      border-radius: 18px;
+      padding: 24px;
+      background:
+        linear-gradient(155deg, rgba(255,255,255,.9), rgba(232,234,238,.92));
+      border: 1px solid rgba(255,255,255,.8);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 24px 60px rgba(110,116,128,.18);
+    }
+    dialog.join-dialog::backdrop { background: rgba(20, 20, 22, .42); }
+    .join-dialog h2 { margin: 0 0 8px; font-size: 20px; }
+    .join-dialog p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+    .join-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    @media (max-width: 1040px) {
+      .boards { grid-template-columns: 1fr; }
+      .board-featured { padding-right: 18px; min-height: 0; }
+      .board-mascot { width: 120px; right: -10px; bottom: -24px; }
+      .join-grid .join-item:nth-child(n),
+      .hot-grid .hot-item:nth-child(n) { border-top: 1px solid var(--line); }
+      .join-grid .join-item:nth-child(-n+2),
+      .hot-grid .hot-item:nth-child(-n+2) { border-top: 0; }
+    }
+    @media (max-width: 860px) {
+      .school-grid { grid-template-columns: 1fr 1fr; }
+      .filters { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 580px) {
+      .school-grid { grid-template-columns: 1fr; }
+      .board { min-height: 0; }
+      .pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        padding-bottom: 4px;
+      }
+      .pills button { flex-shrink: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    THESIS: Beijing school directory in SkillHub enterprise-zone grammar, not a campus map and not a Skill marketplace.
+    OWN-WORLD: Douyin Campus chrome-and-pink mist; glass search; ink/pink letter marks; Outfit + Noto Sans SC.
+    STORY: Scan ranked Beijing schools, filter, then enter one school's Skill shelf.
+    FIRST VIEWPORT: Nav, three ranking boards (featured list + chrome figure, latest joiners, hot skills), pills + search, then 3-col school cards.
+    FORM: SkillHub enterprise-zone canon inside the established chrome-pink world.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="skills.html">全部 Skill</a>
+        <a class="active" href="school-zone.html">学校专区<span class="nav-new">NEW</span></a>
+        <a href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
+        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+      </div>
+    </nav>
+
+    <section class="boards" aria-label="学校专区榜单">
+      <article class="board board-featured">
+        <h2 class="display">精选高校</h2>
+        <div id="featuredList"></div>
+        <img class="board-mascot" src="assets/hero-chrome-girl.png" alt="" width="176" height="220">
+      </article>
+      <article class="board">
+        <h2 class="display">最新入驻</h2>
+        <div class="join-grid" id="recentList"></div>
+      </article>
+      <article class="board">
+        <h2 class="display">热门技能</h2>
+        <div class="hot-grid" id="hotList"></div>
+      </article>
+    </section>
+
+    <div class="filters">
+      <div class="pills" id="pills" role="tablist" aria-label="学校类型"></div>
+      <button class="how-join" type="button" id="howJoin">如何入驻?</button>
+    </div>
+
+    <div class="school-search glass">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="5.25" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <input id="schoolSearch" type="search" placeholder="请输入学校名称" aria-label="搜索学校名称">
+    </div>
+    <p class="hint">北京高校专区为平台演示数据，非官方校方入驻。点击学校进入该校 Skill 列表。</p>
+    <p class="count-line" id="countLine"></p>
+    <div class="school-grid" id="schoolGrid"></div>
+  </div>
+
+  <dialog class="join-dialog" id="joinDialog" aria-labelledby="joinTitle">
+    <h2 class="display" id="joinTitle">如何入驻学校专区</h2>
+    <p>用语音把本校走通的经验做成 Skill。生成后带上学校标签，就会出现在对应高校的专区里，供后来的同学直接用。</p>
+    <div class="join-actions">
+      <button class="btn btn-ghost" type="button" id="joinClose">先看看</button>
+      <a class="btn btn-pink" href="create-skill.html">去语音生成 Skill</a>
+    </div>
+  </dialog>
+
+  <script src="schools-data.js"></script>
+  <script>
+    const cats = ["全部", "综合", "理工", "财经", "师范", "医科", "农林"];
+    let cat = "全部";
+    let query = "";
+
+    const verified = `<svg class="verified" viewBox="0 0 16 16" aria-label="已认证"><circle cx="8" cy="8" r="8" fill="#FF4F9A"/><path d="M4.4 8.2l2.3 2.3 5-5.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    const featured = GROWTH_SCHOOLS.filter(s => s.rank).sort((a, b) => a.rank - b.rank);
+    document.getElementById("featuredList").innerHTML = featured.map(s => `
+      <a class="rank-row" href="school-skills.html?id=${s.id}">
+        <span class="rank-no">${s.rank}</span>
+        <span>
+          <span class="rank-name">${s.name}</span>
+          <span class="rank-meta">${s.skillCount} 技能 · ${s.uses} 使用</span>
+        </span>
+      </a>
+    `).join("");
+
+    const recent = GROWTH_SCHOOLS.filter(s => s.recent);
+    document.getElementById("recentList").innerHTML = recent.map((s, i) => `
+      <a class="join-item" href="school-skills.html?id=${s.id}">
+        <span class="rank-no">${i + 1}</span>
+        ${renderSchoolMark(s, 28)}
+        <span class="join-name">${s.short}</span>
+      </a>
+    `).join("");
+
+    document.getElementById("hotList").innerHTML = GROWTH_HOT_SKILLS.map((item, i) => {
+      const school = schoolById(item.schoolId);
+      return `
+        <a class="hot-item" href="skill-detail.html?id=${item.skillId}">
+          <span class="rank-no">${i + 1}</span>
+          ${renderSchoolMark(school, 28)}
+          <span>
+            <span class="hot-title">${item.title}</span>
+            <span class="hot-sub">${school.short} · ${item.uses} 使用</span>
+          </span>
+        </a>
+      `;
+    }).join("");
+
+    const pills = document.getElementById("pills");
+    pills.innerHTML = cats.map(c => `<button type="button" role="tab" data-cat="${c}" class="${c === "全部" ? "active" : ""}">${c}</button>`).join("");
+    pills.addEventListener("click", e => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      cat = btn.dataset.cat;
+      pills.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+      render();
+    });
+
+    const grid = document.getElementById("schoolGrid");
+    function render() {
+      const q = query.trim();
+      const list = GROWTH_SCHOOLS.filter(s => {
+        const catOk = cat === "全部" || s.cats.indexOf(cat) !== -1;
+        const qOk = !q || s.name.indexOf(q) !== -1 || s.short.indexOf(q) !== -1;
+        return catOk && qOk;
+      });
+      document.getElementById("countLine").textContent = `共 ${list.length} 所学校`;
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty"><b>没有找到这所学校</b>试试换个关键词，或查看全部北京高校。<button type="button" id="resetFilters">查看全部</button></div>`;
+        document.getElementById("resetFilters").addEventListener("click", () => {
+          query = "";
+          cat = "全部";
+          document.getElementById("schoolSearch").value = "";
+          pills.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.cat === "全部"));
+          render();
+        });
+        return;
+      }
+      grid.innerHTML = list.map(s => `
+        <a class="school-card" href="school-skills.html?id=${s.id}">
+          <div class="card-head">
+            ${renderSchoolMark(s, 40)}
+            <div>
+              <div class="card-title">
+                <h3>${s.name}</h3>
+                ${verified}
+              </div>
+            </div>
+          </div>
+          <div class="card-tags">${s.tags.map(t => `<span class="chip">${t}</span>`).join("")}</div>
+          <p>${s.desc}</p>
+          <div class="card-foot">
+            <span><b>${s.skillCount}</b> 技能</span>
+            <span><b>${s.uses}</b> 使用</span>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    document.getElementById("schoolSearch").addEventListener("input", e => {
+      query = e.target.value;
+      render();
+    });
+
+    const dialog = document.getElementById("joinDialog");
+    document.getElementById("howJoin").addEventListener("click", () => dialog.showModal());
+    document.getElementById("joinClose").addEventListener("click", () => dialog.close());
+
+    render();
+  </script>
+</body>
+</html>

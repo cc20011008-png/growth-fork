@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill 功能页 · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    body { background: transparent; }
+    .shell { max-width: 980px; }
+
+    /* App Store header */
+    .app-header {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 22px;
+      align-items: start;
+      border-radius: 24px;
+      padding: 28px;
+    }
+    .app-icon {
+      width: 120px; height: 120px; border-radius: 28px;
+      object-fit: cover;
+      box-shadow: 0 12px 28px rgba(20,20,22,.12);
+    }
+    .app-icon.fallback {
+      display: grid; place-items: center;
+      color: #fff; font-size: 42px; font-weight: 800;
+      font-family: Outfit, "Noto Sans SC", sans-serif;
+    }
+    .app-header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .handle { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .rating-line {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      font-size: 13px; color: var(--muted); margin-bottom: 12px;
+    }
+    .stars { color: #F59E0B; letter-spacing: 1px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--pink-soft); color: var(--pink);
+      border-radius: 999px; padding: 3px 9px;
+      font-size: 12px; font-weight: 700;
+    }
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 540px;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .tag {
+      background: #F1F4F8; color: var(--muted);
+      border-radius: 999px; padding: 5px 10px;
+      font-size: 12px; font-weight: 600;
+    }
+    .cta-col { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 140px; }
+    .btn {
+      border: 0; border-radius: 12px; padding: 12px 16px;
+      font-weight: 750; font-size: 14px; text-align: center;
+    }
+    .btn-get { background: var(--pink); color: #fff; }
+    .btn-share { background: #EEF0F3; color: var(--ink); }
+    .btn-remix {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid rgba(20,20,22,.12);
+    }
+    .btn-remix:hover { border-color: var(--pink); color: var(--pink); }
+    .btn:focus-visible, .tabs button:focus-visible, .pager button:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+
+    /* Stats row */
+    .stats {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .stat {
+      padding: 16px 12px;
+      text-align: center;
+      border-right: 1px solid var(--line);
+    }
+    .stat:last-child { border-right: 0; }
+    #statRemix { cursor: pointer; }
+    #statRemix:hover b { color: var(--pink); }
+    #statRemix:focus-visible { outline: 2px solid var(--pink); outline-offset: -2px; }
+    .stat b { display: block; font-size: 20px; font-weight: 800; font-family: Outfit, "Noto Sans SC", sans-serif; }
+    .stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+    .origin-cite {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 16px;
+    }
+    .origin-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: var(--pink-soft); color: var(--pink);
+      flex: 0 0 auto;
+    }
+    .origin-mark svg { width: 18px; height: 18px; }
+    .origin-cite .who { font-size: 13px; font-weight: 800; }
+    .origin-cite .who a {
+      color: var(--pink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .origin-cite .who a:hover, .origin-cite .chain a:hover { color: var(--pink-deep); }
+    .origin-cite .who a:focus-visible, .origin-cite .chain a:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .origin-cite .delta { margin-top: 3px; color: var(--muted); font-size: 13px; }
+    .origin-cite .chain { margin-top: 6px; font-size: 12px; color: var(--muted); }
+    .origin-cite .chain a {
+      color: var(--ink); font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .remix-wrap { margin-top: 28px; scroll-margin-top: 18px; }
+    .remix-head {
+      display: flex; align-items: end; justify-content: space-between;
+      gap: 16px; margin-bottom: 12px;
+    }
+    .remix-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
+    .remix-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; max-width: 52ch; }
+    .remix-start {
+      color: var(--pink); font-size: 13px; font-weight: 700;
+      white-space: nowrap;
+    }
+    .remix-start:hover { color: var(--pink-deep); }
+    .remix-start:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .remix-list { display: grid; gap: 10px; }
+    .remix-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 14px; align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .remix-row:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .remix-row:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+    .remix-ico {
+      width: 44px; height: 44px; border-radius: 12px;
+      object-fit: cover;
+      display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 18px;
+      font-family: Outfit, "Noto Sans SC", sans-serif;
+      background: var(--ink);
+    }
+    .remix-row h3 { margin: 0; font-size: 15px; font-weight: 800; }
+    .remix-row .delta { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+    .remix-row .meta {
+      color: var(--muted); font-size: 12px;
+      white-space: nowrap; text-align: right;
+    }
+    .remix-row .meta b {
+      display: block; color: var(--ink); font-size: 14px;
+      font-family: Outfit, "Noto Sans SC", sans-serif;
+    }
+    .remix-empty {
+      padding: 22px 18px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .remix-empty p { margin: 0; color: var(--muted); font-size: 14px; max-width: 52ch; }
+    .remix-empty .btn { border-radius: 12px; white-space: nowrap; }
+
+    /* Gallery */
+    .gallery-wrap { margin-top: 28px; }
+    .gallery-wrap h2 { margin: 0 0 12px; font-size: 18px; font-weight: 800; }
+    .gallery {
+      display: flex; gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scroll-snap-type: x mandatory;
+    }
+    .gallery img {
+      flex: 0 0 min(420px, 78vw);
+      height: 236px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      scroll-snap-align: start;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    /* Tabs */
+    .tabs {
+      margin-top: 28px;
+      display: flex; gap: 4px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+    .tabs button {
+      border: 0; background: transparent;
+      color: var(--muted); padding: 14px 16px;
+      font-size: 14px; font-weight: 650;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px; white-space: nowrap;
+    }
+    .tabs button.active { color: var(--ink); border-bottom-color: var(--pink); }
+    .tabs .new {
+      display: inline-block; margin-left: 6px;
+      background: var(--pink); color: #fff;
+      font-size: 10px; border-radius: 4px; padding: 1px 5px;
+      vertical-align: middle;
+    }
+
+    .tab-panel { display: none; margin-top: 22px; }
+    .tab-panel.active { display: block; }
+
+    .overview {
+      border-radius: 18px;
+      padding: 26px;
+    }
+    .overview h3 { margin: 0 0 10px; font-size: 18px; }
+    .overview p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    .overview ul { margin: 0; padding-left: 18px; color: var(--ink); font-size: 14px; }
+    .overview li { margin-bottom: 8px; }
+    .codechip {
+      display: inline-block;
+      background: var(--pink-soft); color: var(--pink);
+      border-radius: 6px; padding: 2px 7px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+
+    /* Effect preview */
+    .preview-bar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .case-pill {
+      border: 0; border-radius: 999px;
+      background: var(--pink); color: #fff;
+      padding: 8px 14px; font-size: 13px; font-weight: 700;
+    }
+    .case-title { flex: 1; color: var(--muted); font-size: 13px; min-width: 200px; }
+    .pager { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+    .pager button {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid var(--line); background: #fff;
+    }
+
+    .chat {
+      border-radius: 18px;
+      padding: 22px;
+      min-height: 360px;
+    }
+    .msg-user {
+      display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 18px;
+    }
+    .msg-user .bubble {
+      max-width: 70%;
+      background: var(--pink-soft);
+      border: 1px solid rgba(255,79,154,.22);
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    .avatar-u {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #FF7AB0, #FF4F9A);
+      flex: 0 0 auto;
+    }
+    .msg-ai { display: flex; gap: 10px; align-items: flex-start; }
+    .avatar-ai {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #111; color: #fff;
+      display: grid; place-items: center; font-size: 12px;
+      flex: 0 0 auto; margin-top: 4px;
+    }
+    .ai-body {
+      flex: 1;
+      background: rgba(255,255,255,.72);
+      border-radius: 14px;
+      padding: 18px 18px 8px;
+      font-size: 14px;
+    }
+    .ai-body h4 { margin: 0 0 8px; font-size: 16px; }
+    .ai-body .chapter { font-weight: 800; margin: 12px 0 6px; }
+    .ai-body p { margin: 0 0 12px; color: #3A4654; line-height: 1.7; }
+
+    .muted-box {
+      border-radius: 16px;
+      padding: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 780px) {
+      .app-header { grid-template-columns: 84px 1fr; }
+      .app-icon { width: 84px; height: 84px; border-radius: 20px; }
+      .cta-col { grid-column: 1 / -1; flex-direction: column; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(2) { border-right: 0; }
+      .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--line); }
+      .gallery img { height: 190px; }
+      .remix-row { grid-template-columns: 44px 1fr; }
+      .remix-row .meta { grid-column: 2; text-align: left; }
+      .remix-empty { flex-direction: column; align-items: stretch; }
+      .remix-head { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a class="active" href="skills.html">全部 Skill</a>
+        <a href="school-zone.html">学校专区</a>
+        <a href="campus-map.html">附近创作者</a>
+        <a href="my-growth.html">我的成长</a>
+      </div>
+      <a class="back" href="skills.html">← 返回商店</a>
+    </nav>
+
+    <header class="app-header glass" id="appHeader"></header>
+    <aside id="originCite" hidden></aside>
+    <section class="stats glass" id="stats" aria-label="关键指标"></section>
+
+    <section class="remix-wrap" id="remixes" aria-labelledby="remixTitle"></section>
+
+    <section class="gallery-wrap">
+      <h2 class="display">功能预览</h2>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="overview">概述</button>
+      <button type="button" data-tab="preview">效果预览 <span class="new">NEW</span></button>
+      <button type="button" data-tab="files">文件</button>
+      <button type="button" data-tab="comments">评论</button>
+      <button type="button" data-tab="versions">版本历史</button>
+    </div>
+
+    <section class="tab-panel active" id="tab-overview"></section>
+
+    <section class="tab-panel" id="tab-preview">
+      <div class="preview-bar">
+        <button type="button" class="case-pill" id="casePill">使用案例 1</button>
+        <div class="case-title" id="caseTitle"></div>
+        <div class="pager">
+          <button type="button" id="prevCase" aria-label="上一个案例">‹</button>
+          <span id="caseIndex">1/3</span>
+          <button type="button" id="nextCase" aria-label="下一个案例">›</button>
+        </div>
+      </div>
+      <div class="chat glass" id="chatPreview"></div>
+    </section>
+
+    <section class="tab-panel" id="tab-files">
+      <div class="muted-box glass">包含 <code>SKILL.md</code>、<code>prompts/</code>、<code>examples/</code>。原型演示中暂不提供下载。</div>
+    </section>
+    <section class="tab-panel" id="tab-comments">
+      <div class="muted-box glass">「按这个 Skill 改完简历，第二周就拿到了初面。」—— 中山大学 · 大三</div>
+    </section>
+    <section class="tab-panel" id="tab-versions">
+      <div class="muted-box glass">v1.2.0 · 补充易卡点提示与示例输出<br>v1.0.0 · 首次发布</div>
+    </section>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const catalog = {
+      resume: {
+        title: "社团经历项目化表达",
+        handle: "@guyan/campus-resume",
+        rating: "4.8",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "成长 Fork 认证",
+        desc: "当你提到「社团经历」「活动怎么写进简历」「没有数据怎么办」时触发。先梳理事实与贡献，再生成 STAR 项目描述与一页案例。",
+        tags: ["实习求职", "简历表达", "社团经历", "单 Skill", "2 周前更新", "v1.2.0"],
+        users: "2,189",
+        rate: "84%",
+        forks: "112",
+        age: "全年级",
+        color: "#141416",
+        icon: "assets/skill-icon-resume.png",
+        gallery: [
+          "assets/skill-preview-resume.png",
+          "assets/skill-preview-interview.png",
+          "assets/skill-preview-path.png"
+        ],
+        overviewTitle: "Campus Experience → Resume Project",
+        overview: [
+          "从「随便写一段活动」变成「产出可投递的项目表述」。",
+          "Philosophy always comes first：先确认成果与贡献，再生成表达。",
+          "输出：结构化 Markdown 简历条目 + 可复制的案例页提纲。"
+        ],
+        cases: [
+          {
+            prompt: "我做过迎新晚会统筹，想写成简历项目，但没什么数据。",
+            title: "《迎新晚会统筹 → 校园活动运营项目》",
+            chapter: "步骤 1 · 把职责变成可量化贡献",
+            body: [
+              "先锁定你真正推动的结果：到场人数、协作人数、预算执行、复盘文档是否被沿用。",
+              "示例表述：主导 1 场 800+ 人校园迎新晚会，协调 6 个部门、完成预算执行率 97%，沉淀可复用的排期模板。",
+              "下一步：补一张「问题—动作—结果」表，Skill 会据此生成完整 STAR 段落。"
+            ]
+          },
+          {
+            prompt: "社团公众号运营半年，想体现内容能力。",
+            title: "《校园内容运营项目》",
+            chapter: "步骤 1 · 用阅读与互动证明价值",
+            body: [
+              "整理发布频次、篇均阅读、涨粉与一次代表性选题复盘。",
+              "示例表述：负责社团公众号半年，完成 36 篇内容，篇均阅读提升 42%，沉淀选题与标题 A/B 方法。",
+              "输出将包含简历 bullet + 一页作品案例提纲。"
+            ]
+          },
+          {
+            prompt: "我只是组员，担心写不出个人贡献。",
+            title: "《协作型项目的个人贡献拆解》",
+            chapter: "步骤 1 · 从「我负责什么」写起",
+            body: [
+              "不要写「参与活动」，而写你独立完成的交付物与决策点。",
+              "Skill 会追问：你独自负责的模块、你推动改变的一次决策、可验证的结果。",
+              "最终生成强调个人贡献边界的项目描述，避免团队成果全揽。"
+            ]
+          }
+        ]
+      },
+      career: {
+        title: "内容运营实习上岸路线",
+        handle: "@linran/ops-intern-28d",
+        rating: "4.6",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "专家路径",
+        desc: "面向想转内容/运营实习的同学。按 28 天节奏完成定位、作品、投递与面试复盘。",
+        tags: ["实习求职", "内容运营", "专家路径", "v1.0.0"],
+        users: "1,284",
+        rate: "76%",
+        forks: "89",
+        age: "大二起",
+        color: "#FF4F9A",
+        icon: null,
+        gallery: [
+          "assets/skill-preview-path.png",
+          "assets/skill-preview-resume.png",
+          "assets/skill-preview-interview.png"
+        ],
+        overviewTitle: "28-Day Content Internship Sprint",
+        overview: [
+          "把散乱的求职动作编排成可完成的日更路径。",
+          "每天只做一件可验证的事，降低拖延。",
+          "输出：周计划、简历项目、模拟面试记录。"
+        ],
+        cases: [
+          {
+            prompt: "零实习经验，想在一个月内拿到运营初面。",
+            title: "《28 天冲刺 Day 1》",
+            chapter: "岗位画像与差距清单",
+            body: [
+              "先选 3 个目标岗位 JD，提炼共同能力词。",
+              "对照你现有经历，标出「已有 / 可迁移 / 缺口」。",
+              "本 Skill 会据此生成本周微项目选题。"
+            ]
+          },
+          {
+            prompt: "简历项目太空洞怎么办？",
+            title: "《经历挖掘工作坊》",
+            chapter: "从校园事实到业务语言",
+            body: [
+              "导入你的社团/课程项目原文。",
+              "Skill 输出 2 版简历 bullet，并指出缺失的数据位。",
+              "建议你用一天补齐截图或后台数据。"
+            ]
+          },
+          {
+            prompt: "面试总被追问细节。",
+            title: "《追问抗压训练》",
+            chapter: "三轮深挖",
+            body: [
+              "围绕你的项目做 Why / How / Trade-off 追问。",
+              "每轮后给出表达评分与补强句。",
+              "导出一份可复习的问答卡。"
+            ]
+          }
+        ]
+      },
+      research: {
+        title: "科研入门：从读论文到找选题",
+        handle: "@zhouzhi/research-start",
+        rating: "4.5",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "认证专家",
+        desc: "适合没有科研经历的同学。完成论文精读笔记、选题卡片与第一份研究计划草稿。",
+        tags: ["科研保研", "论文精读", "专家路径"],
+        users: "672",
+        rate: "68%",
+        forks: "38",
+        age: "大二/大三",
+        color: "#141416",
+        icon: null,
+        gallery: ["assets/skill-preview-path.png", "assets/skill-preview-resume.png", "assets/skill-preview-interview.png"],
+        overviewTitle: "From Paper Reading to Research Question",
+        overview: ["建立可读的文献笔记结构", "把兴趣收束成可研究的问题", "输出一页研究计划"],
+        cases: [
+          {
+            prompt: "完全不懂怎么读论文。",
+            title: "《精读模板》",
+            chapter: "问题—方法—证据—局限",
+            body: ["先读摘要与结论，再回看方法。", "用四格笔记记录可迁移点。", "输出可分享的精读卡。"]
+          },
+          {
+            prompt: "有兴趣但没有选题。",
+            title: "《选题收敛》",
+            chapter: "从宽主题到可检验问题",
+            body: ["列出 5 个兴趣点并打分。", "检查数据可得性与时间盒。", "生成 2 个候选研究问题。"]
+          },
+          {
+            prompt: "要写夏令营研究计划。",
+            title: "《计划骨架》",
+            chapter: "背景—问题—路径—预期",
+            body: ["补齐相关工作与你的切口。", "明确 4 周可完成的最小实验。", "导出研究计划草稿。"]
+          }
+        ]
+      },
+      demo: {
+        title: "竞赛 Demo 一周共创营",
+        handle: "@demolab/week-demo",
+        rating: "4.4",
+        ratingLabel: "良好",
+        safe: true,
+        source: "组合路径",
+        desc: "7 天完成选题、分工、原型与答辩材料，适合临时组队的竞赛同学。",
+        tags: ["竞赛项目", "原型", "组合路径"],
+        users: "493",
+        rate: "71%",
+        forks: "65",
+        age: "全年级",
+        color: "#141416",
+        icon: null,
+        gallery: ["assets/skill-preview-interview.png", "assets/skill-preview-path.png", "assets/skill-preview-resume.png"],
+        overviewTitle: "One-Week Demo Camp",
+        overview: ["压缩决策成本", "每天有可演示增量", "答辩叙事一并产出"],
+        cases: [
+          { prompt: "队伍还没有方向。", title: "《选题工作坊》", chapter: "用户—痛点—可行性", body: ["30 分钟发散，15 分钟收敛。", "用可行性矩阵淘汰。", "锁定一个可做 Demo 的切口。"] },
+          { prompt: "不会做原型。", title: "《最小可演示》", chapter: "关键路径三屏", body: ["只做主流程。", "用可点击线框代替完美视觉。", "准备 90 秒演示脚本。"] },
+          { prompt: "答辩容易超时。", title: "《叙事压缩》", chapter: "问题—方案—证据", body: ["把故事压到 3 分钟。", "准备评委追问卡片。", "输出讲稿与分工表。"] }
+        ]
+      },
+      exam: {
+        title: "期末复习计划生成器",
+        handle: "@mia/exam-plan",
+        rating: "4.7",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "单 Skill",
+        desc: "根据课程难度、学分与剩余天数，生成可执行的复习清单与每日节奏。",
+        tags: ["学习方法", "期末", "单 Skill"],
+        users: "3,214",
+        rate: "81%",
+        forks: "156",
+        age: "全年级",
+        color: "#FF4F9A",
+        icon: null,
+        gallery: ["assets/skill-preview-path.png", "assets/skill-preview-resume.png", "assets/skill-preview-interview.png"],
+        overviewTitle: "Exam Plan That You Can Finish",
+        overview: ["拒绝空想日程", "按精力曲线排课", "输出可勾选清单"],
+        cases: [
+          { prompt: "还有 12 天，三门课要复习。", title: "《十二日节奏》", chapter: "难课优先 + 间隔复习", body: ["先排高学分高难度。", "插入回顾日防止遗忘。", "导出每日任务卡。"] },
+          { prompt: "总是计划完不成。", title: "《减负版计划》", chapter: "每天只保底 2 项", body: ["区分保底与加分任务。", "中断后可一键重排。", "加入休息块。"] },
+          { prompt: "不知道从哪章开始。", title: "《薄弱点诊断》", chapter: "真题映射知识点", body: ["上传大纲或章节列表。", "按易考点排序。", "生成攻坚顺序。"] }
+        ]
+      },
+      interview: {
+        title: "运营岗模拟面试追问",
+        handle: "@azhe/ops-mock",
+        rating: "4.3",
+        ratingLabel: "良好",
+        safe: true,
+        source: "新上线",
+        desc: "按真实面试节奏对你的项目进行追问，补齐细节与结构化表达。",
+        tags: ["面试", "运营", "新上线"],
+        users: "318",
+        rate: "79%",
+        forks: "27",
+        age: "求职季",
+        color: "#141416",
+        icon: null,
+        gallery: ["assets/skill-preview-interview.png", "assets/skill-preview-resume.png", "assets/skill-preview-path.png"],
+        overviewTitle: "Mock Interview Deep Dive",
+        overview: ["模拟追问压力", "即时给补强句", "沉淀问答库"],
+        cases: [
+          { prompt: "请介绍一次你主导的校园项目。", title: "《开场追问》", chapter: "背景与目标澄清", body: ["先压缩成 60 秒。", "追问你的决策点。", "输出优化后的开场白。"] },
+          { prompt: "如果数据下降你怎么办？", title: "《情景题》", chapter: "假设—验证—动作", body: ["要求你给出排查顺序。", "检查是否空话。", "给出更落地的答法。"] },
+          { prompt: "你和队友意见不合。", title: "《协作冲突》", chapter: "沟通与取舍", body: ["关注事实而非情绪。", "体现推动结果的能力。", "生成可复用模板。"] }
+        ]
+      },
+      "resume-sysu": {
+        title: "中大迎新晚会 · 社团口径版",
+        handle: "@qiao/sysu-resume",
+        rating: "4.7",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "二创",
+        desc: "按中大团委、学生会口径改写社团经历。补校内可核验材料，而不是套用通用活动模板。",
+        tags: ["实习求职", "中大", "二创", "社团经历"],
+        users: "418",
+        rate: "86%",
+        forks: "19",
+        age: "中大同学",
+        color: "#141416",
+        icon: "assets/skill-icon-resume.png",
+        gallery: ["assets/skill-preview-resume.png", "assets/skill-preview-path.png", "assets/skill-preview-interview.png"],
+        overviewTitle: "SYSU Club Voice → Resume",
+        overview: [
+          "保留原作的 STAR 骨架，改写中大迎新、团委、学生会能对上的措辞。",
+          "每条经历都要落到可核验材料：通知、签到表、复盘纪要。",
+          "输出：校内口径版简历条目 + 材料清单。"
+        ],
+        letter: "乔",
+        origin: "resume",
+        delta: "写入中大迎新、团委口径与可核验材料清单",
+        cases: [
+          {
+            prompt: "我在中大做过南校区迎新晚会统筹，想写成简历。",
+            title: "《南校迎新 → 校园活动运营》",
+            chapter: "步骤 1 · 对上团委能核验的数字",
+            body: [
+              "先问：到场人数、协作部门、预算执行、复盘是否被下一届沿用。",
+              "示例：统筹南校区迎新晚会，协调 6 个部门、到场 800+，预算执行率 97%，复盘模板被下一届沿用。",
+              "下一步：附上团委通知截图与签到表字段，避免空口数字。"
+            ]
+          },
+          {
+            prompt: "学生会宣传部待了一年，不知道怎么写个人贡献。",
+            title: "《宣传部个人贡献边界》",
+            chapter: "步骤 1 · 写你独立交付的物料",
+            body: [
+              "不写「参与宣传」，写你负责的推送、物料、档期。",
+              "Skill 会追问：哪一次选题是你定的、哪张物料被学院转发。",
+              "输出强调个人边界的条目，避免把整场迎新揽到自己头上。"
+            ]
+          },
+          {
+            prompt: "面试官会问这些数字怎么来的。",
+            title: "《校内证据包》",
+            chapter: "步骤 1 · 把材料变成可出示清单",
+            body: [
+              "对应每一条数据，列出通知、表格或纪要存放位置。",
+              "教你把敏感原件脱敏成可投递附件。",
+              "生成「问题—证据—表述」三列，方便面试时回翻。"
+            ]
+          }
+        ]
+      },
+      "resume-quant": {
+        title: "没有后台数据时怎么量化",
+        handle: "@ning/resume-numbers",
+        rating: "4.6",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "二创",
+        desc: "给没有后台权限的同学一套估算模板：用可公开替代证据，把空经历写成有数字的项目。",
+        tags: ["实习求职", "量化", "二创", "单 Skill"],
+        users: "902",
+        rate: "81%",
+        forks: "44",
+        age: "全年级",
+        color: "#FF4F9A",
+        icon: null,
+        gallery: ["assets/skill-preview-resume.png", "assets/skill-preview-interview.png", "assets/skill-preview-path.png"],
+        overviewTitle: "Quantify Without Dashboards",
+        overview: [
+          "原作假设你能拿出数据；这一版先处理「我没有后台」。",
+          "区分可估算、可观测、必须放弃的数字，避免编造。",
+          "输出：带证据等级的简历 bullet。"
+        ],
+        letter: "宁",
+        origin: "resume",
+        delta: "强制补可验证数字，并给没有后台时的估算模板",
+        cases: [
+          {
+            prompt: "迎新晚会我负责过，但完全没有数据。",
+            title: "《替代证据》",
+            chapter: "能数的先数，不能数的标等级",
+            body: [
+              "先盘点：群人数、班车趟次、物料份数、排班表行数。",
+              "标出「直接计数 / 合理估算 / 不可写」。",
+              "示例：协调 4 个班车点、印发 600 份手册，而不是虚构到场 800。"
+            ]
+          },
+          {
+            prompt: "公众号没有后台，只有自己的阅读习惯。",
+            title: "《公开替代指标》",
+            chapter: "用可见互动代替后台",
+            body: [
+              "整理转发、留言、被学院转载的次数。",
+              "一篇代表作写清选题、改写、结果，比空泛涨粉更可信。",
+              "Skill 会拒绝「阅读量很高」这类无法核验的句子。"
+            ]
+          },
+          {
+            prompt: "我怕估算变成造假。",
+            title: "《证据等级》",
+            chapter: "写得出、说得清、问得住",
+            body: [
+              "每条数字旁标注来源：计数、区间估算、或删除。",
+              "面试追问时用同一张表回答「这个数怎么来的」。",
+              "输出带证据等级的 STAR 段落。"
+            ]
+          }
+        ]
+      },
+      "resume-sysu-cs": {
+        title: "中大计院竞赛经历版",
+        handle: "@chen/sysu-cs-contest",
+        rating: "4.5",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "二创",
+        desc: "从迎新口径改到计院竞赛：把组队、题解和排名写成个人贡献，而不是队名墙。",
+        tags: ["实习求职", "计院", "竞赛", "二创"],
+        users: "156",
+        rate: "78%",
+        forks: "7",
+        age: "计院",
+        color: "#141416",
+        icon: null,
+        gallery: ["assets/skill-preview-interview.png", "assets/skill-preview-resume.png", "assets/skill-preview-path.png"],
+        overviewTitle: "Contest Contribution, Not Team Name",
+        overview: [
+          "沿用中大口径版的核验习惯，把对象换成竞赛。",
+          "拆清你写的模块、你做的取舍、你对成绩的贡献。",
+          "输出：竞赛项目条目 + 可演示仓库说明。"
+        ],
+        letter: "陈",
+        origin: "resume-sysu",
+        delta: "把迎新口径改成 ACM / 项目竞赛的个人贡献拆解",
+        cases: [
+          {
+            prompt: "打过校赛，但只是队员。",
+            title: "《队员也能写的贡献》",
+            chapter: "模块、决策、复盘",
+            body: [
+              "写你独立完成的题解、数据结构或答辩段落。",
+              "追问一次你推动的策略切换，而不是「我们拿了奖」。",
+              "生成强调个人边界的竞赛条目。"
+            ]
+          },
+          {
+            prompt: "课程项目想写成实习项目。",
+            title: "《课程作业 → 可演示项目》",
+            chapter: "问题规模与你的切口",
+            body: [
+              "说清作业要求之外你多做了什么。",
+              "补仓库、Demo 与可复核的指标。",
+              "避免把整组成绩写成个人 KPI。"
+            ]
+          },
+          {
+            prompt: "面试会问排名含金量。",
+            title: "《成绩怎么解释》",
+            chapter: "赛制、对手、你的题",
+            body: [
+              "写清赛制规模和你负责的题面。",
+              "用「哪一题是你收的」代替含糊的名次。",
+              "输出 60 秒竞赛开场白。"
+            ]
+          }
+        ]
+      },
+      "career-xhs": {
+        title: "小红书内容实习 28 天",
+        handle: "@yue/xhs-intern-28d",
+        rating: "4.5",
+        ratingLabel: "优秀",
+        safe: true,
+        source: "二创",
+        desc: "把通用运营冲刺改成小红书：笔记结构、封面实验、投流口径，按 28 天交出可投作品。",
+        tags: ["实习求职", "小红书", "二创", "专家路径"],
+        users: "367",
+        rate: "73%",
+        forks: "21",
+        age: "大二起",
+        color: "#FF4F9A",
+        icon: null,
+        gallery: ["assets/skill-preview-path.png", "assets/skill-preview-resume.png", "assets/skill-preview-interview.png"],
+        overviewTitle: "28-Day Xiaohongshu Sprint",
+        overview: [
+          "原作的日更节奏保留，作品形态改成笔记与封面。",
+          "面试追问按平台机制：推荐、搜索、投流，而不是泛运营。",
+          "输出：12 篇笔记结构 + 3 次封面实验记录。"
+        ],
+        letter: "乐",
+        origin: "career",
+        delta: "作品集改成小红书笔记结构，面试按平台机制追问",
+        cases: [
+          {
+            prompt: "想转小红书运营，但只有社团公众号经历。",
+            title: "《迁移地图》",
+            chapter: "把公众号能力翻译成笔记能力",
+            body: [
+              "选题、标题、排期可以迁移；封面与搜索词要重练。",
+              "本周只做 3 个账号拆解，不急着日更。",
+              "输出你的能力缺口清单。"
+            ]
+          },
+          {
+            prompt: "作品集不知道放什么。",
+            title: "《可投笔记包》",
+            chapter: "结构比爆款更重要",
+            body: [
+              "12 篇里至少 3 种结构：教程、对比、踩坑。",
+              "每篇记录封面变量与搜索词。",
+              "Skill 会删掉只有情绪没有信息的草稿。"
+            ]
+          },
+          {
+            prompt: "面试总问「你怎么看推荐机制」。",
+            title: "《机制问答》",
+            chapter: "用你的实验说话",
+            body: [
+              "用封面实验和完读数据回答，不背行业黑话。",
+              "准备一次失败笔记的复盘。",
+              "导出问答卡。"
+            ]
+          }
+        ]
+      },
+      "exam-lab": {
+        title: "实验课期末双线突击",
+        handle: "@hao/lab-exam",
+        rating: "4.4",
+        ratingLabel: "良好",
+        safe: true,
+        source: "二创",
+        desc: "实验报告和笔试分开排期。按课时占用重排，避免报告拖死复习。",
+        tags: ["学习方法", "实验课", "二创", "期末"],
+        users: "241",
+        rate: "77%",
+        forks: "11",
+        age: "理工科",
+        color: "#141416",
+        icon: null,
+        gallery: ["assets/skill-preview-path.png", "assets/skill-preview-interview.png", "assets/skill-preview-resume.png"],
+        overviewTitle: "Lab Report vs Written Exam",
+        overview: [
+          "原作按课程难度排期；这一版把实验课拆成两条线。",
+          "报告有硬截止，笔试有遗忘曲线，不能混在同一天。",
+          "输出：双线日历 + 每天保底两项。"
+        ],
+        letter: "郝",
+        origin: "exam",
+        delta: "实验报告与笔试分开排期，按课时占用重排",
+        cases: [
+          {
+            prompt: "还有两周，三门实验课报告没写完。",
+            title: "《报告优先窗口》",
+            chapter: "先清硬截止",
+            body: [
+              "按提交日倒排，而不是按「哪门更难」。",
+              "每份报告只保方法、数据、结论三块。",
+              "笔试复习插入报告间隙，不另开空想日程。"
+            ]
+          },
+          {
+            prompt: "实验课占掉晚上，理论课没时间。",
+            title: "《课时占用重排》",
+            chapter: "把实验室时段标成不可用",
+            body: [
+              "先涂黑实验占用，再排理论块。",
+              "短间隔复习放在实验前后 25 分钟。",
+              "导出可执行的双线表。"
+            ]
+          },
+          {
+            prompt: "报告和背书抢同一块精力。",
+            title: "《精力分层》",
+            chapter: "写作放清醒，记忆放碎片",
+            body: [
+              "报告写作占用高精力时段。",
+              "公式和步骤卡放通勤与实验等待。",
+              "中断后可一键重排，不从零再计划。"
+            ]
+          }
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(location.search);
+    const id = catalog[params.get("id")] ? params.get("id") : "resume";
+    const skill = catalog[id];
+    let caseIdx = 0;
+
+    const forkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="12" r="2.2"/><path d="M6 7.2v9.6M8.2 5h5.2a4 4 0 0 1 4 4v1"/></svg>`;
+
+    function notice(t) {
+      const el = document.getElementById("toast");
+      el.textContent = t;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function lineageIds(skillId) {
+      const chain = [];
+      let cur = catalog[skillId];
+      let guard = 0;
+      while (cur && cur.origin && catalog[cur.origin] && guard < 8) {
+        chain.push(cur.origin);
+        cur = catalog[cur.origin];
+        guard += 1;
+      }
+      return chain;
+    }
+
+    function remixesOf(skillId) {
+      return Object.keys(catalog)
+        .filter(key => catalog[key].origin === skillId)
+        .map(key => ({ id: key, ...catalog[key] }));
+    }
+
+    function iconHtml(item, cls) {
+      const letter = item.letter || item.title.slice(0, 1);
+      return item.icon
+        ? `<img class="${cls}" src="${item.icon}" alt="">`
+        : `<div class="${cls}" style="background:${item.color || "#141416"}">${letter}</div>`;
+    }
+
+    document.getElementById("appHeader").innerHTML = `
+      ${iconHtml(skill, "app-icon" + (skill.icon ? "" : " fallback"))}
+      <div>
+        <h1 class="display">${skill.title}</h1>
+        <div class="handle">${skill.handle}</div>
+        <div class="rating-line">
+          <span class="stars">★★★★☆</span>
+          <strong>${skill.rating}</strong>
+          <span>${skill.ratingLabel}</span>
+          ${skill.safe ? `<span class="pill">安全</span>` : ""}
+          ${skill.origin ? `<span class="pill">二创</span>` : `<span>源自 ${skill.source}</span>`}
+        </div>
+        <p class="desc">${skill.desc}</p>
+        <div class="tags">${skill.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+      <div class="cta-col">
+        <button class="btn btn-get" id="getBtn" type="button">开始使用</button>
+        <a class="btn btn-remix" href="create-skill.html?fork=${encodeURIComponent(id)}">二创这个 Skill</a>
+        <button class="btn btn-share" id="shareBtn" type="button">分享</button>
+      </div>
+    `;
+
+    const originBox = document.getElementById("originCite");
+    const parentId = skill.origin;
+    const parent = parentId && catalog[parentId];
+    if (parent) {
+      const chain = lineageIds(id);
+      const rootId = chain[chain.length - 1];
+      const root = rootId && rootId !== parentId ? catalog[rootId] : null;
+      originBox.hidden = false;
+      originBox.className = "origin-cite glass";
+      originBox.innerHTML = `
+        <div class="origin-mark">${forkSvg}</div>
+        <div>
+          <div class="who">二创自 <a href="skill-detail.html?id=${parentId}">${parent.title}</a></div>
+          <div class="delta">${skill.delta ? `本版改动：${skill.delta}` : `基于 ${parent.handle} 迭代。`}</div>
+          ${root ? `<div class="chain">原创 <a href="skill-detail.html?id=${rootId}">${root.title}</a></div>` : ""}
+        </div>
+      `;
+    }
+
+    const remixList = remixesOf(id);
+    document.getElementById("stats").innerHTML = `
+      <div class="stat"><b>${skill.rating}</b><span>评分</span></div>
+      <div class="stat"><b>${skill.users}</b><span>使用人数</span></div>
+      <div class="stat"><b>${skill.rate}</b><span>完成率</span></div>
+      <div class="stat" id="statRemix" role="link" tabindex="0"><b>${remixList.length ? skill.forks : "0"}</b><span>二创</span></div>
+    `;
+    const jumpRemix = () => document.getElementById("remixes").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("statRemix").addEventListener("click", jumpRemix);
+    document.getElementById("statRemix").addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jumpRemix(); }
+    });
+
+    const remixWrap = document.getElementById("remixes");
+    remixWrap.innerHTML = `
+      <div class="remix-head">
+        <div>
+          <h2 class="display" id="remixTitle">二创列表</h2>
+          <p>Skill 也是经验，后来者可以按校情、专业或失败补丁改一版。</p>
+        </div>
+        <a class="remix-start" href="create-skill.html?fork=${encodeURIComponent(id)}">基于此二创 →</a>
+      </div>
+      ${remixList.length
+        ? `<div class="remix-list">${remixList.map(item => `
+            <a class="remix-row glass" href="skill-detail.html?id=${item.id}">
+              ${iconHtml(item, "remix-ico")}
+              <div>
+                <h3>${item.title}</h3>
+                <p class="delta">${item.delta || item.desc}</p>
+              </div>
+              <div class="meta"><b>${item.users}</b>人在用</div>
+            </a>`).join("")}</div>`
+        : `<div class="remix-empty glass">
+            <p>还没有人二创。你走过的校情、专业差异或失败补丁，可以成为下一条可运行版本。</p>
+            <a class="btn btn-get" href="create-skill.html?fork=${encodeURIComponent(id)}">成为第一个二创</a>
+          </div>`}
+    `;
+
+    document.getElementById("gallery").innerHTML = skill.gallery
+      .map(src => `<img src="${src}" alt="功能预览图">`).join("");
+
+    document.getElementById("tab-overview").innerHTML = `
+      <article class="overview glass">
+        <h3 class="display">${skill.overviewTitle}</h3>
+        <p>从「知道要做什么」到「能跟着完成并产出成果」。</p>
+        <ul>${skill.overview.map(x => `<li>${x}</li>`).join("")}</ul>
+        <p style="margin-top:16px">运行时通过结构化步骤引导用户，关键产出会写入可复制结果，而不是只给一段建议。</p>
+        <p>演示标识：效果预览为合成示例，便于理解 Skill 能力。</p>
+      </article>
+    `;
+
+    function renderCase() {
+      const c = skill.cases[caseIdx];
+      document.getElementById("casePill").textContent = `使用案例 ${caseIdx + 1}`;
+      document.getElementById("caseTitle").textContent = c.prompt;
+      document.getElementById("caseIndex").textContent = `${caseIdx + 1}/${skill.cases.length}`;
+      document.getElementById("chatPreview").innerHTML = `
+        <div class="msg-user">
+          <div class="bubble">${c.prompt}</div>
+          <div class="avatar-u" aria-hidden="true"></div>
+        </div>
+        <div class="msg-ai">
+          <div class="avatar-ai" aria-hidden="true">✦</div>
+          <div class="ai-body">
+            <h4>${c.title}</h4>
+            <div class="chapter">${c.chapter}</div>
+            ${c.body.map(p => `<p>${p}</p>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    document.querySelectorAll(".tabs button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+      });
+    });
+
+    document.getElementById("prevCase").addEventListener("click", () => {
+      caseIdx = (caseIdx - 1 + skill.cases.length) % skill.cases.length;
+      renderCase();
+    });
+    document.getElementById("nextCase").addEventListener("click", () => {
+      caseIdx = (caseIdx + 1) % skill.cases.length;
+      renderCase();
+    });
+
+    document.getElementById("getBtn").addEventListener("click", () => notice("已加入「我的成长」，可开始试跑"));
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        notice("链接已复制");
+      } catch {
+        notice("请手动复制浏览器地址");
+      }
+    });
+
+    document.title = `${skill.title} · 成长 Fork`;
+    renderCase();
+    if (location.hash === "#remixes") {
+      requestAnimationFrame(jumpRemix);
+    }
+  </script>
+</body>
+</html>
