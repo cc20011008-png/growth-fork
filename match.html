@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>location.replace(`index.html${location.search || ""}`);</script>
   <title>任务匹配 · 成长 Fork</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,6 +80,7 @@
       display: inline-flex; align-items: center; gap: 6px;
     }
     .ai-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .search-skill-btn { border:1px solid rgba(20,20,22,.14); border-radius:999px; background:var(--ink); color:#fff; padding:9px 14px; font-size:13px; font-weight:750; white-space:nowrap; }
     .ai-btn svg { width: 14px; height: 14px; }
     .ai-btn.busy { animation: pulseSoft 1s ease-in-out infinite; }
     @keyframes pulseSoft {
@@ -95,7 +97,7 @@
       background: rgba(255,255,255,.55);
       animation: sheetIn .35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .refine-sheet.show { display: block; }
+    .refine-sheet.show { display: none; }
     @keyframes sheetIn {
       from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
       to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -158,6 +160,7 @@
       margin-top: 22px;
       display: none;
     }
+    .wish-box { display:none; margin-top:14px; padding:16px; border:1px solid rgba(255,79,154,.2); border-radius:16px; background:var(--pink-soft); }.wish-box.show { display:block; }.wish-box h3 { margin:0; color:var(--pink-deep); font-size:15px; }.wish-box p { margin:5px 0 12px; color:var(--muted); font-size:12px; line-height:1.55; }.wish-row { display:flex; gap:8px; }.wish-row input { min-width:0; flex:1; border:1px solid rgba(255,79,154,.22); border-radius:10px; padding:10px 12px; color:var(--ink); background:#fff; font:inherit; font-size:13px; outline:none; }.wish-row input:focus { border-color:var(--pink); box-shadow:0 0 0 3px rgba(255,79,154,.12); }.wish-row button { flex:0 0 auto; border:0; border-radius:10px; padding:10px 13px; color:#fff; background:var(--pink); font-size:12px; font-weight:750; }
     .tray.show { display: block; }
     .tray-head {
       display: flex; align-items: end; justify-content: space-between;
@@ -324,10 +327,10 @@
         <textarea id="taskInput" maxlength="1000" placeholder="例如：急求线上运营实习！！大三可长期三个月以上，有用户增长和新媒经验，希望 AI 或 3C 方向…"></textarea>
         <div class="editor-foot">
           <span class="char-count"><span id="charCount">0</span>/1000</span>
-          <button type="button" class="ai-btn" id="aiRefineBtn">
+          <div style="display:flex;gap:8px;align-items:center"><button type="button" class="ai-btn" id="aiRefineBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.6 4.8L18 9.4l-4.4 1.6L12 16l-1.6-4.999L6 9.4l4.4-1.6L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
             AI 完善
-          </button>
+          </button><button type="button" class="search-skill-btn" id="searchSkillBtn">搜索 Skill</button></div>
         </div>
       </div>
 
@@ -365,7 +368,8 @@
       </div>
 
       <div class="match-list" id="matchList"></div>
-      <div class="empty-tray glass" id="emptyTray" hidden>没有足够匹配的 Skill。试着补充年级、目标岗位或可验证成果，或去许愿池留下需求。</div>
+      <div class="empty-tray glass" id="emptyTray" hidden>暂时没有足够匹配的 Skill。</div>
+      <div class="wish-box" id="wishBox"><h3>没有找到合适的 Skill？来许愿池留下需求</h3><p>你的需求会同步到首页许愿池，帮助创作者发现值得补齐的成长路径。</p><div class="wish-row"><input id="wishInput" placeholder="例如：AI+传播学文献综述可视化 Skill" aria-label="输入想要的 Skill"><button type="button" id="wishBtn">许愿</button></div></div>
     </section>
   </div>
 
@@ -692,15 +696,21 @@
       const list = document.getElementById("matchList");
       const empty = document.getElementById("emptyTray");
       const comboBox = document.getElementById("comboBox");
+      const wishBox = document.getElementById("wishBox");
       document.getElementById("dock").classList.add("show");
 
       if (!results.length) {
         list.innerHTML = "";
         empty.hidden = false;
         comboBox.hidden = true;
+        wishBox.classList.add("show");
+        document.getElementById("wishInput").value = taskInput.value.trim();
+        state.selected.clear();
+        syncDock();
         return;
       }
       empty.hidden = true;
+      wishBox.classList.remove("show");
 
       const combo = buildCombo(results, state.profile, text);
       if (combo) {
@@ -766,14 +776,16 @@
       setTimeout(() => {
         state.gaps = diagnose(text, state.profile);
         state.refined = refineTask(text, state.profile);
+        taskInput.value = state.refined;
+        syncCount();
+        refineSheet.classList.remove("show");
         document.getElementById("diagList").innerHTML = state.gaps.map(g => `<li>${g}</li>`).join("");
         document.getElementById("refinedText").textContent = state.refined;
-        refineSheet.classList.add("show");
-        renderSignals(text, state.profile);
         btn.disabled = false;
         btn.classList.remove("busy");
         btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3l1.6 4.8L18 9.4l-4.4 1.6L12 16l-1.6-4.999L6 9.4l4.4-1.6L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg> AI 完善`;
-        refineSheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        taskInput.focus();
+        notice("已将 AI 完善后的任务直接写入输入框，可继续修改或匹配 Skill");
       }, 650);
     }
 
@@ -818,6 +830,18 @@
 
     taskInput.addEventListener("input", syncCount);
     document.getElementById("aiRefineBtn").addEventListener("click", runRefine);
+    document.getElementById("searchSkillBtn").addEventListener("click", () => runMatch(taskInput.value));
+    document.getElementById("wishBtn").addEventListener("click", () => {
+      const wish = document.getElementById("wishInput").value.trim();
+      if (!wish) { document.getElementById("wishInput").focus(); return; }
+      try {
+        const pool = JSON.parse(localStorage.getItem("growthForkWishPool") || "[]");
+        pool.unshift({ title: wish, createdAt: Date.now(), votes: 1, source: "任务匹配" });
+        localStorage.setItem("growthForkWishPool", JSON.stringify(pool.slice(0, 30)));
+      } catch (_) {}
+      document.getElementById("wishBox").classList.remove("show");
+      notice("已同步到许愿池，创作者会看到这条需求");
+    });
     document.getElementById("adoptBtn").addEventListener("click", () => {
       taskInput.value = state.refined;
       syncCount();
@@ -865,13 +889,8 @@
     if (q) {
       taskInput.value = q;
       syncCount();
-      runRefine();
-      const once = setInterval(() => {
-        if (!refineSheet.classList.contains("show")) return;
-        clearInterval(once);
-        setTimeout(() => runMatch(state.refined), 280);
-      }, 80);
-      setTimeout(() => clearInterval(once), 4000);
+      taskInput.focus();
+      notice("当前信息还可以更具体：点击“AI 完善”后会直接补全到输入框");
     } else {
       syncCount();
     }

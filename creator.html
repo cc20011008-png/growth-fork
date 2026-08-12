@@ -163,6 +163,7 @@
     .rec-list { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
     .rec-list li { font-size: 12px; color: var(--muted); }
     .rec-list b { color: var(--ink); font-weight: 700; }
+    .message-mask { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(14,16,22,.42); }.message-mask.open { display:flex; }.message-modal { width:min(560px,100%); height:min(660px,calc(100dvh - 36px)); display:grid; grid-template-rows:auto 1fr auto; overflow:hidden; border-radius:22px; background:#fff; box-shadow:0 24px 70px rgba(14,16,22,.3); }.message-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); }.message-profile { display:flex; gap:9px; align-items:center; }.message-profile img { width:34px; height:34px; border-radius:50%; object-fit:cover; }.message-profile b { display:block; font-size:14px; }.message-profile span { display:block; margin-top:2px; color:var(--muted); font-size:11px; }.message-close { width:30px; height:30px; border:0; border-radius:50%; background:var(--mist); color:var(--ink); font-size:16px; }.message-thread { display:flex; flex-direction:column; gap:12px; overflow:auto; padding:16px; background:#FAFBFC; }.dm { display:flex; gap:8px; align-items:flex-start; max-width:86%; }.dm.me { align-self:flex-end; flex-direction:row-reverse; }.dm .avatar-small { width:26px; height:26px; display:grid; place-items:center; flex:0 0 auto; border-radius:9px; color:#fff; background:var(--pink); font-size:10px; font-weight:800; }.dm.me .avatar-small { background:var(--ink); }.dm .bubble { padding:10px 12px; border-radius:4px 13px 13px 13px; background:#fff; box-shadow:0 5px 14px rgba(20,20,22,.06); color:var(--ink); font-size:13px; line-height:1.6; }.dm.me .bubble { border-radius:13px 4px 13px 13px; color:#fff; background:var(--ink); }.message-compose { display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); }.message-compose input { flex:1; min-width:0; border:1px solid var(--line); border-radius:11px; padding:10px 12px; font:inherit; font-size:13px; outline:none; }.message-compose input:focus { border-color:var(--pink); box-shadow:0 0 0 3px var(--pink-soft); }.message-compose button { border:0; border-radius:11px; padding:10px 13px; color:#fff; background:var(--pink); font-size:12px; font-weight:700; }
 
     @media (max-width: 900px) {
       .identity { grid-template-columns: 80px 1fr; }
@@ -196,6 +197,9 @@
     <div id="page"></div>
   </div>
   <div class="toast" id="toast"></div>
+  <div class="message-mask" id="messageMask" role="dialog" aria-modal="true" aria-labelledby="messageName">
+    <section class="message-modal"><header class="message-head"><div class="message-profile"><img id="messageAvatar" src="" alt=""><div><b id="messageName">创作者</b><span id="messageRole">创作者私信</span></div></div><button class="message-close" id="messageClose" aria-label="关闭私信">×</button></header><div class="message-thread" id="messageThread"></div><div class="message-compose"><input id="messageInput" placeholder="向创作者提问…" aria-label="私信内容"><button id="messageSend">发送</button></div></section>
+  </div>
 
   <script src="creators-data.js"></script>
   <script>
@@ -213,6 +217,45 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
+
+    let messageCreator = null;
+    const messageMask = document.getElementById("messageMask");
+    const messageThread = document.getElementById("messageThread");
+    const messageInput = document.getElementById("messageInput");
+    function appendDm(type, text) {
+      const item = document.createElement("div");
+      item.className = `dm ${type === "me" ? "me" : ""}`;
+      const avatar = type === "me" ? "林" : (messageCreator?.name || "创").slice(0, 1);
+      item.innerHTML = `<span class="avatar-small">${esc(avatar)}</span><div class="bubble">${esc(text).replace(/\n/g, "<br>")}</div>`;
+      messageThread.appendChild(item);
+      messageThread.scrollTop = messageThread.scrollHeight;
+    }
+    function openMessage(creator) {
+      messageCreator = creator;
+      document.getElementById("messageAvatar").src = creator.avatar;
+      document.getElementById("messageAvatar").alt = `${creator.name} 头像`;
+      document.getElementById("messageName").textContent = creator.name;
+      document.getElementById("messageRole").textContent = creator.role || "成长 Fork 创作者";
+      messageThread.innerHTML = "";
+      appendDm("creator", `你好，我是 ${creator.name}。你可以问我关于我发布的 Skill、二创经验或使用路径的问题。`);
+      messageMask.classList.add("open");
+      messageInput.focus();
+    }
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text || !messageCreator) return;
+      appendDm("me", text);
+      messageInput.value = "";
+      let reply = "我看到了。建议你先把自己的起点、目前卡住的步骤和期待成果写清楚，我会结合相关 Skill 给你一个可执行的下一步。";
+      if (/文献|综述|论文/.test(text)) reply = "如果你在做文献综述，可以先调用“文献综述撰写 Skill”整理主题和文献脉络；把论文标题或关键词发来后，我会建议你优先补哪一类资料。";
+      else if (/二创|fork|版本/.test(text)) reply = "二创时最值得补的是原路径不覆盖的专业、学校资源或失败案例。先说明你想服务的人群，我可以帮你判断该改哪几步。";
+      else if (/实习|简历|面试/.test(text)) reply = "先从可验证的经历入手：你做过什么、解决过什么问题、留下什么数据或作品。把这些发给我，我们可以判断该调用哪条实习 Skill。";
+      setTimeout(() => appendDm("creator", reply), 380);
+    }
+    document.getElementById("messageClose").addEventListener("click", () => messageMask.classList.remove("open"));
+    messageMask.addEventListener("click", e => { if (e.target === messageMask) messageMask.classList.remove("open"); });
+    document.getElementById("messageSend").addEventListener("click", sendMessage);
+    messageInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
 
     const id = new URLSearchParams(location.search).get("id");
     const creator = creatorById(id);
@@ -397,6 +440,7 @@
             </div>
             <div class="id-actions">
               <button class="btn ${on ? "btn-follow" : "btn-pink"}" type="button" id="followBtn" aria-pressed="${on}">${on ? "已关注" : "关注"}</button>
+              <button class="btn btn-ghost" type="button" id="messageBtn">私信</button>
               <a class="btn btn-ghost" href="campus-map.html">地图上看位置</a>
             </div>
           </header>
@@ -435,6 +479,7 @@
           notice(now ? `已关注 ${creator.name}，你是 TA 的粉丝了` : `已取消关注 ${creator.name}`);
           render();
         });
+        document.getElementById("messageBtn").addEventListener("click", () => openMessage(creator));
         document.getElementById("tabs").addEventListener("click", e => {
           const btn = e.target.closest("[data-tab]");
           if (!btn) return;

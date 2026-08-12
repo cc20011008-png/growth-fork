@@ -1082,7 +1082,9 @@
       renderCase();
     });
 
-    document.getElementById("getBtn").addEventListener("click", () => notice("已加入「我的成长」，可开始试跑"));
+    document.getElementById("getBtn").addEventListener("click", () => {
+      location.href = `my-tasks.html?skill=${encodeURIComponent(id)}&title=${encodeURIComponent(skill.title)}`;
+    });
     document.getElementById("shareBtn").addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(location.href);
