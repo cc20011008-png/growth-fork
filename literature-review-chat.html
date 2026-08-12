@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文献综述撰写 Skill · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    body { min-height:100vh; background:radial-gradient(ellipse 50% 46% at 10% 5%,rgba(255,79,154,.11),transparent 55%),var(--mist); }
+    .page { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:22px 0 30px; }.nav { display:flex; align-items:center; justify-content:space-between; gap:16px; }.brand { display:flex; gap:9px; align-items:center; color:var(--ink); font-weight:900; text-decoration:none; }.brand-mark { width:30px; height:30px; display:grid; place-items:center; border-radius:10px; color:#fff; background:var(--pink); font-family:Outfit,sans-serif; }.back { color:var(--muted); text-decoration:none; font-size:13px; }
+    .layout { display:grid; grid-template-columns:300px minmax(0,1fr); gap:16px; margin-top:20px; }.skill-panel,.chat-panel { border:1px solid rgba(255,255,255,.75); border-radius:24px; background:rgba(255,255,255,.72); box-shadow:var(--shadow); backdrop-filter:blur(15px); }.skill-panel { padding:20px; align-self:start; }.label { display:inline-flex; padding:4px 7px; border-radius:6px; background:rgba(255,79,154,.12); color:var(--pink); font-size:11px; font-weight:700; }.skill-icon { width:54px; height:54px; display:grid; place-items:center; margin:16px 0 12px; border-radius:16px; color:#fff; background:var(--pink); font-size:20px; font-family:Outfit,sans-serif; font-weight:800; }.skill-panel h1 { margin:0; font-size:21px; line-height:1.25; font-weight:900; }.skill-panel>p { margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.65; }.deliverables { display:grid; gap:8px; margin-top:18px; }.deliverable { padding:10px; border-radius:10px; background:rgba(255,255,255,.66); font-size:12px; }.deliverable span { display:block; color:var(--muted); font-size:10px; margin-bottom:3px; }.progress { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }.progress b { display:block; font-size:12px; }.progress p { margin:4px 0 0; color:var(--muted); font-size:11px; }.bar { height:6px; margin-top:9px; overflow:hidden; border-radius:999px; background:#E4E6EC; }.bar i { display:block; width:18%; height:100%; border-radius:inherit; background:var(--pink); }
+    .chat-panel { min-height:calc(100vh - 128px); display:grid; grid-template-rows:auto 1fr auto; overflow:hidden; }.chat-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:17px 20px; border-bottom:1px solid var(--line); }.chat-head h2 { margin:0; font-size:16px; font-weight:900; }.chat-head p { margin:3px 0 0; color:var(--muted); font-size:12px; }.status { flex:0 0 auto; padding:6px 9px; border-radius:999px; color:#0F766E; background:rgba(15,118,110,.10); font-size:11px; font-weight:700; }.messages { overflow:auto; padding:22px; display:flex; flex-direction:column; gap:15px; }.message { max-width:min(620px,88%); display:flex; gap:9px; align-items:flex-start; }.message.user { align-self:flex-end; flex-direction:row-reverse; }.avatar { width:29px; height:29px; flex:0 0 auto; display:grid; place-items:center; border-radius:10px; color:#fff; background:var(--pink); font-size:11px; font-weight:800; }.user .avatar { background:var(--ink); }.bubble { padding:12px 14px; border-radius:4px 16px 16px 16px; background:#fff; color:var(--ink); font-size:13px; line-height:1.65; box-shadow:0 7px 20px rgba(28,31,38,.06); }.user .bubble { border-radius:16px 4px 16px 16px; color:#fff; background:var(--ink); }.bubble strong { font-weight:900; }.framework { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:10px; }.framework div { padding:8px; border:1px solid rgba(255,79,154,.18); border-radius:9px; background:rgba(255,79,154,.05); font-size:11px; }.framework span { display:block; margin-bottom:2px; color:var(--pink); font-size:10px; font-weight:700; }.chat-compose { padding:14px; border-top:1px solid var(--line); background:rgba(255,255,255,.5); }.quick { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:9px; }.quick button { border:1px solid var(--line); border-radius:999px; padding:6px 10px; color:var(--muted); background:#fff; font-size:11px; }.compose-row { display:flex; gap:9px; align-items:center; padding:6px 7px 6px 14px; border:1px solid var(--line); border-radius:16px; background:#fff; }.compose-row input { flex:1; min-width:0; border:0; outline:0; padding:8px 0; color:var(--ink); background:transparent; font:inherit; font-size:13px; }.compose-row button { border:0; border-radius:11px; padding:9px 13px; color:#fff; background:var(--pink); font-size:12px; font-weight:700; }
+    @media(max-width:760px) { .page { width:min(100% - 22px,1180px); }.layout { grid-template-columns:1fr; }.skill-panel { display:none; }.chat-panel { min-height:calc(100vh - 88px); }.messages { padding:16px; }.framework { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark">F</span><span>成长 Fork</span></a><a class="back" href="index.html">← 返回首页</a></nav>
+    <div class="layout">
+      <aside class="skill-panel">
+        <span class="label">已调用 Skill</span><div class="skill-icon">文</div><h1>文献综述撰写 Skill</h1><p>把零散论文与模糊主题，整理成有脉络、可继续修改的文献综述框架。</p>
+        <div class="deliverables"><div class="deliverable"><span>本次可产出</span>主题拆解与检索词</div><div class="deliverable"><span>本次可产出</span>文献分组与综述结构</div><div class="deliverable"><span>最终成果</span>文献综述框架 v1</div></div>
+        <div class="progress"><b>当前进度 · 第 1 步</b><p>先告诉我你的主题、已有材料或目前的卡点。</p><div class="bar"><i></i></div></div>
+      </aside>
+      <section class="chat-panel">
+        <header class="chat-head"><div><h2>文献综述撰写 Skill</h2><p>你可以持续输入需求，Skill 会基于上下文陪你完成。</p></div><span class="status">Skill 运行中</span></header>
+        <div class="messages" id="messages">
+          <div class="message"><span class="avatar">文</span><div class="bubble">你好，我是<strong>文献综述撰写 Skill</strong>。我会陪你从主题拆解、文献分组到综述结构，一步步完成可修改的框架。<br><br>请先告诉我：你想写什么主题？已有几篇论文或课程材料吗？</div></div>
+          <div class="message user"><span class="avatar">林</span><div class="bubble">我想写“短视频平台如何影响大学生的升学焦虑”，现在收集了 8 篇相关论文。</div></div>
+          <div class="message"><span class="avatar">文</span><div class="bubble">这个主题有明确对象、机制和结果，很适合作为综述起点。我先为你拆出一个初版框架：<div class="framework"><div><span>研究对象</span>大学生升学群体</div><div><span>核心机制</span>平台推荐与社会比较</div><div><span>结果变量</span>升学焦虑与决策</div></div><br>下一步请把你已有论文的标题或关键词发给我；我会帮你分成研究脉络，并找出可能缺少的文献方向。</div></div>
+        </div>
+        <div class="chat-compose"><div class="quick"><button data-prompt="我已有的论文主要讨论算法推荐和社会比较">补充已有论文方向</button><button data-prompt="我不知道怎么给这 8 篇论文分类">帮我给论文分类</button><button data-prompt="先帮我生成一个文献综述大纲">生成综述大纲</button></div><div class="compose-row"><input id="chatInput" placeholder="继续描述你的主题、文献或卡点…" aria-label="继续输入文献综述需求"><button id="sendBtn">发送</button></div></div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const conversation = [
+      { role: 'assistant', content: '你好，我是文献综述撰写 Skill。请先告诉我：你想写什么主题？已有几篇论文或课程材料吗？' },
+      { role: 'user', content: '我想写“短视频平台如何影响大学生的升学焦虑”，现在收集了 8 篇相关论文。' },
+      { role: 'assistant', content: '这个主题有明确对象、机制和结果。下一步请把你已有论文的标题或关键词发给我；我会帮你分成研究脉络。' }
+    ];
+    function escapeHtml(text) { const box = document.createElement('div'); box.textContent = text; return box.innerHTML; }
+    function formatText(text) { return escapeHtml(text).replace(/\n/g, '<br>'); }
+    function appendMessage(type, content, isHtml = false) { const item = document.createElement('div'); item.className = `message ${type}`; const avatar = type === 'user' ? '林' : '文'; item.innerHTML = `<span class="avatar">${avatar}</span><div class="bubble">${isHtml ? content : formatText(content)}</div>`; messages.appendChild(item); messages.scrollTop = messages.scrollHeight; return item; }
+    function setSending(sending) { sendBtn.disabled = sending; sendBtn.textContent = sending ? '思考中…' : '发送'; input.disabled = sending; }
+    async function send() {
+      const text = input.value.trim();
+      if (!text) return;
+      appendMessage('user', text);
+      conversation.push({ role: 'user', content: text });
+      input.value = '';
+      setSending(true);
+      const typing = appendMessage('assistant', '正在根据已调用的文献综述 Skill 整理你的材料…');
+      try {
+        const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: conversation }) });
+        const data = await response.json();
+        typing.remove();
+        if (!response.ok) throw new Error(data.error || '对话服务暂时不可用。');
+        conversation.push({ role: 'assistant', content: data.content });
+        appendMessage('assistant', data.content);
+      } catch (error) {
+        typing.remove();
+        appendMessage('assistant', `暂时无法连接对话服务：${error.message}\n\n请确认通过 npm start 启动了本地后端，或在部署平台配置了服务端环境变量。`);
+      } finally { setSending(false); input.focus(); }
+    }
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+    document.querySelectorAll('.quick button').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.prompt; send(); }));
+  </script>
+</body>
+</html>

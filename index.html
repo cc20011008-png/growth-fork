@@ -75,6 +75,12 @@
       background: var(--pink); color: #fff;
       padding: 11px 18px; font-weight: 700; white-space: nowrap;
     }
+    .recommend-mask { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(15,18,24,.42); }
+    .recommend-mask.show { display:flex; }
+    .recommend-modal { width:min(620px,100%); border-radius:24px; padding:22px; background:#fff; box-shadow:0 26px 72px rgba(12,17,28,.28); animation:rise .25s ease both; }
+    .recommend-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }.recommend-top h2 { margin:0; font-size:22px; font-weight:900; }.recommend-top p { margin:5px 0 0; color:var(--muted); font-size:13px; }.modal-close { border:0; background:var(--mist); color:var(--ink); border-radius:50%; width:30px; height:30px; font-size:16px; }
+    .recommend-card { display:flex; gap:14px; align-items:center; margin-top:18px; padding:15px; border:1px solid rgba(255,79,154,.22); border-radius:16px; background:linear-gradient(135deg,rgba(255,79,154,.08),rgba(126,97,255,.08)); }.recommend-icon { width:48px; height:48px; flex:0 0 auto; display:grid; place-items:center; color:#fff; border-radius:14px; background:var(--pink); font-family:Outfit,sans-serif; font-weight:800; }.recommend-card h3 { margin:0; font-size:16px; }.recommend-card p { margin:5px 0 0; color:var(--muted); font-size:12px; }.recommend-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; color:var(--muted); font-size:11px; }.recommend-go { margin-left:auto; border:0; border-radius:999px; padding:10px 14px; background:var(--ink); color:#fff; font-size:12px; font-weight:700; white-space:nowrap; }
+    .recommend-foot { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:15px; color:var(--muted); font-size:12px; }.recommend-foot a { color:var(--pink); font-weight:700; }
     .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
     .btn-ghost {
       background: rgba(255,255,255,.35); color: var(--ink);
@@ -442,6 +448,18 @@
     </footer>
   </div>
 
+  <div class="recommend-mask" id="literatureModal" role="dialog" aria-modal="true" aria-labelledby="literatureTitle">
+    <div class="recommend-modal">
+      <div class="recommend-top"><div><h2 id="literatureTitle">找到 1 条适合你的 Skill</h2><p>围绕“文献综述”，优先推荐能直接产出综述框架的路径。</p></div><button class="modal-close" id="literatureClose" aria-label="关闭推荐">×</button></div>
+      <div class="recommend-card">
+        <div class="recommend-icon">文</div>
+        <div style="min-width:0;flex:1"><h3>文献综述撰写 Skill</h3><p>从主题拆解、文献分组到综述结构，陪你完成一份可继续修改的综述初稿。</p><div class="recommend-meta"><span>适合：已有主题或若干论文</span><span>预计：25 分钟</span><span>产出：综述框架 v1</span></div></div>
+        <button class="recommend-go" id="openLiteratureChat">调用 Skill</button>
+      </div>
+      <div class="recommend-foot"><span>已经有 <b>328</b> 位同学使用并沉淀了自己的综述框架。</span><a href="skills.html">继续浏览 Skill →</a></div>
+    </div>
+  </div>
+
   <script>
     const skills = [
       { id: "resume", title: "社团经历项目化表达", desc: "把普通活动描述改写成有数据、有业务价值的简历项目。", author: "顾言", initial: "顾", users: "2,189", rate: "84%", badge: "已验证", tab: ["rec", "done", "hot"], icon: "assets/skill-icon-resume.png" },
@@ -492,8 +510,12 @@
     function doSearch() {
       const q = document.getElementById("searchInput").value.trim();
       if (!q) { location.href = "match.html"; return; }
+      if (/文献综述|综述撰写|写综述/.test(q)) { document.getElementById("literatureModal").classList.add("show"); return; }
       location.href = `match.html?q=${encodeURIComponent(q)}`;
     }
+    document.getElementById("literatureClose").addEventListener("click", () => document.getElementById("literatureModal").classList.remove("show"));
+    document.getElementById("literatureModal").addEventListener("click", e => { if (e.target.id === "literatureModal") e.currentTarget.classList.remove("show"); });
+    document.getElementById("openLiteratureChat").addEventListener("click", () => { location.href = "literature-review-chat.html?skill=literature-review"; });
     document.getElementById("searchBtn").addEventListener("click", doSearch);
     document.getElementById("searchInput").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
     document.querySelectorAll(".hints button").forEach(b => b.addEventListener("click", () => {
