@@ -13,7 +13,12 @@ function getMessages(body) {
     }));
 }
 
-async function requestDeepSeek(messages) {
+function getActiveSkills(body) {
+  const raw = Array.isArray(body.activeSkills) ? body.activeSkills : [];
+  return raw.filter(skill => typeof skill === "string").slice(0, 5).map(skill => skill.slice(0, 80));
+}
+
+async function requestDeepSeek(messages, activeSkills = []) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) throw new Error("服务端尚未配置 DEEPSEEK_API_KEY。");
   const response = await fetch("https://api.deepseek.com/chat/completions", {
@@ -24,7 +29,10 @@ async function requestDeepSeek(messages) {
     },
     body: JSON.stringify({
       model: "deepseek-chat",
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+      messages: [{
+        role: "system",
+        content: `${SYSTEM_PROMPT}\n\n当前用户已组合调用的 Skill：${activeSkills.length ? activeSkills.join("、") : "文献综述撰写 Skill"}。请在回答中明确说明哪个 Skill 负责哪一步，并优先给出它们之间的衔接顺序；不要假装已经执行用户未提供的数据分析、可视化或外部检索。`
+      }, ...messages],
       temperature: 0.55,
       max_tokens: 1000
     })
@@ -42,7 +50,8 @@ async function requestDeepSeek(messages) {
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "仅支持 POST 请求。" });
   try {
-    const content = await requestDeepSeek(getMessages(req.body || {}));
+    const body = req.body || {};
+    const content = await requestDeepSeek(getMessages(body), getActiveSkills(body));
     return res.status(200).json({ content });
   } catch (error) {
     return res.status(500).json({ error: error.message || "对话服务暂时不可用。" });
@@ -51,3 +60,4 @@ module.exports = async (req, res) => {
 
 module.exports.requestDeepSeek = requestDeepSeek;
 module.exports.getMessages = getMessages;
+module.exports.getActiveSkills = getActiveSkills;

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
-const { requestDeepSeek, getMessages } = require("./api/chat");
+const { requestDeepSeek, getMessages, getActiveSkills } = require("./api/chat");
 
 function loadEnv() {
   const envPath = path.join(__dirname, ".env");
@@ -31,7 +31,7 @@ const server = http.createServer(async (req, res) => {
     req.on("end", async () => {
       try {
         const body = JSON.parse(raw || "{}");
-        const content = await requestDeepSeek(getMessages(body));
+        const content = await requestDeepSeek(getMessages(body), getActiveSkills(body));
         sendJson(res, 200, { content });
       } catch (error) {
         sendJson(res, 500, { error: error.message || "对话服务暂时不可用。" });
