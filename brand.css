@@ -331,3 +331,123 @@ button { cursor: pointer; }
   }
   .nav-links a { padding: 9px 6px; font-size: 14px; }
 }
+
+/* Pet skill reviews — Taobao-style note + 2–3 chat shots */
+.pet-review { display: grid; gap: 10px; margin-top: 12px; }
+.pet-review-head {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 10px; align-items: center;
+}
+.pet-review-head > img {
+  width: 44px; height: 44px; object-fit: contain; object-position: center 12%;
+  background: #fff; border-radius: 50%;
+  filter: drop-shadow(0 6px 10px rgba(20,20,22,.12));
+}
+.pet-review-who b { display: block; font-size: 13px; letter-spacing: -.02em; }
+.pet-review-who span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.pet-stars { display: inline-flex; gap: 2px; color: var(--chrome); }
+.pet-stars svg { width: 16px; height: 16px; display: block; }
+.pet-stars svg.on { color: var(--pink); }
+.pet-review-note { margin: 0; color: var(--ink); font-size: 14px; line-height: 1.65; max-width: 62ch; }
+.pet-shots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 680px;
+}
+.pet-shots[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 460px; }
+.pet-shot {
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+.pet-shot.is-open { grid-column: 1 / -1; }
+.pet-shot > img, .chat-shot {
+  display: block; width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 205, 212, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 16px 32px rgba(90, 96, 110, 0.12);
+}
+.pet-shot > img { height: 168px; object-fit: cover; object-position: top; background: #eef0f4; }
+.pet-shot.is-open > img { height: auto; object-fit: contain; }
+.pet-shot figcaption {
+  margin-top: 6px; color: var(--muted); font-size: 11px; font-weight: 650;
+}
+.chat-shot {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 40% at 80% 0%, rgba(255,79,154,.08), transparent 58%),
+    linear-gradient(180deg, #f7f8fa 0%, #eef0f4 100%);
+  max-height: 168px;
+}
+.pet-shot.is-open .chat-shot { max-height: none; }
+.chat-shot-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid rgba(20,20,22,.08);
+  background: rgba(255,255,255,.62);
+}
+.chat-shot-head img {
+  width: 28px; height: 28px; border: 0; border-radius: 50%;
+  object-fit: cover; object-position: center 12%; background: #fff;
+}
+.chat-shot-head b { display: block; font-size: 12px; }
+.chat-shot-head span { display: block; margin-top: 1px; color: var(--muted); font-size: 11px; }
+.chat-shot-feed { display: grid; gap: 8px; padding: 10px 12px 12px; }
+.chat-shot-msg { display: flex; align-items: flex-end; gap: 6px; max-width: 94%; }
+.chat-shot-msg.user { justify-self: end; flex-direction: row-reverse; }
+.chat-shot-face, .chat-shot-mark {
+  width: 24px; height: 24px; flex: 0 0 auto; border-radius: 50%;
+}
+.chat-shot-face { object-fit: cover; object-position: center 12%; background: #fff; }
+.chat-shot-mark {
+  display: grid; place-items: center;
+  background: var(--ink); color: #fff;
+  font-size: 10px; font-weight: 800;
+}
+.chat-shot-bubble {
+  padding: 8px 10px; border-radius: 16px 16px 16px 6px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 8px 20px rgba(80,86,98,.08);
+  color: var(--ink); font-size: 12px; line-height: 1.5;
+}
+.chat-shot-msg.user .chat-shot-bubble {
+  border-radius: 16px 16px 6px 16px;
+  background: var(--pink); color: #fff;
+}
+.pet-teaser {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 12px;
+}
+.pet-teaser-faces { display: flex; }
+.pet-teaser-faces img {
+  width: 22px; height: 22px; object-fit: contain; object-position: center 12%;
+  background: #fff; border-radius: 50%;
+  box-shadow: 0 0 0 2px #fff;
+  margin-left: -6px;
+}
+.pet-teaser-faces img:first-child { margin-left: 0; }
+.pet-teaser b { color: var(--ink); font-weight: 700; }
+.skill-comments { display: grid; gap: 4px; }
+.skill-comments .used-row,
+.skill-comments .pet-comment {
+  padding: 18px 2px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.skill-comments .pet-comment:last-child { border-bottom: 0; }
+.comment-user { color: var(--muted); font-size: 12px; margin: 0 0 2px; }
+@media (max-width: 560px) {
+  .pet-review-head { grid-template-columns: 40px 1fr; }
+  .pet-stars { grid-column: 2; }
+  .pet-shots, .pet-shots[data-count="2"] { grid-template-columns: 1fr 1fr; }
+}

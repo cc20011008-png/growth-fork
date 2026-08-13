@@ -276,6 +276,7 @@
   </div>
 
   <script src="schools-data.js"></script>
+  <script src="creators-data.js"></script>
   <script>
     const verified = `<svg class="verified" viewBox="0 0 16 16" aria-label="已认证"><circle cx="8" cy="8" r="8" fill="#FF4F9A"/><path d="M4.4 8.2l2.3 2.3 5-5.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const searchIcon = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.25" stroke="currentColor" stroke-width="1.6"/><path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
@@ -423,7 +424,7 @@
           return;
         }
         grid.innerHTML = list.map(s => `
-          <a class="skill-card" href="skill-detail.html?id=${s.id}">
+          <a class="skill-card" href="skill-detail.html?id=${encodeURIComponent(s.id)}&title=${encodeURIComponent(s.title)}">
             <div class="skill-meta">
               <span class="type">${s.typeLabel}</span>
               <span class="org-tag">${orgName(s.orgId) || s.verified}</span>
@@ -444,6 +445,7 @@
               <span><b>${s.rate}</b> 完成率</span>
               <span><b>${s.forks}</b> Fork</span>
             </div>
+            ${typeof commentTeaserHtml === "function" ? commentTeaserHtml(s.id, s.title) : ""}
           </a>
         `).join("");
       }

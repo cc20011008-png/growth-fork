@@ -529,7 +529,7 @@
     document.getElementById("hotList").innerHTML = GROWTH_HOT_SKILLS.map((item, i) => {
       const school = schoolById(item.schoolId);
       return `
-        <a class="hot-item" href="skill-detail.html?id=${item.skillId}">
+        <a class="hot-item" href="skill-detail.html?id=${encodeURIComponent(item.skillId)}&title=${encodeURIComponent(item.title)}">
           <span class="rank-no">${i + 1}</span>
           ${renderSchoolMark(school, 28)}
           <span>

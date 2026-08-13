@@ -67,6 +67,7 @@
     .school-error { display: none; margin-top: 8px; color: var(--pink); font-size: 12px; font-weight: 650; }
     .school-error.show { display: block; }
 
+    .creator-shelf { margin-top: 18px; }
     .life {
       display: grid; grid-template-columns: 1.05fr .9fr 1.05fr;
       margin-top: 18px; padding: 0; overflow: hidden;
@@ -292,28 +293,12 @@
     }
     .pub-row:first-child, .used-row:first-child, .save-row:first-child { padding-top: 12px; }
     .pub-row:last-child, .used-row:last-child, .save-row:last-child { border-bottom: 0; padding-bottom: 2px; }
-    .pub-row:hover b, .save-row:hover b { color: var(--pink); }
+    .pub-row:hover b, .save-row:hover b, .used-row a:hover { color: var(--pink); }
     .type-label { color: var(--pink); font-size: 11px; font-weight: 700; }
     .pub-row b, .used-row b, .save-row b { font-size: 14px; letter-spacing: -.02em; }
     .pub-row span, .save-row span { color: var(--muted); font-size: 12px; }
     .used-meta { color: var(--muted); font-size: 12px; }
-    .pet-note {
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 10px; align-items: start;
-      margin-top: 10px;
-    }
-    .pet-note img {
-      width: 52px; height: 52px; object-fit: contain;
-      filter: drop-shadow(0 6px 10px rgba(20,20,22,.12));
-    }
-    .pet-note p {
-      margin: 0; color: var(--ink); font-size: 13px; line-height: 1.55;
-    }
-    .pet-note em {
-      display: block; margin-top: 4px;
-      font-style: normal; color: var(--pink); font-size: 11px; font-weight: 700;
-    }
+    .used-row { padding: 18px 2px 20px; }
     .bounty-head {
       display: flex; flex-wrap: wrap; align-items: flex-end;
       justify-content: space-between; gap: 12px;
@@ -450,6 +435,20 @@
       </div>
     </header>
 
+    <section class="section glass creator-shelf" id="creatorShelf">
+      <div class="section-head">
+        <div><h2 class="display">我发布与用过的 Skill</h2><p>发布、用过、收藏和悬赏，都沉淀在这里。</p></div>
+        <a class="text-btn" href="create-skill.html">发布 Skill →</a>
+      </div>
+      <div class="creator-tabs" role="tablist" id="creatorTabs">
+        <button type="button" class="active" data-creator-tab="published" role="tab" aria-selected="true">发布的 Skill</button>
+        <button type="button" data-creator-tab="used" role="tab" aria-selected="false">用过的 Skill</button>
+        <button type="button" data-creator-tab="saved" role="tab" aria-selected="false">收藏的 Skill</button>
+        <button type="button" data-creator-tab="bounty" role="tab" aria-selected="false">需求悬赏</button>
+      </div>
+      <div id="creatorPane"></div>
+    </section>
+
     <section class="life glass" aria-label="学习与陪伴">
       <article>
         <h2 class="display">学习成就</h2>
@@ -545,19 +544,6 @@
               <button class="text-btn" type="button">开始</button>
             </div>
           </div>
-        </section>
-        <section class="section glass" id="creatorShelf">
-          <div class="section-head">
-            <div><h2 class="display">我发布与用过的 Skill</h2><p>发布、用过、收藏和悬赏，都沉淀在这里。</p></div>
-            <a class="text-btn" href="create-skill.html">发布 Skill →</a>
-          </div>
-          <div class="creator-tabs" role="tablist" id="creatorTabs">
-            <button type="button" class="active" data-creator-tab="published" role="tab" aria-selected="true">发布的 Skill</button>
-            <button type="button" data-creator-tab="used" role="tab" aria-selected="false">用过的 Skill</button>
-            <button type="button" data-creator-tab="saved" role="tab" aria-selected="false">收藏的 Skill</button>
-            <button type="button" data-creator-tab="bounty" role="tab" aria-selected="false">需求悬赏</button>
-          </div>
-          <div id="creatorPane"></div>
         </section>
       </div>
       <aside>
@@ -909,15 +895,10 @@
                 <span class="type-label">${esc(r.typeLabel)}</span>
                 <b><a href="${esc(r.href)}">${esc(r.skillTitle)}</a></b>
                 <p class="used-meta">学习对话框完成「${esc(r.taskTitle)}」 · ${esc(r.completedAt)}</p>
-                <div class="pet-note">
-                  <img src="${esc(r.petImage)}" alt="">
-                  <div>
-                    <p>「${esc(r.note)}」</p>
-                    <em>${esc(r.petName)} · 亲自沉淀 · ${esc(r.verdict)}</em>
-                  </div>
-                </div>
+                ${renderPetReviewHtml(Object.assign({ userMark: "林", userName: "林" }, r))}
               </article>`).join("")
           : `<p class="creator-empty">还没有用过的 Skill。在学习对话框里把一次任务跑完，宠物会来这里写下评价。</p>`;
+        bindPetReviewShots(pane);
         return;
       }
       if (tab === "saved") {

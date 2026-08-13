@@ -312,6 +312,14 @@
       color: var(--muted);
       font-size: 14px;
     }
+    .comment-lead {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 62ch;
+    }
+    .pet-comment .comment-user { margin-bottom: 4px; }
 
     @media (max-width: 780px) {
       .app-header { grid-template-columns: 84px 1fr; }
@@ -360,7 +368,7 @@
       <button type="button" class="active" data-tab="overview">概述</button>
       <button type="button" data-tab="preview">效果预览 <span class="new">NEW</span></button>
       <button type="button" data-tab="files">文件</button>
-      <button type="button" data-tab="comments">评论</button>
+      <button type="button" data-tab="comments" id="commentsTab">评论</button>
       <button type="button" data-tab="versions">版本历史</button>
     </div>
 
@@ -383,7 +391,8 @@
       <div class="muted-box glass">包含 <code>SKILL.md</code>、<code>prompts/</code>、<code>examples/</code>。原型演示中暂不提供下载。</div>
     </section>
     <section class="tab-panel" id="tab-comments">
-      <div class="muted-box glass">「按这个 Skill 改完简历，第二周就拿到了初面。」—— 中山大学 · 大三</div>
+      <p class="comment-lead">其他同学的宠物看完学习对话后写下的评价。对照截图里怎么调用、拿到什么结果，判断这条 Skill 适不适合你。</p>
+      <div class="skill-comments" id="skillComments"></div>
     </section>
     <section class="tab-panel" id="tab-versions">
       <div class="muted-box glass">v1.2.0 · 补充易卡点提示与示例输出<br>v1.0.0 · 首次发布</div>
@@ -392,6 +401,7 @@
   </div>
   <div class="toast" id="toast"></div>
 
+  <script src="creators-data.js"></script>
   <script>
     const catalog = {
       resume: {
@@ -918,6 +928,7 @@
     const params = new URLSearchParams(location.search);
     const id = catalog[params.get("id")] ? params.get("id") : "resume";
     const skill = catalog[id];
+    const displayTitle = (params.get("title") || "").trim() || skill.title;
     let caseIdx = 0;
 
     const forkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="12" r="2.2"/><path d="M6 7.2v9.6M8.2 5h5.2a4 4 0 0 1 4 4v1"/></svg>`;
@@ -957,7 +968,7 @@
     document.getElementById("appHeader").innerHTML = `
       ${iconHtml(skill, "app-icon" + (skill.icon ? "" : " fallback"))}
       <div>
-        <h1 class="display">${skill.title}</h1>
+        <h1 class="display">${displayTitle}</h1>
         <div class="handle">${skill.handle}</div>
         <div class="rating-line">
           <span class="stars">★★★★☆</span>
@@ -1076,6 +1087,29 @@
       });
     });
 
+    (function renderComments() {
+      const host = document.getElementById("skillComments");
+      const list = typeof skillCommentsFor === "function" ? skillCommentsFor(id, displayTitle) : [];
+      const tab = document.getElementById("commentsTab");
+      if (tab) tab.textContent = list.length ? `评论 · ${list.length}` : "评论";
+      if (!list.length) {
+        host.innerHTML = `<div class="muted-box glass">还没有宠物评价。用过这条 Skill 并完成学习对话后，评价会出现在这里。</div>`;
+        return;
+      }
+      host.innerHTML = list.map(c => `
+        <article class="pet-comment">
+          <p class="comment-user">${c.userName} · ${c.userSchool} · ${c.completedAt}</p>
+          ${renderPetReviewHtml(c, { public: true })}
+        </article>`).join("");
+      bindPetReviewShots(host);
+    })();
+
+    const wantComments = new URLSearchParams(location.search).get("tab") === "comments";
+    if (wantComments) {
+      const commentsBtn = document.querySelector('.tabs [data-tab="comments"]');
+      if (commentsBtn) commentsBtn.click();
+    }
+
     document.getElementById("prevCase").addEventListener("click", () => {
       caseIdx = (caseIdx - 1 + skill.cases.length) % skill.cases.length;
       renderCase();
@@ -1086,7 +1120,7 @@
     });
 
     document.getElementById("getBtn").addEventListener("click", () => {
-      location.href = `pet-demo/?skill=${encodeURIComponent(id)}&title=${encodeURIComponent(skill.title)}`;
+      location.href = `pet-demo/?skill=${encodeURIComponent(id)}&title=${encodeURIComponent(displayTitle)}`;
     });
     document.getElementById("shareBtn").addEventListener("click", async () => {
       try {
@@ -1097,7 +1131,7 @@
       }
     });
 
-    document.title = `${skill.title} · Wowgrowth`;
+    document.title = `${displayTitle} · Wowgrowth`;
     renderCase();
     if (location.hash === "#remixes") {
       requestAnimationFrame(jumpRemix);
