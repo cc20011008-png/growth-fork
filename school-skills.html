@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
-    .nav-links { gap: 18px; }
     .nav-new {
       display: inline-block;
       margin-left: 5px;
@@ -27,12 +26,70 @@
     .crumb {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
       margin: 6px 0 18px;
       color: var(--muted);
       font-size: 13px;
     }
+    .crumb-path { display: flex; align-items: center; gap: 8px; }
     .crumb a:hover { color: var(--ink); }
+    .scope-switch {
+      display: inline-flex; gap: 4px; padding: 4px;
+      border-radius: 999px;
+    }
+    .scope-switch a {
+      padding: 8px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .scope-switch a:hover { color: var(--ink); }
+    .scope-switch a.on { background: var(--ink); color: #fff; }
+
+    .org-board {
+      margin: 0 0 20px;
+      padding: 20px 22px 12px;
+      border-radius: 22px;
+    }
+    .org-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .org-top h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .org-all {
+      border: 1px solid var(--line); background: #fff; color: var(--muted);
+      border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 700;
+    }
+    .org-all.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .org-cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px 28px;
+    }
+    .org-cols h3 {
+      margin: 0 0 6px;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    .org-list { display: grid; }
+    .org-item {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 10px; width: 100%; text-align: left;
+      padding: 9px 0; border: 0; border-top: 1px solid var(--line);
+      background: none; color: inherit; font: inherit; cursor: pointer;
+    }
+    .org-list .org-item:first-child { border-top: 0; }
+    .org-item:hover .org-name { color: var(--pink); }
+    .org-item.active .org-name { color: var(--pink); }
+    .org-name { font-size: 14px; font-weight: 700; }
+    .org-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .org-item:focus-visible,
+    .org-all:focus-visible,
+    .scope-switch a:focus-visible {
+      outline: 2px solid var(--pink); outline-offset: 2px;
+    }
+    .org-tag {
+      color: var(--muted); font-size: 11px; font-weight: 650;
+    }
 
     .school-hero {
       display: grid;
@@ -178,12 +235,14 @@
       .school-hero { grid-template-columns: auto 1fr; }
       .hero-actions { grid-column: 1 / -1; flex-direction: row; }
       .skill-grid { grid-template-columns: 1fr 1fr; }
+      .org-cols { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 580px) {
       .skill-grid { grid-template-columns: 1fr; }
       .school-hero { grid-template-columns: 1fr; }
       .toolbar { flex-direction: column; align-items: stretch; }
       .store-search { flex: 1; }
+      .org-cols { grid-template-columns: 1fr; }
       .category-tabs {
         flex-wrap: nowrap;
         overflow-x: auto;
@@ -201,17 +260,21 @@
       <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
       <div class="nav-links">
         <a href="index.html">首页</a>
+        <a href="my-tasks.html">学习</a>
+        <a href="calendar.html">每日计划</a>
         <a class="active" href="school-zone.html">学校专区<span class="nav-new">NEW</span></a>
-        <a href="campus-map.html">附近创作者</a>
-        <a href="my-growth.html">我的成长</a>
+        <a href="campus-map.html">附近 Skill 创作者</a>
+        <a href="pet-demo/">我的宠物</a>
       </div>
       <div class="nav-actions">
         <a class="btn btn-ink" href="create-skill.html">＋ 发布 Skill</a>
-        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+        <a class="avatar" href="my-growth.html" aria-label="林的主页" title="林 · 已登录"><img src="assets/avatar-student.png" alt="林" width="40" height="40"></a>
       </div>
     </nav>
 
+    <div class="shell-main">
     <div id="page"></div>
+    </div>
   </div>
 
   <script src="schools-data.js"></script>
@@ -229,20 +292,44 @@
         <div class="missing">
           <h1 class="display">未找到这所学校</h1>
           <p>链接可能已失效。回到学校专区查看北京高校列表。</p>
-          <a class="btn btn-ink" href="school-zone.html">返回学校专区</a>
+          <a class="btn btn-ink" href="school-zone.html?view=national">全国视角</a>
         </div>`;
     } else {
       document.title = school.name + " · 学校专区";
       const cats = ["全部", "实习与求职", "科研与保研", "竞赛与项目", "学习与证书"];
       const catMap = { "全部": "all", "实习与求职": "career", "科研与保研": "research", "竞赛与项目": "project", "学习与证书": "study" };
+      const orgs = school.orgs || [];
+      const mine = certifiedSchool();
+      const isMine = mine && mine.id === school.id;
       let category = "all";
       let query = "";
+      let orgId = new URLSearchParams(location.search).get("org") || "";
+      if (orgId && !orgs.some(o => o.id === orgId)) orgId = "";
+
+      function orgName(id) {
+        const found = orgs.find(o => o.id === id);
+        return found ? found.name : "";
+      }
+
+      function orgCount(id) {
+        return school.catalog.filter(s => s.orgId === id).length;
+      }
+
+      function kindsPresent() {
+        return ORG_KIND_ORDER.filter(kind => orgs.some(o => o.kind === kind));
+      }
 
       page.innerHTML = `
         <nav class="crumb" aria-label="面包屑">
-          <a href="school-zone.html">学校专区</a>
-          <span aria-hidden="true">/</span>
-          <span>${school.name}</span>
+          <div class="crumb-path">
+            <a href="school-zone.html?view=national">全国视角</a>
+            <span aria-hidden="true">/</span>
+            <span>${school.name}</span>
+          </div>
+          <div class="scope-switch glass" role="tablist" aria-label="专区视角">
+            <a class="on" href="school-skills.html?id=${school.id}" aria-current="page">${isMine ? "本校 · " + school.short : school.short}</a>
+            <a href="school-zone.html?view=national">全国视角</a>
+          </div>
         </nav>
         <header class="school-hero glass">
           ${renderSchoolMark(school, 64)}
@@ -253,14 +340,21 @@
             <div class="hero-stats">
               <div><b>${school.skillCount}</b><span>技能</span></div>
               <div><b>${school.uses}</b><span>使用</span></div>
-              <div><b>${school.catalog.length}</b><span>热门在架</span></div>
+              <div><b>${orgs.length}</b><span>本校圈子</span></div>
             </div>
           </div>
           <div class="hero-actions">
             <a class="btn btn-pink" href="create-skill.html">贡献本校 Skill</a>
-            <a class="btn btn-ghost" href="index.html">返回首页</a>
+            <a class="btn btn-ghost" href="school-zone.html?view=national">看全国高校</a>
           </div>
         </header>
+        <section class="org-board glass" aria-label="本校圈子">
+          <div class="org-top">
+            <h2 class="display">本校圈子</h2>
+            <button type="button" class="org-all ${orgId ? "" : "active"}" data-org="">全部圈子</button>
+          </div>
+          <div class="org-cols" id="orgCols"></div>
+        </section>
         <div class="toolbar">
           <div class="category-tabs" id="tabs"></div>
           <div class="store-search glass">
@@ -271,6 +365,38 @@
         </div>
         <div class="skill-grid" id="skillGrid"></div>
       `;
+
+      document.getElementById("orgCols").innerHTML = kindsPresent().map(kind => {
+        const items = orgs.filter(o => o.kind === kind);
+        return `
+          <div>
+            <h3>${ORG_KIND_LABEL[kind]}</h3>
+            <div class="org-list">
+              ${items.map(o => `
+                <button type="button" class="org-item ${orgId === o.id ? "active" : ""}" data-org="${o.id}">
+                  <span class="org-name">${o.name}</span>
+                  <span class="org-count">${orgCount(o.id)}</span>
+                </button>`).join("")}
+            </div>
+          </div>`;
+      }).join("");
+
+      function setOrg(next) {
+        orgId = next;
+        document.querySelectorAll(".org-item").forEach(btn => btn.classList.toggle("active", btn.dataset.org === orgId));
+        document.querySelector(".org-all").classList.toggle("active", !orgId);
+        const url = new URL(location.href);
+        if (orgId) url.searchParams.set("org", orgId);
+        else url.searchParams.delete("org");
+        history.replaceState(null, "", url);
+        render();
+      }
+
+      document.querySelector(".org-board").addEventListener("click", e => {
+        const btn = e.target.closest("[data-org]");
+        if (!btn) return;
+        setOrg(btn.dataset.org || "");
+      });
 
       const tabs = document.getElementById("tabs");
       tabs.innerHTML = cats.map((c, i) => `<button type="button" data-cat="${catMap[c]}" class="${i === 0 ? "active" : ""}">${c}</button>`).join("");
@@ -286,21 +412,23 @@
       function render() {
         const list = school.catalog.filter(s => {
           const catOk = category === "all" || s.category === category;
+          const orgOk = !orgId || s.orgId === orgId;
           const q = query.trim().toLowerCase();
-          const qOk = !q || (s.title + s.desc + s.name).toLowerCase().indexOf(q) !== -1;
-          return catOk && qOk;
+          const qOk = !q || (s.title + s.desc + s.name + orgName(s.orgId)).toLowerCase().indexOf(q) !== -1;
+          return catOk && orgOk && qOk;
         });
-        document.getElementById("skillCount").textContent = `共 ${list.length} 个`;
+        const orgLabel = orgId ? orgName(orgId) + " · " : "";
+        document.getElementById("skillCount").textContent = `${orgLabel}共 ${list.length} 个`;
         const grid = document.getElementById("skillGrid");
         if (!list.length) {
-          grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>本校还没有这类 Skill</b>换个分类，或把你走通的经验贡献出来。</div>`;
+          grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>${orgId ? orgName(orgId) + "还没有这类 Skill" : "本校还没有这类 Skill"}</b>换个圈子，或把你走通的经验贡献出来。</div>`;
           return;
         }
         grid.innerHTML = list.map(s => `
           <a class="skill-card" href="skill-detail.html?id=${s.id}">
             <div class="skill-meta">
               <span class="type">${s.typeLabel}</span>
-              <span class="badge">${s.verified}</span>
+              <span class="org-tag">${orgName(s.orgId) || s.verified}</span>
             </div>
             <h3>${s.title}</h3>
             <p class="desc">${s.desc}</p>

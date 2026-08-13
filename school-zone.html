@@ -8,8 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
+  <script src="schools-data.js"></script>
+  <script>
+    (function () {
+      if (new URLSearchParams(location.search).get("view") === "national") return;
+      var school = typeof certifiedSchool === "function" ? certifiedSchool() : null;
+      if (school) location.replace("school-skills.html?id=" + encodeURIComponent(school.id));
+    })();
+  </script>
   <style>
-    .nav-links { gap: 18px; }
     .nav-new {
       display: inline-block;
       margin-left: 5px;
@@ -23,6 +30,20 @@
       vertical-align: 2px;
       letter-spacing: .06em;
     }
+    .scope-bar { margin: 2px 0 16px; }
+    .scope-switch {
+      display: inline-flex; gap: 4px; padding: 4px;
+      border-radius: 999px;
+    }
+    .scope-switch a {
+      padding: 8px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .scope-switch a:hover { color: var(--ink); }
+    .scope-switch a.on { background: var(--ink); color: #fff; }
+    .scope-switch a:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+    .scope-note { margin: 0; color: var(--muted); font-size: 13px; }
+    .scope-note a { color: var(--pink); font-weight: 700; }
 
     .boards {
       display: grid;
@@ -404,16 +425,20 @@
       <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
       <div class="nav-links">
         <a href="index.html">首页</a>
+        <a href="my-tasks.html">学习</a>
+        <a href="calendar.html">每日计划</a>
         <a class="active" href="school-zone.html">学校专区<span class="nav-new">NEW</span></a>
-        <a href="campus-map.html">附近创作者</a>
-        <a href="my-growth.html">我的成长</a>
+        <a href="campus-map.html">附近 Skill 创作者</a>
+        <a href="pet-demo/">我的宠物</a>
       </div>
       <div class="nav-actions">
         <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
-        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+        <a class="avatar" href="my-growth.html" aria-label="林的主页" title="林 · 已登录"><img src="assets/avatar-student.png" alt="林" width="40" height="40"></a>
       </div>
     </nav>
 
+    <div class="shell-main">
+    <div class="scope-bar" id="scopeBar"></div>
     <section class="boards" aria-label="学校专区榜单">
       <article class="board board-featured">
         <h2 class="display">高校贡献榜</h2>
@@ -442,7 +467,7 @@
     <div class="hub-bar" role="search">
       <nav class="hub-tabs" aria-label="专区范围">
         <a href="skills.html">技能</a>
-        <a class="on" href="school-zone.html" aria-current="page">学校</a>
+        <a class="on" href="school-zone.html?view=national" aria-current="page">学校</a>
         <span>专家课</span>
       </nav>
       <label class="hub-search">
@@ -457,6 +482,7 @@
     </div>
     <p class="hint">北京高校专区为平台演示数据，非官方校方入驻。点击学校进入该校 Skill 列表。</p>
     <div class="school-grid" id="schoolGrid"></div>
+    </div>
   </div>
 
   <dialog class="join-dialog" id="joinDialog" aria-labelledby="joinTitle">
@@ -468,8 +494,19 @@
     </div>
   </dialog>
 
-  <script src="schools-data.js"></script>
   <script>
+    const mine = certifiedSchool();
+    const scopeBar = document.getElementById("scopeBar");
+    if (mine) {
+      scopeBar.innerHTML = `
+        <div class="scope-switch glass" role="tablist" aria-label="专区视角">
+          <a href="school-skills.html?id=${encodeURIComponent(mine.id)}">本校 · ${mine.short}</a>
+          <a class="on" href="school-zone.html?view=national" aria-current="page">全国视角</a>
+        </div>`;
+    } else {
+      scopeBar.innerHTML = `<p class="scope-note">完成学校认证后，学校专区会优先进入本校圈子。<a href="my-growth.html">去认证</a></p>`;
+    }
+
     const cats = ["全部", "综合", "理工", "财经", "师范", "医科", "农林"];
     let cat = "全部";
     let query = "";

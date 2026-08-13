@@ -1,0 +1,457 @@
+/* 我的宠物 — liquid silver room + floating study dialog */
+
+body.pet-room-body {
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #c5c9d0;
+  color: var(--ink);
+}
+
+body.pet-room-body::before,
+body.pet-room-body::after {
+  display: none;
+}
+
+.pet-room {
+  position: relative;
+  min-height: 100dvh;
+}
+
+.room-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 70% 40%, rgba(255, 79, 154, 0.12), transparent 55%),
+    linear-gradient(165deg, #dfe3e8 0%, #c5c9d0 48%, #b7bcc4 100%);
+}
+
+.room-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.room-stage.fallback {
+  background:
+    url("../../assets/pet-home-room-bg.png") center / cover no-repeat,
+    #c5c9d0;
+}
+
+.room-fallback-pet {
+  position: absolute;
+  right: 8%;
+  bottom: 6%;
+  width: min(420px, 46vw);
+  filter: drop-shadow(0 28px 40px rgba(70, 76, 90, 0.28));
+  pointer-events: none;
+}
+
+.pet-room-body .nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 0;
+  align-items: center;
+}
+
+.pet-room-body .brand span {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.pet-room-body .nav-links {
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 12px 28px rgba(90, 96, 110, 0.1);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+}
+
+.pet-room-body .nav-links a {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: #3d4148;
+}
+
+.pet-room-body .nav-links a:hover {
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+}
+
+.pet-room-body .nav-links a.active {
+  color: var(--pink);
+  background: transparent;
+  font-weight: 800;
+  box-shadow: inset 0 -2px 0 var(--pink);
+}
+
+.orbit-hint {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(90, 96, 110, 0.12);
+  backdrop-filter: blur(12px);
+  color: #3d4148;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.orbit-hint svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--pink);
+  fill: none;
+  stroke-width: 1.8;
+}
+
+.room-chat {
+  position: fixed;
+  left: max(24px, calc((100vw - 1280px) / 2 + 8px));
+  bottom: 28px;
+  z-index: 16;
+  width: min(420px, calc(100vw - 48px));
+  max-height: min(62vh, 640px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.5) 48%, rgba(240, 242, 246, 0.42) 100%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 0 0 1px rgba(201, 205, 212, 0.28),
+    0 28px 64px rgba(70, 76, 90, 0.2);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(8px);
+  animation: roomChatIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+@keyframes roomChatIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.room-chat.in {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.room-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 12px;
+}
+
+.room-chat-face {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 8px 16px rgba(90, 96, 110, 0.16);
+}
+
+.room-chat-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.room-chat-head p {
+  margin: 2px 0 0;
+  color: #5c6068;
+  font-size: 12px;
+}
+
+.room-messages {
+  overflow: auto;
+  padding: 4px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 120px;
+}
+
+.room-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 92%;
+}
+
+.room-msg.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.room-msg-face,
+.room-msg-mark {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.room-msg-face {
+  object-fit: cover;
+  background: #fff;
+}
+
+.room-msg-mark {
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.room-bubble {
+  padding: 10px 12px;
+  border-radius: 16px 16px 16px 6px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 20px rgba(80, 86, 98, 0.08);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.room-msg.user .room-bubble {
+  border-radius: 16px 16px 6px 16px;
+  background: var(--pink);
+  color: #fff;
+}
+
+.room-file-note {
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.82;
+}
+
+.room-help {
+  padding: 2px 16px 10px;
+}
+
+.room-help p {
+  margin: 0 0 8px;
+  color: #5c6068;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.room-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.room-skill {
+  border: 1px solid rgba(20, 20, 22, 0.08);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #3d4148;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.room-skill:hover,
+.room-skill.on {
+  color: var(--pink);
+  border-color: rgba(255, 79, 154, 0.35);
+  background: rgba(255, 79, 154, 0.1);
+}
+
+.room-attach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 8px;
+}
+
+.room-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 8px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(255, 79, 154, 0.22);
+  font-size: 10px;
+}
+
+.room-file b,
+.room-file em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-file em {
+  color: #6b6e78;
+  font-style: normal;
+}
+
+.room-file button {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--silver);
+  color: #5c6068;
+  line-height: 16px;
+  padding: 0;
+}
+
+.room-compose {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+
+.room-plus {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--pink);
+  background: rgba(255, 79, 154, 0.12);
+}
+
+.room-plus svg {
+  width: 16px;
+  height: 16px;
+}
+
+.room-compose input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 10px 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.room-compose input::placeholder {
+  color: #7a7e86;
+}
+
+.room-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 12px;
+  padding: 9px 12px;
+  color: #fff;
+  background: linear-gradient(145deg, #ff6aa8, #ff4f9a);
+  box-shadow: 0 10px 20px rgba(255, 79, 154, 0.32);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.room-send svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+.room-send:hover {
+  filter: brightness(1.04);
+}
+
+.room-send:disabled,
+.room-send.busy {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.room-send:focus-visible,
+.room-plus:focus-visible,
+.room-skill:focus-visible,
+.room-compose input:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 860px) {
+  .pet-room-body .nav {
+    width: calc(100% - 16px);
+    padding-top: 10px;
+  }
+  .pet-room-body .nav-links {
+    display: none;
+  }
+  .room-chat {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-height: 46dvh;
+    border-radius: 22px;
+  }
+  .orbit-hint {
+    right: 16px;
+    bottom: calc(46dvh + 20px);
+  }
+  .room-fallback-pet {
+    width: min(240px, 58vw);
+    right: 4%;
+    bottom: 48dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-chat {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .room-chat,
+  .pet-room-body .nav-links,
+  .orbit-hint {
+    background: #f7f7f9;
+    backdrop-filter: none;
+  }
+}

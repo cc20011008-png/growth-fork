@@ -272,6 +272,126 @@
     }
   ];
 
+  const org = function (id, kind, name) {
+    return { id: id, kind: kind, name: name };
+  };
+
+  const SCHOOL_ORGS = {
+    thu: {
+      orgs: [
+        org("cs", "major", "计算机系"),
+        org("sem", "major", "经管学院"),
+        org("lab", "lab", "实验室圈"),
+        org("chuang", "club", "清创社")
+      ],
+      skills: ["sem", "lab", "cs", "chuang", "sem", "cs"]
+    },
+    pku: {
+      orgs: [
+        org("yuanpei", "major", "元培学院"),
+        org("gpa", "major", "政府管理学院"),
+        org("acad", "lab", "学术写作圈"),
+        org("weiming", "team", "未名实践社")
+      ],
+      skills: ["acad", "yuanpei", "gpa", "acad", "yuanpei", "weiming"]
+    },
+    bit: {
+      orgs: [
+        org("cs", "major", "计算机学院"),
+        org("auto", "major", "车辆与智能车"),
+        org("lab", "lab", "实验室圈"),
+        org("moyou", "club", "模友社")
+      ],
+      skills: ["moyou", "auto", "cs", "lab", "cs", "auto"]
+    },
+    buaa: {
+      orgs: [
+        org("sy", "major", "沈元学院"),
+        org("aero", "major", "航空宇航"),
+        org("fengru", "club", "冯如工作室"),
+        org("hangmo", "club", "航模队")
+      ],
+      skills: ["fengru", "aero", "sy", "hangmo", "aero", "sy"]
+    },
+    ruc: {
+      orgs: [
+        org("gongguan", "major", "公共管理学院"),
+        org("biz", "major", "商学院"),
+        org("writing", "lab", "社科写作圈"),
+        org("shijian", "team", "人大实践团")
+      ],
+      skills: ["gongguan", "biz", "biz", "writing", "writing", "shijian"]
+    },
+    bnu: {
+      orgs: [
+        org("edu", "major", "教育学部"),
+        org("teach", "team", "教资备考圈"),
+        org("intern", "club", "教育实习团")
+      ],
+      skills: ["edu", "teach", "intern", "edu", "teach"]
+    },
+    bupt: {
+      orgs: [
+        org("cs", "major", "计算机学院"),
+        org("se", "major", "软件学院"),
+        org("chuang", "club", "北邮创新坊")
+      ],
+      skills: ["cs", "se", "cs", "chuang", "cs"]
+    },
+    uibe: {
+      orgs: [
+        org("biz", "major", "国际商学院"),
+        org("finance", "major", "金融学院"),
+        org("contest", "team", "贸大商赛队")
+      ],
+      skills: ["biz", "finance", "biz", "contest", "finance"]
+    },
+    cufe: {
+      orgs: [
+        org("finance", "major", "金融学院"),
+        org("quant", "lab", "量化研究圈"),
+        org("touyan", "club", "中财投研社")
+      ],
+      skills: ["finance", "quant", "finance", "finance", "touyan"]
+    },
+    bjtu: {
+      orgs: [
+        org("trans", "major", "交通运输"),
+        org("se", "major", "软件学院"),
+        org("model", "club", "北交建模社")
+      ],
+      skills: ["trans", "se", "se", "model", "se"]
+    },
+    cau: {
+      orgs: [
+        org("agr", "major", "农学"),
+        org("lab", "lab", "试验站"),
+        org("chuang", "team", "农大创赛队")
+      ],
+      skills: ["lab", "agr", "lab", "agr", "chuang"]
+    },
+    ccmu: {
+      orgs: [
+        org("clinic", "major", "临床医学"),
+        org("xizong", "team", "西综备考圈"),
+        org("medlab", "lab", "医学科研圈")
+      ],
+      skills: ["xizong", "clinic", "medlab", "clinic", "clinic"]
+    }
+  };
+
+  root.GROWTH_SCHOOLS.forEach(function (school) {
+    const spec = SCHOOL_ORGS[school.id];
+    if (!spec) return;
+    school.orgs = spec.orgs;
+    school.catalog.forEach(function (item, i) {
+      item.orgId = spec.skills[i] || spec.orgs[0].id;
+    });
+  });
+
+  root.ORG_KIND_ORDER = ["major", "club", "lab", "team"];
+  root.ORG_KIND_LABEL = { major: "专业", club: "社团", lab: "实验室", team: "竞赛与实践" };
+
   root.GROWTH_HOT_SKILLS = [
     { schoolId: "thu", title: "互联网提前批 28 天冲刺", uses: "3,102", skillId: "career" },
     { schoolId: "pku", title: "夏令营材料清单与陈述", uses: "2,011", skillId: "research" },
@@ -289,5 +409,28 @@
 
   root.schoolById = function schoolById(id) {
     return root.GROWTH_SCHOOLS.find(function (s) { return s.id === id; });
+  };
+
+  root.schoolByName = function schoolByName(name) {
+    if (!name) return null;
+    var n = String(name).trim();
+    return root.GROWTH_SCHOOLS.find(function (s) { return s.name === n; })
+      || root.GROWTH_SCHOOLS.find(function (s) { return s.short === n; })
+      || null;
+  };
+
+  root.readOnboardingProfile = function readOnboardingProfile() {
+    try {
+      var raw = localStorage.getItem("growth-fork-onboarding-profile-v1");
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  root.certifiedSchool = function certifiedSchool() {
+    var profile = root.readOnboardingProfile();
+    if (!profile || !profile.school) return null;
+    return root.schoolByName(profile.school);
   };
 })(window);

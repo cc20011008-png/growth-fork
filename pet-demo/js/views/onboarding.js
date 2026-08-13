@@ -10,7 +10,8 @@ export function mountOnboarding(state, { onDone }) {
     return;
   }
 
-  let petId = state.profile.petId || "cat";
+  root.hidden = false;
+  let petId = state.profile.petId || "dog";
 
   root.innerHTML = "";
   const card = el("div", { className: "onboard-card glass-pane" });

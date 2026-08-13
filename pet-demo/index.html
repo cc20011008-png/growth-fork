@@ -3,25 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>今日计划 · MeowPlan</title>
+  <title>我的宠物 · 成长 Fork</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../brand.css">
-  <link rel="stylesheet" href="./css/shell.css">
   <link rel="stylesheet" href="./css/onboarding.css">
-  <link rel="stylesheet" href="./css/app-shell.css">
-  <link rel="stylesheet" href="./css/today-plan.css">
-  <link rel="stylesheet" href="./css/focus-bond.css">
+  <link rel="stylesheet" href="./css/pet-room.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
-<body class="app-body">
+<body class="pet-room-body">
+  <!--
+    THESIS: Opening 我的宠物 is walking into the pet's liquid-silver apartment, not a to-do dashboard.
+    OWN-WORLD: Mercury walls, bubblegum-pink upholstery, chrome-rim glass chat, Outfit italic + Noto Sans SC, pink #FF4F9A only.
+    STORY: See the house and the puppy, then talk to it as the learning agent (Skill chips + compose from 学习页).
+    FIRST VIEWPORT: Full-bleed orbitable 3D room; pet on a pink cushion, center-right; frosted study sheet lower-left; overlay nav.
+    FORM: Approved float comp B; orbitable 3D room. seed: user-pinned liquid silver + pink furniture.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
   <div id="onboarding" class="onboarding"></div>
-  <div class="app-frame">
-    <aside class="sidebar" id="app-sidebar"></aside>
-    <main class="app-main">
-      <div class="plan-page" id="plan-root"></div>
-    </main>
+  <div class="pet-room">
+    <div class="grain" aria-hidden="true"></div>
+    <nav class="nav">
+      <a class="brand" href="../index.html">
+        <img src="../assets/douyin-campus-logo.png" alt="">
+        <span><em>成长 Fork</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="../index.html">首页</a>
+        <a href="../my-tasks.html">学习</a>
+        <a href="../calendar.html">每日计划</a>
+        <a href="../school-zone.html">学校专区</a>
+        <a href="../campus-map.html">附近 Skill 创作者</a>
+        <a class="active" href="./index.html">我的宠物</a>
+      </div>
+      <div class="nav-actions">
+        <a class="avatar" href="../my-growth.html" aria-label="我的主页">林</a>
+      </div>
+    </nav>
+    <div id="room-stage" class="room-stage" aria-label="宠物的液态银房间，可拖动旋转"></div>
+    <p class="orbit-hint">
+      <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14.9-4M20 12a8 8 0 0 1-14.9 4"/><path d="M17 5v4h4M7 19v-4H3"/></svg>
+      拖拽旋转
+    </p>
+    <aside class="room-chat" id="room-chat" aria-label="和宠物学习对话"></aside>
   </div>
-  <script type="module" src="./js/app-plan.js"></script>
+  <script type="module" src="./js/app-room.js"></script>
 </body>
 </html>

@@ -299,13 +299,18 @@
       <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
       <div class="nav-links">
         <a href="index.html">首页</a>
+        <a class="active" href="my-tasks.html">学习</a>
+        <a href="calendar.html">每日计划</a>
         <a href="school-zone.html">学校专区</a>
-        <a href="campus-map.html">附近创作者</a>
-        <a href="my-growth.html">我的成长</a>
+        <a href="campus-map.html">附近 Skill 创作者</a>
+        <a href="pet-demo/">我的宠物</a>
       </div>
-      <a class="back" href="index.html">← 返回首页</a>
+      <div class="nav-actions">
+        <a class="avatar" href="my-growth.html" aria-label="林的主页" title="林 · 已登录"><img src="assets/avatar-student.png" alt="林" width="40" height="40"></a>
+      </div>
     </nav>
 
+    <div class="shell-main">
     <header class="page-head">
       <h1 class="display">先说清此刻要完成什么</h1>
       <p>AI 帮你补全需求，再按任务适配、能力缺口与风险约束匹配 Skill。货架解决有什么，这里解决此刻该用什么。</p>
@@ -370,6 +375,7 @@
       <div class="empty-tray glass" id="emptyTray" hidden>暂时没有足够匹配的 Skill。</div>
       <div class="wish-box" id="wishBox"><h3>没有找到合适的 Skill？来许愿池留下需求</h3><p>你的需求会同步到首页许愿池，帮助创作者发现值得补齐的成长路径。</p><div class="wish-row"><input id="wishInput" placeholder="例如：AI+传播学文献综述可视化 Skill" aria-label="输入想要的 Skill"><button type="button" id="wishBtn">许愿</button></div></div>
     </section>
+    </div>
   </div>
 
   <div class="dock glass" id="dock" role="region" aria-label="已选 Skill">

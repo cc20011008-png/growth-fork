@@ -12,7 +12,7 @@
   <style>
     .head {
       display: flex; justify-content: space-between; align-items: end;
-      gap: 16px; margin: 4px 0 16px;
+      gap: 16px; margin: 0 0 12px;
     }
     .head h1 { margin: 0; font-size: 28px; letter-spacing: -.04em; }
     .head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
@@ -206,16 +206,19 @@
       <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
       <div class="nav-links">
         <a href="index.html">首页</a>
+        <a href="my-tasks.html">学习</a>
+        <a href="calendar.html">每日计划</a>
         <a href="school-zone.html">学校专区</a>
-        <a class="active" href="campus-map.html">附近创作者</a>
-        <a href="my-growth.html">我的成长</a>
+        <a class="active" href="campus-map.html">附近 Skill 创作者</a>
+        <a href="pet-demo/">我的宠物</a>
       </div>
       <div class="nav-actions">
         <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
-        <a class="avatar" href="my-growth.html" aria-label="我的成长主页">林</a>
+        <a class="avatar" href="my-growth.html" aria-label="林的主页" title="林 · 已登录"><img src="assets/avatar-student.png" alt="林" width="40" height="40"></a>
       </div>
     </nav>
 
+    <div class="shell-main">
     <header class="head">
       <div>
         <h1 class="display">附近的 Skill 创作者</h1>
@@ -243,6 +246,7 @@
       </aside>
       <p class="map-note glass">可拖动、缩放。头像按校园大致位置展示，不精确定位个人。演示数据。</p>
     </section>
+    </div>
   </div>
   <div class="toast" id="toast"></div>
 

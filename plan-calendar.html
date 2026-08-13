@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日计划 · 每日计划 · 成长 Fork</title>
+  <title>日历 · 每日计划 · 成长 Fork</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,28 +34,34 @@
     </nav>
 
     <div class="shell-main">
-      <div class="cal-app plan-app" id="learnCalendar">
+      <div class="cal-app plan-app month-app" id="learnCalendar">
         <main class="cal-main">
           <header class="cal-head">
             <div>
               <div class="cal-title-row">
-                <h1 id="plan-title">每日计划</h1>
-                <div class="month-shift" id="date-shift">
-                  <button type="button" id="cal-prev" aria-label="上一天">
+                <h1 id="cal-month-label">2026年8月</h1>
+                <div class="month-shift">
+                  <button type="button" id="cal-prev" aria-label="上一月">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
                   </button>
-                  <button type="button" id="cal-next" aria-label="下一天">
+                  <button type="button" id="cal-next" aria-label="下一月">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6l6 6-6 6"/></svg>
                   </button>
                 </div>
               </div>
-              <p class="cal-note" id="plan-note">勾选完成的待办，会同步写进日历页</p>
+              <p class="cal-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l1.6 5.2L19 9.2l-5.4 1.6L12 16l-1.6-5.2L5 9.2l5.4-1.5L12 2.5z"/></svg>
+                小猫根据你的学习自动更新
+              </p>
             </div>
             <div class="cal-tools">
-              <div class="view-toggle" aria-label="每日计划页面">
-                <a href="calendar.html" aria-current="page">日计划</a>
-                <a href="plan-calendar.html">日历</a>
-              </div>
+              <label>
+                <span class="sr-only">视图</span>
+                <select class="view-select" id="plan-view" aria-label="日历视图">
+                  <option value="calendar.html">日计划</option>
+                  <option value="plan-calendar.html" selected>月视图</option>
+                </select>
+              </label>
               <button class="today-btn" type="button" id="cal-today">
                 <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
                 回到今天
@@ -63,18 +69,22 @@
             </div>
           </header>
 
-          <section class="todo-board" id="day-view" aria-label="日计划">
-            <form class="todo-composer" id="todo-form">
-              <input id="todo-input" type="text" maxlength="80" placeholder="写下今天要完成的一件事" autocomplete="off" aria-label="新增待办">
-              <button type="submit">添加</button>
-            </form>
-            <p class="todo-progress" id="todo-progress"></p>
-            <ul class="todo-list" id="todo-list"></ul>
-            <label class="todo-note">
-              <span>今日感悟</span>
-              <textarea id="todo-note" rows="2" maxlength="40" placeholder="写一句今天的感受，会出现在日历格子里"></textarea>
-            </label>
+          <section class="cal-board" aria-label="学习月历">
+            <div class="cal-weekdays">
+              <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+            <div class="cal-legend">
+              <span><i class="legend-dot"></i>自动战绩 (根据学习自动记录)</span>
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF4F9A" aria-hidden="true"><path d="M7.2 18c-2.4 0-4.2-1.9-4.2-4.5C3 9.6 5.8 6.2 10 5.2l.7 1.6C8.2 7.6 6.6 9.4 6.4 11.4c.5-.4 1.2-.6 2-.6 1.8 0 3.1 1.2 3.1 3 0 1.9-1.5 3.2-4.3 3.2zm9.5 0c-2.4 0-4.2-1.9-4.2-4.5 0-3.9 2.8-7.3 7-8.3l.7 1.6c-2.5.8-4.1 2.6-4.3 4.6.5-.4 1.2-.6 2-.6 1.8 0 3.1 1.2 3.1 3 0 1.9-1.5 3.2-4.3 3.2z"/></svg>
+                有感悟 (记录学习感悟)
+              </span>
+            </div>
+            <img class="cal-mascot" src="assets/calendar-mascot.png" alt="">
           </section>
+
+          <section class="day-sheet" id="day-sheet" aria-label="当天计划"></section>
         </main>
       </div>
     </div>

@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
-    .shell { padding-bottom: 88px; }
+    .shell { padding-bottom: 48px; }
 
     /* First-open profile and companion picker. Skipped after localStorage completion. */
     body.onboarding-open { overflow: hidden; }
@@ -59,6 +59,7 @@
     .field { display:flex; flex-direction:column; gap:8px; }
     .field.full { grid-column:1 / -1; }
     .field label { font-size:13px; font-weight:750; }
+    .field .hint { color:var(--muted); font-size:12px; font-weight:500; }
     .field input, .field select {
       width:100%; border:1px solid rgba(20,20,22,.1); border-radius:14px;
       padding:13px 14px; outline:none; color:var(--ink); background:rgba(247,248,250,.82); font:inherit;
@@ -627,7 +628,6 @@
       .path-tile, .path-tile.featured { min-height: 220px; }
       .skill-grid { grid-template-columns: 1fr 1fr; }
       .actions { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
       .close { grid-template-columns: 1fr; }
     }
     @media (min-width: 761px) and (max-width: 960px) {
@@ -732,8 +732,9 @@
         <form class="profile-form" id="profileForm" novalidate>
           <div class="field-grid">
             <div class="field full">
-              <label for="profileSchool">学校</label>
+              <label for="profileSchool">学校认证</label>
               <input id="profileSchool" name="school" list="schoolOptions" placeholder="搜索或输入你的学校" autocomplete="organization">
+              <span class="hint">登录后用于校园身份标识，个人主页会展示已认证学校。</span>
               <datalist id="schoolOptions">
                 <option value="北京大学"><option value="清华大学"><option value="中国人民大学"><option value="北京邮电大学"><option value="北京师范大学"><option value="北京航空航天大学"><option value="北京理工大学"><option value="中国农业大学">
               </datalist>
@@ -812,17 +813,19 @@
       </a>
       <div class="nav-links">
         <a class="active" href="index.html">首页</a>
+        <a href="my-tasks.html">学习</a>
+        <a href="calendar.html">每日计划</a>
         <a href="school-zone.html">学校专区</a>
-        <a href="campus-map.html">附近创作者</a>
-        <a href="my-growth.html">我的成长</a>
-        <a href="pet-demo/">宠物 Demo</a>
+        <a href="campus-map.html">附近 Skill 创作者</a>
+        <a href="pet-demo/">我的宠物</a>
       </div>
       <div class="nav-actions">
         <a class="btn btn-ink" href="create-skill.html">语音生成 Skill</a>
-        <a class="avatar" href="my-growth.html" aria-label="我的主页">林</a>
+        <a class="avatar" href="my-growth.html" aria-label="林的主页" title="林 · 已登录"><img src="assets/avatar-student.png" alt="林" width="40" height="40"></a>
       </div>
     </nav>
 
+    <div class="shell-main">
     <div class="stage">
       <div class="companion-backdrop" aria-hidden="true">
         <span class="blob blob-a"></span>
@@ -850,7 +853,7 @@
               <button type="button" id="searchBtn">匹配 Skill</button>
             </div>
             <div class="cta-row">
-              <a class="btn btn-ghost glass" href="my-tasks.html">我的任务</a>
+              <a class="btn btn-ghost glass" href="my-tasks.html">学习</a>
             </div>
           </div>
         </div>
@@ -896,6 +899,7 @@
       <span>成长 Fork · 大学生成长 Skill 共创平台</span>
       <span>内容由用户共创，使用前请自行判断适用性</span>
     </footer>
+    </div>
   </div>
 
   <div class="recommend-mask" id="literatureModal" role="dialog" aria-modal="true" aria-labelledby="literatureTitle">
@@ -1018,6 +1022,7 @@
       if (!selectedPet || !draftProfile) return;
       const profile = {
         ...draftProfile,
+        schoolVerified: true,
         pet: selectedPet.dataset.pet,
         greeting: selectedPet.dataset.greeting,
         image: selectedPet.dataset.image,
