@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>极限博弈复习包 · Study Notes Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    :root { --good:#28a56a; --bad:#e64873; --yellow:#ffe987; --blue:#dcecff; --green:#dcf5e5; --orange:#ffe3bf; }
+    body { background:#e7e9ee; }
+    button { color:inherit; }
+    .shell { max-width:1280px; padding-bottom:46px; }
+    .demo-nav { height:72px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .nav-status { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; font-weight:700; }
+    .nav-status i { width:7px; height:7px; border-radius:50%; background:var(--good); box-shadow:0 0 0 5px rgba(40,165,106,.11); }
+    .app { display:grid; grid-template-columns:250px minmax(0,1fr); gap:18px; min-height:calc(100dvh - 104px); }
+    .side { padding:18px; display:flex; flex-direction:column; gap:18px; position:sticky; top:16px; height:calc(100dvh - 104px); }
+    .pack-title small { color:var(--pink); font:800 10px Outfit,sans-serif; letter-spacing:.12em; }
+    .pack-title h1 { margin:7px 0 4px; font-size:21px; line-height:1.25; letter-spacing:-.04em; }
+    .pack-title p { margin:0; color:var(--muted); font-size:11px; }
+    .steps { display:grid; gap:7px; }
+    .step { width:100%; border:0; border-radius:14px; background:transparent; padding:11px 12px; display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:9px; text-align:left; font-size:12px; font-weight:750; }
+    .step:hover { background:rgba(255,255,255,.48); }
+    .step.active { background:#151517; color:#fff; box-shadow:0 10px 22px rgba(20,20,22,.14); }
+    .step.done:not(.active) .step-num { color:#fff; background:var(--good); }
+    .step-num { width:25px; height:25px; border-radius:50%; display:grid; place-items:center; background:rgba(20,20,22,.07); font:800 10px Outfit,sans-serif; }
+    .step.active .step-num { color:#151517; background:#fff; }
+    .step-state { color:#a1a4ad; font-size:9px; }
+    .step.active .step-state { color:#f5a6c8; }
+    .side-progress { margin-top:auto; }
+    .side-progress-head { display:flex; justify-content:space-between; font-size:10px; font-weight:800; }
+    .progress-line { height:6px; margin-top:8px; border-radius:99px; overflow:hidden; background:rgba(20,20,22,.08); }
+    .progress-line span { display:block; width:0; height:100%; background:var(--pink); transition:width .35s ease; }
+    .side-companion { display:grid; grid-template-columns:58px 1fr; align-items:center; gap:8px; border-radius:16px; padding:9px; background:rgba(255,255,255,.5); }
+    .side-companion img { width:58px; height:58px; object-fit:contain; }
+    .side-companion b { display:block; font-size:11px; }
+    .side-companion span { display:block; margin-top:2px; color:var(--muted); font-size:9px; line-height:1.4; }
+    .main { min-width:0; }
+    .screen { display:none; min-height:calc(100dvh - 104px); padding:clamp(22px,4vw,48px); overflow:hidden; }
+    .screen.active { display:block; animation:enter .42s cubic-bezier(.16,1,.3,1); }
+    @keyframes enter { from { opacity:0; transform:translateY(8px); } }
+    .eyebrow { margin:0 0 10px; color:var(--pink); font:800 11px Outfit,sans-serif; letter-spacing:.12em; }
+    .screen h2 { margin:0; font-size:clamp(28px,4vw,46px); line-height:1.1; letter-spacing:-.055em; }
+    .subtitle { max-width:650px; margin:13px 0 0; color:var(--muted); font-size:13px; line-height:1.8; }
+    .primary,.secondary { border:0; border-radius:999px; padding:12px 19px; font-size:12px; font-weight:850; }
+    .primary { color:#fff; background:var(--pink); box-shadow:0 10px 24px rgba(255,79,154,.2); }
+    .secondary { color:var(--ink); background:rgba(255,255,255,.65); border:1px solid rgba(20,20,22,.08); }
+    .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:22px; }
+    .coach { display:flex; align-items:center; gap:10px; margin-top:22px; padding:10px 14px 10px 8px; width:fit-content; max-width:100%; border-radius:999px; background:rgba(255,255,255,.72); border:1px solid #fff; box-shadow:0 8px 20px rgba(80,84,94,.08); }
+    .coach img { width:42px; height:42px; object-fit:contain; }
+    .coach p { margin:0; color:#565a64; font-size:11px; line-height:1.5; }
+    .coach b { color:var(--ink); }
+
+    /* Editable note document — follows the existing workspace document pattern. */
+    .document-shell { margin-top:25px; overflow:hidden; border-radius:24px; background:#eef0f4; border:1px solid rgba(255,255,255,.88); box-shadow:0 22px 50px rgba(83,88,100,.12); }
+    .document-head { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 15px; border-bottom:1px solid rgba(20,20,22,.08); background:rgba(255,255,255,.82); }
+    .document-head h3 { margin:0; font-size:13px; }.document-head p { margin:2px 0 0; color:var(--muted); font-size:9px; }
+    .document-actions { display:flex; flex-wrap:wrap; gap:6px; }.document-actions button { border:1px solid rgba(20,20,22,.09); border-radius:9px; padding:7px 10px; background:#fff; font-size:9px; font-weight:850; }.document-actions .download { border-color:var(--pink); color:#fff; background:var(--pink); }
+    .editor-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:5px; padding:8px 14px; border-bottom:1px solid rgba(20,20,22,.07); background:rgba(255,255,255,.68); }
+    .editor-toolbar button { min-width:30px; height:28px; padding:0 8px; border:1px solid rgba(20,20,22,.09); border-radius:7px; background:#fff; font-size:9px; }
+    .editor-wrap { max-height:480px; overflow:auto; padding:18px; }
+    .document-paper { width:min(760px,100%); min-height:600px; margin:0 auto; padding:38px 48px; background:#fff; box-shadow:0 10px 28px rgba(28,31,38,.11); }
+    .document-title { width:100%; border:0; border-bottom:1px solid transparent; outline:0; padding:0 0 14px; color:var(--ink); background:transparent; text-align:center; font:900 23px/1.35 'Noto Sans SC',sans-serif; }
+    .document-title:focus { border-bottom-color:rgba(20,20,22,.12); }
+    .document-editor { min-height:500px; outline:0; color:#292c34; font-size:12px; line-height:1.9; }
+    .document-editor h1 { margin:25px 0 9px; font-size:19px; }.document-editor h2,.document-editor h3 { margin:21px 0 8px; font-size:15px; }.document-editor p { margin:8px 0; }.document-editor blockquote { margin:14px 0; padding:10px 14px; border-left:3px solid var(--pink); color:#5f626c; background:rgba(255,79,154,.05); }.document-editor ul,.document-editor ol { padding-left:22px; }
+    .document-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 15px; border-top:1px solid rgba(20,20,22,.07); color:var(--muted); background:rgba(255,255,255,.78); font-size:9px; }.document-foot .saved { color:#0f766e; }
+
+    /* Overview */
+    .overview-layout { display:grid; grid-template-columns:minmax(300px,.85fr) minmax(300px,1.15fr); gap:28px; align-items:center; margin-top:26px; }
+    .note-page { aspect-ratio:3/4; max-height:590px; margin:auto; padding:30px; position:relative; overflow:hidden; border-radius:8px 18px 12px 8px; background:#fffdf2; box-shadow:0 22px 46px rgba(86,84,72,.16); transform:rotate(-.55deg); font-family:"KaiTi","STKaiti",serif; }
+    .note-page::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.12; background-image:linear-gradient(#98b9dc 1px,transparent 1px); background-size:100% 29px; }
+    .note-page h3 { position:relative; margin:0; font-size:25px; text-decoration:underline 8px rgba(255,233,135,.7); text-underline-offset:-3px; }
+    .game { position:relative; margin:25px 0 17px; display:grid; grid-template-columns:1fr 32px 1fr; align-items:center; gap:4px; text-align:center; }
+    .player { padding:13px 8px; border:2px solid #222; border-radius:48% 52% 45% 55%; font-weight:900; font-size:13px; }
+    .player.b { background:var(--blue); }.player.a { background:var(--green); }.game-arrow { font-size:21px; }
+    .core-rule { position:relative; padding:12px 14px; border-left:4px solid #f0a33e; background:rgba(255,227,191,.58); font-size:12px; font-weight:700; }
+    .concept-lines { position:relative; display:grid; gap:9px; margin-top:17px; }
+    .concept-line { display:grid; grid-template-columns:58px 1fr; gap:9px; align-items:center; font-size:11px; }
+    .concept-line b { padding:4px 7px; text-align:center; border-radius:6px; background:var(--yellow); }
+    .memory-hook { position:relative; margin-top:18px; color:#d83e6f; font-size:12px; font-weight:900; transform:rotate(-1deg); }
+    .anchor { position:absolute; right:24px; bottom:20px; font-size:31px; transform:rotate(10deg); }
+    .overview-copy h3 { margin:0; font-size:22px; letter-spacing:-.035em; }
+    .overview-copy p { color:var(--muted); font-size:12px; line-height:1.8; }
+    .map-list { display:grid; gap:9px; margin:20px 0; }
+    .map-row { display:grid; grid-template-columns:82px 1fr; gap:10px; padding:12px 14px; border-radius:13px; background:rgba(255,255,255,.55); font-size:11px; }
+    .map-row b { color:var(--pink); }.map-row span { color:#565a64; }
+
+    /* Knowledge */
+    .knowledge-layout { display:grid; grid-template-columns:.85fr 1.15fr; gap:18px; margin-top:25px; }
+    .knowledge-list,.concept-panel { border-radius:22px; background:rgba(255,255,255,.48); border:1px solid rgba(255,255,255,.78); }
+    .knowledge-list { padding:11px; max-height:570px; overflow:auto; }
+    .kgroup { padding:12px 11px 5px; color:var(--muted); font-size:9px; font-weight:900; letter-spacing:.08em; }
+    .kitem { width:100%; border:0; border-radius:12px; padding:11px; display:grid; grid-template-columns:24px 1fr auto; gap:8px; align-items:center; background:transparent; text-align:left; }
+    .kitem:hover,.kitem.active { background:#fff; }
+    .kcheck { width:20px; height:20px; display:grid; place-items:center; border-radius:6px; background:rgba(20,20,22,.06); font-size:9px; }
+    .kitem.viewed .kcheck { color:#fff; background:var(--good); }
+    .kitem b { font-size:11px; }.kitem small { color:var(--muted); font-size:8px; }
+    .concept-panel { min-height:570px; padding:28px; position:relative; }
+    .concept-tag { display:inline-flex; padding:5px 9px; border-radius:999px; color:var(--pink); background:rgba(255,79,154,.09); font-size:9px; font-weight:900; }
+    .concept-panel h3 { margin:15px 0 5px; font-size:27px; letter-spacing:-.04em; }
+    .plain { margin:15px 0; padding:16px; border-radius:15px; background:rgba(255,233,135,.35); font-size:12px; line-height:1.8; }
+    .formula { overflow:auto; padding:16px; border-radius:15px; color:#fff; background:#171719; font:600 14px/1.7 Georgia,serif; }
+    .concept-panel h4 { margin:19px 0 8px; font-size:12px; }
+    .key-limit { color:#626670; font-size:11px; line-height:1.8; }
+    .copy-button { position:absolute; right:18px; top:18px; border:0; border-radius:10px; padding:8px 10px; background:#fff; font-size:9px; font-weight:800; }
+
+    /* Cards */
+    .quiz-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; }
+    .quiz-counter { color:var(--muted); font:700 12px Outfit,sans-serif; }
+    .quiz-progress { height:5px; margin:20px 0 24px; overflow:hidden; border-radius:99px; background:rgba(20,20,22,.07); }
+    .quiz-progress span { display:block; height:100%; width:10%; background:var(--pink); transition:width .3s; }
+    .flashcard { width:min(670px,100%); min-height:440px; margin:auto; padding:32px; display:flex; flex-direction:column; border-radius:28px; background:rgba(255,255,255,.78); border:1px solid #fff; box-shadow:0 26px 55px rgba(78,83,96,.14); }
+    .flash-meta { display:flex; align-items:center; justify-content:space-between; color:var(--pink); font-size:9px; font-weight:900; letter-spacing:.06em; }
+    .flashcard h3 { margin:24px 0 19px; font-size:21px; line-height:1.5; letter-spacing:-.025em; }
+    .options { display:grid; gap:9px; }
+    .option { border:1px solid rgba(20,20,22,.09); border-radius:15px; padding:13px 15px; display:grid; grid-template-columns:27px 1fr; gap:10px; align-items:center; background:#fff; text-align:left; font-size:11px; transition:.17s; }
+    .option:hover { border-color:var(--pink); transform:translateY(-1px); }
+    .option i { width:24px; height:24px; display:grid; place-items:center; border-radius:8px; background:#f1f1f4; font:800 10px Outfit,sans-serif; font-style:normal; }
+    .option.correct { color:#126941; border-color:var(--good); background:rgba(40,165,106,.08); }.option.correct i { color:#fff; background:var(--good); }
+    .option.wrong { color:#9e3152; border-color:var(--bad); background:rgba(230,72,115,.07); }.option.wrong i { color:#fff; background:var(--bad); }
+    .option:disabled { cursor:default; transform:none; }
+    .feedback { display:none; margin-top:15px; padding:14px; border-radius:14px; font-size:10px; line-height:1.7; }
+    .feedback.show { display:block; animation:enter .25s ease; }.feedback.good { background:rgba(40,165,106,.09); color:#176f49; }.feedback.bad { background:rgba(230,72,115,.08); color:#8f3150; }
+    .feedback b { display:block; margin-bottom:2px; font-size:11px; }
+    .card-bottom { margin-top:auto; padding-top:18px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .coach-mini { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:9px; }.coach-mini img { width:35px; height:35px; object-fit:contain; }
+    .next-card { display:none; }.next-card.show { display:inline-flex; }
+
+    /* Result */
+    .result-hero { display:grid; grid-template-columns:240px 1fr; gap:32px; align-items:center; margin-top:26px; }
+    .score-ring { width:230px; aspect-ratio:1; display:grid; place-items:center; position:relative; border-radius:50%; background:conic-gradient(var(--pink) var(--score,0%),rgba(20,20,22,.07) 0); }
+    .score-ring::after { content:""; position:absolute; inset:15px; border-radius:50%; background:#f4f4f6; }
+    .score-copy { position:relative; z-index:1; text-align:center; }.score-copy strong { display:block; font:900 61px/1 Outfit,sans-serif; }.score-copy span { color:var(--muted); font-size:10px; }
+    .result-summary h3 { margin:0; font-size:25px; }.result-summary p { color:var(--muted); font-size:12px; }
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:16px; }.metric { padding:13px; border-radius:14px; background:rgba(255,255,255,.58); }.metric b { display:block; font:800 21px Outfit,sans-serif; }.metric span { color:var(--muted); font-size:9px; }
+    .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:22px; }.result-box { padding:18px; border-radius:18px; background:rgba(255,255,255,.55); }.result-box h4 { margin:0 0 12px; font-size:12px; }.result-box ul { margin:0; padding-left:17px; color:#626670; font-size:10px; line-height:2; }
+    .wrong-list { display:grid; gap:7px; }.wrong-chip { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border-radius:11px; background:rgba(230,72,115,.07); font-size:9px; }.wrong-chip b { color:#9b3151; }
+    .empty-wrong { color:var(--good); font-size:11px; }
+    .reset-link { border:0; background:transparent; color:var(--muted); font-size:10px; font-weight:800; }
+    @media(max-width:900px){ .app{grid-template-columns:1fr}.side{position:relative;top:0;height:auto}.steps{display:flex;overflow:auto}.step{min-width:150px}.side-progress,.side-companion{display:none}.overview-layout,.knowledge-layout,.result-hero{grid-template-columns:1fr}.note-page{max-height:none;width:min(420px,100%)} }
+    @media(max-width:600px){.shell{padding:0 12px 30px}.screen{padding:24px 16px}.demo-nav .nav-status{display:none}.flashcard{padding:22px 17px}.metrics,.result-grid{grid-template-columns:1fr}.coach{border-radius:18px}.concept-panel{padding:22px 17px}.result-hero{justify-items:center}.result-summary{text-align:center}.document-paper{padding:28px 22px}.document-head{align-items:flex-start;flex-direction:column}.editor-wrap{padding:10px}}
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <main class="shell">
+    <nav class="demo-nav">
+      <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt="成长 Fork"><span>成长 <em>Fork</em></span></a>
+      <div class="nav-status"><i></i>Study Notes Studio · 你的复习包</div>
+      <a class="btn btn-ghost" href="my-tasks.html">返回学习对话</a>
+    </nav>
+    <div class="app">
+      <aside class="side glass">
+        <div class="pack-title"><small>MICRO CALCULUS</small><h1>ε-δ 博弈复习包</h1><p>从一份视频转写稿开始</p></div>
+        <div class="steps" id="steps">
+          <button class="step active" data-step="0"><span class="step-num">01</span><span>文字版笔记</span><span class="step-state">当前</span></button>
+          <button class="step" data-step="1"><span class="step-num">02</span><span>视觉总览</span><span class="step-state">待学习</span></button>
+          <button class="step" data-step="2"><span class="step-num">03</span><span>知识与概念</span><span class="step-state">待学习</span></button>
+          <button class="step" data-step="3"><span class="step-num">04</span><span>复习卡片</span><span class="step-state">10张</span></button>
+          <button class="step" data-step="4"><span class="step-num">05</span><span>复习结果</span><span class="step-state">待完成</span></button>
+        </div>
+        <div class="side-progress"><div class="side-progress-head"><span>复习完成度</span><b id="sidePercent">0%</b></div><div class="progress-line"><span id="sideBar"></span></div></div>
+        <div class="side-companion"><img id="sidePet" alt="陪伴IP"><div><b id="sidePetName">小猫</b><span>我会陪你理解、作答和纠错。</span></div></div>
+      </aside>
+      <section class="main">
+        <article class="screen glass active" data-screen="0">
+          <p class="eyebrow">STEP 01 · EDITABLE NOTES</p><h2>先得到一份写好的笔记，<br>再按你的方式修改。</h2>
+          <p class="subtitle">这是由材料整理完成的文字版学习笔记。你可以直接改标题和正文，内容会自动保存在当前浏览器，也可以下载为 Word 文档继续使用。</p>
+          <section class="document-shell" aria-label="在线学习笔记编辑器">
+            <header class="document-head"><div><h3>可编辑学习笔记</h3><p>修改内容后自动保存到本地</p></div><div class="document-actions"><button type="button" id="resetNote">恢复初稿</button><button type="button" id="copyNote">复制全文</button><button class="download" type="button" id="downloadNote">下载 Word</button></div></header>
+            <div class="editor-toolbar"><button type="button" data-note-command="formatBlock" data-note-value="h1">H1</button><button type="button" data-note-command="formatBlock" data-note-value="h2">H2</button><button type="button" data-note-command="formatBlock" data-note-value="p">正文</button><button type="button" data-note-command="bold"><b>B</b></button><button type="button" data-note-command="italic"><i>I</i></button><button type="button" data-note-command="insertUnorderedList">• 列表</button><button type="button" data-note-command="insertOrderedList">1. 列表</button></div>
+            <div class="editor-wrap"><article class="document-paper"><input class="document-title" id="noteTitle" value="ε-δ 博弈：极限、连续与一致连续" aria-label="笔记标题"><div class="document-editor" id="noteEditor" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true"></div></article></div>
+            <footer class="document-foot"><span class="saved" id="noteSaved">已生成初稿</span><span id="noteCount">0 字</span></footer>
+          </section>
+          <div class="coach"><img class="pet-img" alt="陪伴IP"><p><b class="pet-name">小猫</b>：笔记已经写好了。你可以删改成自己的表达，下载后也能继续补充。</p></div>
+          <div class="actions"><button class="primary" data-next="1">查看视觉总览 →</button></div>
+        </article>
+
+        <article class="screen glass" data-screen="1">
+          <p class="eyebrow">STEP 02 · VISUAL OVERVIEW</p><h2>三个概念，<br>其实是同一场游戏。</h2>
+          <div class="overview-layout">
+            <div class="note-page"><h3>ε-δ 极限博弈</h3><div class="game"><div class="player b">B 提出<br>精度挑战</div><div class="game-arrow">→</div><div class="player a">A 给出<br>必胜策略</div></div><div class="core-rule">找不到反例 → 概念成立<br>核心：想多近，就能有多近</div><div class="concept-lines"><div class="concept-line"><b>数列极限</b><span>ε → N，后面所有项都靠近</span></div><div class="concept-line"><b>点连续</b><span>x₀ + ε → δ，此处足够稳定</span></div><div class="concept-line"><b>一致连续</b><span>ε → 统一 δ，整段都适用</span></div></div><div class="memory-hook">极限看“后面”，连续看“附近”，一致连续看“统一”</div><div class="anchor">⌖</div></div>
+            <div class="overview-copy"><h3>这张图只负责建立主线</h3><p>视觉总览允许压缩信息，不冒充完整笔记。可验证的定义、证明策略和易错点保留在后面的结构化知识层。</p><div class="map-list"><div class="map-row"><b>数列极限</b><span>B给ε，A给N，N之后所有项进入条带。</span></div><div class="map-row"><b>点连续</b><span>B限制输出误差ε，A控制输入范围δ。</span></div><div class="map-row"><b>一致连续</b><span>A给出的δ不能依赖具体位置x₀。</span></div></div><div class="coach"><img class="pet-img" alt="陪伴IP"><p><b class="pet-name">小猫</b>：先记住一句话：<strong>挑战精度的人先出手，给策略的人后回应。</strong></p></div><div class="actions"><button class="secondary" data-next="0">← 返回文字笔记</button><button class="primary" data-next="2">展开12个知识点 →</button></div></div>
+          </div>
+        </article>
+
+        <article class="screen glass" data-screen="2">
+          <p class="eyebrow">STEP 03 · KNOWLEDGE MAP</p><h2>图片帮你看懂，<br>文字让你真正复用。</h2>
+          <p class="subtitle">点击左侧知识点查看“人话解释—数学表达—关键限制”。浏览记录会计入内容覆盖，但不会直接等同于掌握。</p>
+          <div class="knowledge-layout"><div class="knowledge-list" id="knowledgeList"></div><div class="concept-panel" id="conceptPanel"></div></div>
+          <div class="actions"><button class="secondary" id="copyChecklist">复制知识清单</button><button class="primary" data-next="3">开始10张复习卡 →</button></div>
+        </article>
+
+        <article class="screen glass" data-screen="3">
+          <div class="quiz-head"><div><p class="eyebrow">STEP 04 · ACTIVE RECALL</p><h2>不要只看懂，<br>现在试着想起来。</h2></div><div class="quiz-counter" id="quizCounter">01 / 10</div></div>
+          <div class="quiz-progress"><span id="quizBar"></span></div>
+          <div class="flashcard"><div class="flash-meta"><span id="quizKnowledge">K01 · 数列极限</span><span id="quizType">概念选择</span></div><h3 id="question"></h3><div class="options" id="options"></div><div class="feedback" id="feedback"></div><div class="card-bottom"><div class="coach-mini"><img class="pet-img" alt="陪伴IP"><span id="coachHint">注意定义里的量词顺序。</span></div><button class="primary next-card" id="nextCard">下一张 →</button></div></div>
+        </article>
+
+        <article class="screen glass" data-screen="4">
+          <p class="eyebrow">STEP 05 · REVIEW RESULT</p><h2>完成度不是看过多少，<br>而是你能想起多少。</h2>
+          <div class="result-hero"><div class="score-ring" id="scoreRing"><div class="score-copy"><strong id="scoreNumber">0</strong><span>复习完成度</span></div></div><div class="result-summary"><h3 id="resultTitle">本轮复习完成</h3><p id="resultCopy">系统会根据内容覆盖、首次作答和错题修复计算。</p><div class="metrics"><div class="metric"><b id="coverageMetric">0/12</b><span>知识点浏览</span></div><div class="metric"><b id="correctMetric">0/10</b><span>首次答对</span></div><div class="metric"><b id="wrongMetric">0</b><span>待复习卡片</span></div></div></div></div>
+          <div class="result-grid"><div class="result-box"><h4>本轮易错点</h4><div class="wrong-list" id="wrongList"></div></div><div class="result-box"><h4>建议下一步</h4><ul id="nextSuggestions"><li>完成卡片后生成个性化建议</li></ul></div></div>
+          <div class="coach"><img class="pet-img" alt="陪伴IP"><p id="resultCoach"><b class="pet-name">小猫</b>：我会根据你的真实答案告诉你下一步，而不是只说“真棒”。</p></div>
+          <div class="actions"><button class="primary" id="reviewWrong">复习错题卡</button><button class="secondary" id="resetDemo">重新体验</button></div>
+        </article>
+      </section>
+    </div>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="companion-state.js"></script>
+  <script>
+    const knowledge = [
+      {id:'K01',group:'数列极限',title:'理解严格定义',plain:'无论别人要求数列离 L 多近，你总能找到一个足够靠后的起点，使此后的所有项都满足要求。',formula:'∀ ε > 0，∃ N，∀ n > N：|aₙ − L| < ε',limit:'关键不是“有一些项靠近”，而是从某个 N 开始，后面所有项都靠近。'},
+      {id:'K02',group:'数列极限',title:'理解量词顺序',plain:'挑战者 B 先任意选择 ε，宣称者 A 看见 ε 后才能给 N，之后才任取 n>N 检验。',formula:'B: ε → A: N(ε) → ∀ n>N → 检查',limit:'N 可以依赖 ε，但不能根据之后选出的 n 临时改变。'},
+      {id:'K03',group:'数列极限',title:'掌握证明策略',plain:'先从目标不等式反推 n 要多大，再把这个条件写成关于 ε 的 N。',formula:'|aₙ−L| < ε  ⇐  n > N(ε)',limit:'N 不一定要最小，只要能保证目标成立即可。'},
+      {id:'K04',group:'数列极限',title:'理解极限唯一性',plain:'如果有两个不同极限，取小于两者距离一半的 ε，两条邻域不会相交，但后续项却被要求同时进入两者，产生矛盾。',formula:'ε < |L₁−L₂|/2  ⇒  两邻域不相交',limit:'证明使用的是反证法与“三角不等式/邻域分离”思想。'},
+      {id:'K05',group:'数列极限',title:'判断数列发散',plain:'无论猜哪个 L，总能设置一个 ε，使任何 N 之后都还能找到跑出条带的反例。',formula:'∀ L，∃ ε>0，∀ N，∃ n>N：|aₙ−L| ≥ ε',limit:'这是收敛定义的否定，量词顺序不能随意交换。'},
+      {id:'K06',group:'函数连续',title:'点连续的 ε-δ 定义',plain:'只要把输入控制得足够接近 x₀，输出就能控制得足够接近 f(x₀)。',formula:'∀ ε>0，∃ δ>0：|x−x₀|<δ ⇒ |f(x)−f(x₀)|<ε',limit:'讨论的是指定点 x₀ 附近的局部性质。'},
+      {id:'K07',group:'函数连续',title:'区分 ε 与 δ',plain:'ε 控制输出允许差多少，δ 控制输入要靠多近。B 给输出要求，A 回答输入范围。',formula:'输入：δ  →  函数  →  输出：ε',limit:'不要把横向的 δ 和纵向的 ε 画反。'},
+      {id:'K08',group:'函数连续',title:'δ 可以依赖 x₀',plain:'普通点连续中，A 知道当前考察点 x₀，所以不同位置可以使用不同大小的 δ。',formula:'δ = δ(ε, x₀)',limit:'这正是它与一致连续最关键的区别。'},
+      {id:'K09',group:'一致连续',title:'理解统一 δ',plain:'给定 ε 后，要找到一把对整个定义域都有效的 δ 尺子，无论移动到哪里都不失效。',formula:'∀ ε>0，∃ δ(ε)>0，∀ x,y：|x−y|<δ ⇒ |f(x)−f(y)|<ε',limit:'δ 不得依赖某个具体位置。'},
+      {id:'K10',group:'一致连续',title:'连续与一致连续',plain:'连续是“每个点各自能找到尺子”，一致连续是“整片区域共用一把尺子”。',formula:'连续：δ(ε,x₀) ；一致连续：δ(ε)',limit:'逐点连续不自动推出在整个无界或开区间上一致连续。'},
+      {id:'K11',group:'一致连续',title:'为什么 1/x 不一致连续',plain:'在 (0,+∞) 上越靠近 0，函数越陡。任何固定 δ 都能在更靠近 0 的位置失效。',formula:'x→0⁺ 时 |(1/x)\'|=1/x² → ∞',limit:'它处处连续，但不存在覆盖整个定义域的统一 δ。'},
+      {id:'K12',group:'历史意义',title:'ε-δ 语言为何出现',plain:'它用可验证的精度—策略程序，取代了“无穷小到底是不是 0”的模糊说法，为微积分建立严格基础。',formula:'任意精度挑战 → 存在可执行策略',limit:'严格语言不是故意复杂，而是为了消除无穷小推理中的逻辑漏洞。'}
+    ];
+    const quiz = [
+      {k:'K01',type:'概念选择',q:'要证明数列 aₙ 收敛到 L，下面哪个条件正确？',o:['无穷多个 aₙ 接近 L','存在一个 ε，使所有 aₙ 接近 L','对任意 ε，某个 N 之后所有项都接近 L','先固定 N，再对所有 ε 成立'],a:2,why:'收敛要求“对任意 ε”，都能找到 N，使 N 之后的所有项进入范围。',wrong:'你可能把“无穷多个点靠近”混成了“后续所有点都靠近”。'},
+      {k:'K02',type:'量词顺序',q:'极限博弈的正确行动顺序是哪一个？',o:['A给N → B给ε → 任取n','B给ε → A给N → 任取n>N','任取n → A给N → B给ε','B给N → A给ε → 任取n'],a:1,why:'挑战精度的人先给 ε，A 看到 ε 后给出策略 N。',wrong:'定义难点主要不在符号，而在谁先出手。'},
+      {k:'K03',type:'数值计算',q:'对 aₙ=1/n，要保证 |aₙ|<0.001，可取哪个 N？',o:['N=10','N=100','N=1000','N=0.001'],a:2,why:'1/n<0.001=1/1000，因此当 n>1000 时成立。',wrong:'从目标 1/n<ε 反推 n>1/ε。'},
+      {k:'K04',type:'概念判断',q:'极限唯一性证明中，为什么选择 ε<|L₁−L₂|/2？',o:['让两个邻域互不相交','让数列变成单调','保证 N₁=N₂','方便把 ε 取成整数'],a:0,why:'两个不相交邻域不可能同时容纳足够靠后的同一批数列项。',wrong:'唯一性靠的是把两个候选极限的邻域分开。'},
+      {k:'K05',type:'反例判断',q:'为什么 aₙ=(-1)ⁿ 不收敛到 1？',o:['因为它没有正数项','因为奇数项始终与1相差2','因为偶数项越来越大','因为 N 不能取整数'],a:1,why:'任意 N 之后都能找到奇数 n，使 aₙ=-1，与1相差2。',wrong:'证明不收敛要在任意 N 之后持续找到反例。'},
+      {k:'K07',type:'概念选择',q:'在函数连续的 ε-δ 定义里，δ 控制什么？',o:['输出误差','输入与 x₀ 的距离','函数值大小','极限是否唯一'],a:1,why:'δ 是横向输入范围；ε 是纵向输出误差。',wrong:'可以记成：输入 δ，经过函数，得到输出 ε。'},
+      {k:'K08',type:'概念判断',q:'普通点连续中，δ 可以依赖哪些信息？',o:['只能依赖 ε','只能依赖 x₀','可以依赖 ε 和 x₀','不能依赖任何信息'],a:2,why:'普通连续讨论指定点，因此 δ 可以随 ε 与 x₀ 改变。',wrong:'如果 δ 不能依赖 x₀，要求就升级为一致连续。'},
+      {k:'K10',type:'核心对比',q:'一致连续比普通连续多出的核心要求是什么？',o:['函数必须可导','δ 不依赖具体位置 x₀','ε 必须等于 δ','定义域必须有限'],a:1,why:'一致连续要求同一个 δ 对整个定义域都有效。',wrong:'关键不是“更光滑”，而是能否使用统一的 δ。'},
+      {k:'K11',type:'例子判断',q:'1/x 在 (0,+∞) 上连续但不一致连续，主要原因是什么？',o:['它在 x=1 不连续','它没有函数值','靠近0时越来越陡，统一δ会失效','它的值始终小于1'],a:2,why:'越接近0，输入的微小变化可能造成很大的输出变化。',wrong:'每个点都能单独选 δ，但无法找到全域统一的 δ。'},
+      {k:'K12',type:'意义理解',q:'ε-δ 语言最重要的历史作用是什么？',o:['让公式看起来更复杂','取代模糊无穷小，提供可验证程序','证明所有函数都连续','避免使用任何极限'],a:1,why:'它把“无限逼近”变成任意精度下都能执行和检验的承诺。',wrong:'严格定义的目的不是增加符号，而是修补逻辑地基。'}
+    ];
+    function escHtml(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+    function normalizePack(raw){if(!raw||typeof raw!=='object')return null;const pack={...raw};pack.knowledge=Array.isArray(pack.knowledge)&&pack.knowledge.length?pack.knowledge.slice(0,12):knowledge;pack.quiz=Array.isArray(pack.quiz)&&pack.quiz.length?pack.quiz.slice(0,10):quiz;pack.sections=Array.isArray(pack.sections)?pack.sections:[];pack.overview=Array.isArray(pack.overview)?pack.overview.slice(0,5):[];return pack}
+    const generatedPack=normalizePack(JSON.parse(sessionStorage.getItem('growth-fork-study-pack-current')||'null'));
+    if(generatedPack){knowledge.splice(0,knowledge.length,...generatedPack.knowledge.map((k,i)=>({id:k.id||`K${String(i+1).padStart(2,'0')}`,group:k.group||'核心知识',title:k.title||`知识点 ${i+1}`,plain:k.plain||'',formula:k.formula||'—',limit:k.limit||'结合原材料复习'})));quiz.splice(0,quiz.length,...generatedPack.quiz.map((q,i)=>({k:q.k||knowledge[Math.min(i,knowledge.length-1)].id,type:q.type||'概念选择',q:q.q||'请选择正确表述',o:Array.isArray(q.o)&&q.o.length===4?q.o:['正确表述','干扰项一','干扰项二','干扰项三'],a:Number.isInteger(q.a)?Math.max(0,Math.min(3,q.a)):0,why:q.why||'请回看对应知识点。',wrong:q.wrong||'注意概念边界。'})));document.querySelector('.pack-title small').textContent='STUDY NOTES PACK';document.querySelector('.pack-title h1').textContent=generatedPack.title||'学习笔记复习包';document.querySelector('.pack-title p').textContent=generatedPack.subtitle||'根据你上传的材料生成';document.querySelector('[data-screen="0"] .subtitle').textContent='内容已经根据你上传的材料生成。你可以直接编辑，系统会自动保存，也可以下载为 Word 文档。';const overviewTitle=document.querySelector('[data-screen="1"] h2');overviewTitle.innerHTML=`${escHtml(generatedPack.title||'材料主线')}<br>一张图先看清。`;const notePage=document.querySelector('.note-page');notePage.innerHTML=`<h3>${escHtml(generatedPack.title||'复习总览')}</h3><div class="core-rule">${escHtml(generatedPack.summary||'先建立主线，再逐项复习')}</div><div class="concept-lines">${(generatedPack.overview.length?generatedPack.overview:knowledge.slice(0,4).map(k=>({label:k.title,text:k.plain}))).map(item=>`<div class="concept-line"><b>${escHtml(item.label)}</b><span>${escHtml(item.text)}</span></div>`).join('')}</div><div class="memory-hook">回忆主线，再进入知识点和自测</div><div class="anchor">⌖</div>`;document.querySelector('.map-list').innerHTML=(generatedPack.overview.length?generatedPack.overview:knowledge.slice(0,4).map(k=>({label:k.title,text:k.plain}))).map(item=>`<div class="map-row"><b>${escHtml(item.label)}</b><span>${escHtml(item.text)}</span></div>`).join('');document.querySelector('[data-next="2"]').textContent=`展开${knowledge.length}个知识点 →`;document.querySelector('[data-next="3"]').textContent=`开始${quiz.length}张复习卡 →`;document.querySelector('.step[data-step="3"] .step-state').textContent=`${quiz.length}张`;document.querySelector('[data-screen="2"] .subtitle').textContent=`共 ${knowledge.length} 个知识点。点击左侧查看“人话解释—关键表达—易错边界”。`;}
+    const state={screen:0,viewed:new Set(),q:0,answers:[],completed:new Set([0])};
+    const companion=window.GrowthCompanion?.get()||{name:'小猫',image:'assets/companion-cat-transparent.png'};
+    document.querySelectorAll('.pet-img,#sidePet').forEach(x=>x.src=companion.image);document.querySelectorAll('.pet-name,#sidePetName').forEach(x=>x.textContent=companion.name);
+    const NOTE_STORAGE_KEY=generatedPack?`growth-fork-study-note-generated-${generatedPack.generatedAt||'current'}`:'growth-fork-study-note-demo-v1';
+    const DEFAULT_NOTE_TITLE='ε-δ 博弈：极限、连续与一致连续';
+    const DEFAULT_NOTE_HTML=`
+      <blockquote><strong>一句话主线：</strong>极限、连续和一致连续都可以理解为一场“精度挑战—应对策略—寻找反例”的博弈。</blockquote>
+      <h1>一、数列极限：后面的所有项都要靠近</h1>
+      <p>设数列为 aₙ。我们说 aₙ 收敛到 L，意思是：无论挑战者要求数列距离 L 多近，宣称者总能找到一个足够靠后的序号 N，使得 N 后面的所有项都满足要求。</p>
+      <p><strong>严格定义：</strong>对任意 ε&gt;0，存在正整数 N，使得当 n&gt;N 时，都有 |aₙ−L|&lt;ε。</p>
+      <h2>1. 博弈中的角色</h2>
+      <ul><li>B 先给出误差范围 ε。</li><li>A 看见 ε 后，给出序号分水岭 N。</li><li>B 在所有 n&gt;N 的位置寻找反例。</li><li>如果始终找不到反例，A 获胜，数列收敛到 L。</li></ul>
+      <h2>2. 例子：aₙ=1/n</h2>
+      <p>要证明 1/n→0，只需从目标 1/n&lt;ε 反推 n&gt;1/ε。因此可取 N≥1/ε。当 n&gt;N 时，必有 |1/n−0|&lt;ε。</p>
+      <h2>3. 极限唯一性</h2>
+      <p>一个数列不可能同时收敛到两个不同的极限。若 L₁≠L₂，选择 ε&lt;|L₁−L₂|/2，两个极限附近的条带互不相交；但足够靠后的数列项却被要求同时进入两个条带，产生矛盾。</p>
+      <h2>4. 发散如何表达</h2>
+      <p>发散意味着：无论猜测哪个 L，都能找到一个 ε，使得任意 N 之后仍存在跑出条带的反例。例如 aₙ=(−1)ⁿ 在 1 和 −1 之间反复跳动，不会趋近任何单一数字。</p>
+      <h1>二、函数连续：这个点附近足够稳定</h1>
+      <p>函数 f 在 x₀ 处连续，意思是：只要把输入 x 控制得足够接近 x₀，输出 f(x) 就能被控制得足够接近 f(x₀)。</p>
+      <p><strong>严格定义：</strong>对任意 ε&gt;0，存在 δ&gt;0，使得当 |x−x₀|&lt;δ 时，都有 |f(x)−f(x₀)|&lt;ε。</p>
+      <ul><li>ε 控制输出允许相差多少。</li><li>δ 控制输入需要靠多近。</li><li>普通点连续中，δ 可以依赖 ε 和考察点 x₀。</li></ul>
+      <h1>三、一致连续：整片区域共用一把尺子</h1>
+      <p>一致连续比逐点连续多一个限制：给定 ε 后，A 必须找到一个对整个定义域都有效的 δ，不能根据具体位置 x₀ 临时调整。</p>
+      <p><strong>核心区别：</strong>普通连续允许 δ=δ(ε,x₀)；一致连续要求 δ=δ(ε)。</p>
+      <h2>为什么 1/x 在 (0,+∞) 上不一致连续？</h2>
+      <p>1/x 在每个正数点都连续，但越靠近 0，函数越陡。任何固定 δ 都可以在更靠近 0 的位置失效，所以不存在对整个区间统一有效的 δ。</p>
+      <h1>四、为什么需要 ε-δ 语言</h1>
+      <p>早期微积分依赖模糊的“无穷小量”：计算中先把它当作非零量放在分母，最后又让它消失。ε-δ 语言不再追问无穷小究竟是什么，而是把“无限逼近”改写成一套可执行、可验证的程序。</p>
+      <blockquote><strong>记忆钩子：</strong>极限看“后面”，连续看“附近”，一致连续看“统一”。</blockquote>`;
+    const NOTE_INITIAL_TITLE=generatedPack?.title||DEFAULT_NOTE_TITLE;
+    const NOTE_INITIAL_HTML=generatedPack?`<blockquote><strong>一句话主线：</strong>${escHtml(generatedPack.summary||'根据材料建立复习主线。')}</blockquote>${generatedPack.sections.map((section,index)=>`<h1>${index+1}. ${escHtml(section.title||'核心内容')}</h1>${(section.paragraphs||[]).map(p=>`<p>${escHtml(p)}</p>`).join('')}${Array.isArray(section.bullets)&&section.bullets.length?`<ul>${section.bullets.map(b=>`<li>${escHtml(b)}</li>`).join('')}</ul>`:''}`).join('')}<h1>知识点清单</h1><ul>${knowledge.map(k=>`<li><strong>${escHtml(k.id)} ${escHtml(k.title)}</strong>：${escHtml(k.plain)}</li>`).join('')}</ul>`:DEFAULT_NOTE_HTML;
+    const noteTitle=document.getElementById('noteTitle'),noteEditor=document.getElementById('noteEditor'),noteSaved=document.getElementById('noteSaved'),noteCount=document.getElementById('noteCount');
+    let noteSaveTimer;
+    function loadNote(){try{const saved=JSON.parse(localStorage.getItem(NOTE_STORAGE_KEY));noteTitle.value=saved?.title||NOTE_INITIAL_TITLE;noteEditor.innerHTML=saved?.html||NOTE_INITIAL_HTML;noteSaved.textContent=saved?'已恢复上次编辑':'已生成初稿'}catch(_){noteTitle.value=NOTE_INITIAL_TITLE;noteEditor.innerHTML=NOTE_INITIAL_HTML}updateNoteCount()}
+    function saveNote(immediate=false){clearTimeout(noteSaveTimer);const commit=()=>{localStorage.setItem(NOTE_STORAGE_KEY,JSON.stringify({title:noteTitle.value.trim()||NOTE_INITIAL_TITLE,html:noteEditor.innerHTML,updatedAt:Date.now()}));noteSaved.textContent='已自动保存';noteSaved.classList.add('saved');updateNoteCount()};if(immediate)commit();else{noteSaved.textContent='正在保存…';noteSaved.classList.remove('saved');noteSaveTimer=setTimeout(commit,220)}}
+    function updateNoteCount(){noteCount.textContent=`${noteEditor.textContent.replace(/\s/g,'').length} 字`}
+    noteTitle.addEventListener('input',()=>saveNote());noteEditor.addEventListener('input',()=>saveNote());
+    document.querySelectorAll('[data-note-command]').forEach(button=>button.addEventListener('click',()=>{noteEditor.focus();document.execCommand(button.dataset.noteCommand,false,button.dataset.noteValue||null);saveNote()}));
+    document.getElementById('resetNote').onclick=()=>{noteTitle.value=NOTE_INITIAL_TITLE;noteEditor.innerHTML=NOTE_INITIAL_HTML;saveNote(true);toast('已恢复系统初稿')};
+    document.getElementById('copyNote').onclick=()=>copyText(`${noteTitle.value}\n\n${noteEditor.innerText}`);
+    function xmlEscape(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+    function noteParagraphs(){const result=[{text:noteTitle.value.trim()||NOTE_INITIAL_TITLE,style:'Title'}];Array.from(noteEditor.children).forEach(node=>{const tag=node.tagName.toLowerCase();if(tag==='ul'||tag==='ol')Array.from(node.children).forEach((li,index)=>result.push({text:`${tag==='ol'?`${index+1}.`:'•'} ${li.textContent.trim()}`,style:'ListParagraph'}));else{const text=node.textContent.trim();if(text)result.push({text,style:tag==='h1'?'Heading1':['h2','h3'].includes(tag)?'Heading2':tag==='blockquote'?'Quote':''})}});return result}
+    function noteDocumentXml(){const body=noteParagraphs().map(item=>`<w:p>${item.style?`<w:pPr><w:pStyle w:val="${item.style}"/></w:pPr>`:''}<w:r><w:t xml:space="preserve">${xmlEscape(item.text)}</w:t></w:r></w:p>`).join('');return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`}
+    const NOTE_DOC_STYLES=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Times New Roman" w:eastAsia="宋体"/><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:pPr><w:jc w:val="center"/><w:spacing w:after="360"/></w:pPr><w:rPr><w:b/><w:rFonts w:eastAsia="黑体"/><w:sz w:val="36"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:rPr><w:b/><w:rFonts w:eastAsia="黑体"/><w:sz w:val="30"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:rPr><w:b/><w:rFonts w:eastAsia="黑体"/><w:sz w:val="26"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:pPr><w:ind w:left="420"/></w:pPr></w:style><w:style w:type="paragraph" w:styleId="Quote"><w:name w:val="Quote"/><w:basedOn w:val="Normal"/><w:pPr><w:ind w:left="360" w:right="360"/></w:pPr><w:rPr><w:i/><w:color w:val="666666"/></w:rPr></w:style></w:styles>`;
+    function crc32(bytes){let crc=-1;for(const byte of bytes){crc^=byte;for(let i=0;i<8;i++)crc=(crc>>>1)^(0xEDB88320&-(crc&1))}return(crc^-1)>>>0}
+    function u16(value){return new Uint8Array([value&255,(value>>>8)&255])}function u32(value){return new Uint8Array([value&255,(value>>>8)&255,(value>>>16)&255,(value>>>24)&255])}
+    function joinBytes(parts){const output=new Uint8Array(parts.reduce((sum,item)=>sum+item.length,0));let offset=0;parts.forEach(item=>{output.set(item,offset);offset+=item.length});return output}
+    function zipFiles(files){const encoder=new TextEncoder(),local=[],central=[];let offset=0;Object.entries(files).forEach(([name,value])=>{const nameBytes=encoder.encode(name),data=typeof value==='string'?encoder.encode(value):value,crc=crc32(data),header=joinBytes([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(nameBytes.length),u16(0),nameBytes]);local.push(header,data);central.push(joinBytes([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(nameBytes.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),nameBytes]));offset+=header.length+data.length});const centralSize=central.reduce((sum,item)=>sum+item.length,0);return joinBytes([...local,...central,u32(0x06054b50),u16(0),u16(0),u16(central.length),u16(central.length),u32(centralSize),u32(offset),u16(0)])}
+    document.getElementById('downloadNote').onclick=()=>{saveNote(true);const files={'[Content_Types].xml':'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>','_rels/.rels':'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>','word/_rels/document.xml.rels':'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>','word/document.xml':noteDocumentXml(),'word/styles.xml':NOTE_DOC_STYLES};const blob=new Blob([zipFiles(files)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`${(noteTitle.value.trim()||NOTE_INITIAL_TITLE).replace(/[\\/:*?"<>|]/g,'_')}.docx`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(link.href),1000);noteSaved.textContent='Word 已下载';toast('Word 文档已下载')};
+    loadNote();
+    function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500)}
+    function progress(){const pct=Math.min(100,Math.round(state.completed.size/5*100));sidePercent.textContent=pct+'%';sideBar.style.width=pct+'%';document.querySelectorAll('.step').forEach((s,i)=>{s.classList.toggle('done',state.completed.has(i));if(!s.classList.contains('active'))s.querySelector('.step-state').textContent=state.completed.has(i)?'已完成':(i===3?`${quiz.length}张`:'待学习')})}
+    function go(n){state.screen=n;state.completed.add(Math.max(0,n-1));document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',+x.dataset.screen===n));document.querySelectorAll('.step').forEach((x,i)=>{x.classList.toggle('active',i===n);if(i===n)x.querySelector('.step-state').textContent='当前'});if(n===2){renderKnowledge(0)}if(n===3){renderQuiz()}if(n===4){state.completed.add(4);renderResult()}progress();window.scrollTo({top:0,behavior:'smooth'})}
+    document.querySelectorAll('[data-next]').forEach(b=>b.onclick=()=>go(+b.dataset.next));document.querySelectorAll('.step').forEach(b=>b.onclick=()=>go(+b.dataset.step));
+    function renderKnowledge(selected){const groups=[...new Set(knowledge.map(k=>k.group))];knowledgeList.innerHTML=groups.map(g=>`<div class="kgroup">${g}</div>${knowledge.map((k,i)=>k.group===g?`<button class="kitem ${i===selected?'active':''} ${state.viewed.has(k.id)?'viewed':''}" data-k="${i}"><span class="kcheck">${state.viewed.has(k.id)?'✓':k.id.slice(1)}</span><b>${k.title}</b><small>查看 →</small></button>`:'').join('')}`).join('');document.querySelectorAll('.kitem').forEach(b=>b.onclick=()=>renderKnowledge(+b.dataset.k));const k=knowledge[selected];state.viewed.add(k.id);conceptPanel.innerHTML=`<button class="copy-button" id="copyConcept">复制内容</button><span class="concept-tag">${k.id} · ${k.group}</span><h3>${k.title}</h3><div class="plain"><b>人话解释</b><br>${k.plain}</div><h4>数学表达</h4><div class="formula">${k.formula}</div><h4>关键限制</h4><div class="key-limit">${k.limit}</div>`;document.getElementById('copyConcept').onclick=()=>copyText(`${k.id} ${k.title}\n${k.plain}\n${k.formula}\n关键限制：${k.limit}`);document.querySelectorAll('.kitem').forEach((b,i)=>{if(state.viewed.has(knowledge[+b.dataset.k].id)){b.classList.add('viewed');b.querySelector('.kcheck').textContent='✓'}})}
+    function copyText(t){navigator.clipboard?.writeText(t).then(()=>toast('已复制')).catch(()=>toast('当前环境无法复制'))}
+    copyChecklist.onclick=()=>copyText(knowledge.map(k=>`- [ ] ${k.id} ${k.title}：${k.plain}`).join('\n'));
+    function renderQuiz(){const q=quiz[state.q],item=knowledge.find(k=>k.id===q.k)||knowledge[0];quizCounter.textContent=String(state.q+1).padStart(2,'0')+' / '+quiz.length;quizBar.style.width=((state.q+1)/quiz.length*100)+'%';quizKnowledge.textContent=q.k+' · '+item.group;quizType.textContent=q.type;question.textContent=q.q;options.innerHTML=q.o.map((o,i)=>`<button class="option" data-a="${i}"><i>${String.fromCharCode(65+i)}</i><span>${o}</span></button>`).join('');feedback.className='feedback';feedback.innerHTML='';nextCard.classList.remove('show');coachHint.textContent=state.q===0?'先回忆材料主线，再看选项。':'先自己回忆，再看选项。';document.querySelectorAll('.option').forEach(b=>b.onclick=()=>answer(+b.dataset.a))}
+    function answer(a){if(state.answers[state.q])return;const q=quiz[state.q],correct=a===q.a;state.answers[state.q]={answer:a,correct,k:q.k};document.querySelectorAll('.option').forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===a&&!correct)b.classList.add('wrong')});feedback.className='feedback show '+(correct?'good':'bad');feedback.innerHTML=`<b>${correct?'✓ 答对了':'× 这次选错了'}</b>${correct?q.why:q.wrong+'<br>正确理解：'+q.why}`;coachHint.textContent=correct?'我记录为首次答对。':`我把 ${q.k} 加入稍后复习。`;nextCard.textContent=state.q===quiz.length-1?'查看复习结果 →':'下一张 →';nextCard.classList.add('show')}
+    nextCard.onclick=()=>{if(state.q<quiz.length-1){state.q++;renderQuiz()}else go(4)};
+    function renderResult(){const correct=state.answers.filter(a=>a?.correct).length,wrong=state.answers.filter(a=>a&&!a.correct),coverage=state.viewed.size;const score=Math.round((coverage/knowledge.length*.2+correct/quiz.length*.5+(wrong.length?0:.3))*100);scoreRing.style.setProperty('--score',score+'%');scoreNumber.textContent=score;coverageMetric.textContent=coverage+'/'+knowledge.length;correctMetric.textContent=correct+'/'+quiz.length;wrongMetric.textContent=wrong.length;resultTitle.textContent=score>=80?'主线已掌握，进入间隔复习':score>=60?'主线已建立，还需修复混淆':'先修复核心概念，再开始下一轮';resultCopy.textContent=`内容覆盖 ${Math.round(coverage/knowledge.length*100)}% · 首次正确率 ${Math.round(correct/quiz.length*100)}% · 错题修复尚未计入`;wrongList.innerHTML=wrong.length?wrong.map(w=>{const k=knowledge.find(x=>x.id===w.k)||knowledge[0];return `<div class="wrong-chip"><b>${w.k}</b><span>${k.title}</span></div>`}).join(''):'<div class="empty-wrong">本轮没有错题，可以明天再做一次间隔复习。</div>';const suggestion=wrong.length?wrong.slice(0,3).map(w=>knowledge.find(k=>k.id===w.k)||knowledge[0]):knowledge.slice(0,Math.min(2,knowledge.length));nextSuggestions.innerHTML=suggestion.map(k=>`<li>回看 ${k.id}「${k.title}」并做同类卡</li>`).join('');resultCoach.innerHTML=`<b>${companion.name}</b>：${wrong.length?`你有 ${wrong.length} 个具体混淆点。我们从 ${wrong[0].k} 开始修复。`:'这轮基础概念很稳。下一次我会提高题目难度。'}`;reviewWrong.style.display=wrong.length?'inline-flex':'none'}
+    reviewWrong.onclick=()=>{const first=state.answers.findIndex(a=>a&&!a.correct);if(first>=0){state.q=first;state.answers[first]=null;go(3)}};
+    resetDemo.onclick=()=>{state.screen=0;state.viewed.clear();state.q=0;state.answers=[];state.completed=new Set([0]);go(0);toast('已重置演示')};
+    progress();
+  </script>
+</body>
+</html>

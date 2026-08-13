@@ -3,769 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>语音访谈生成 Skill · Wowgrowth</title>
+  <title>制作 Skill · Wowgrowth</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
-    :root {
-      --coral: #FF4F9A;
-      --violet: #FF4F9A;
-    }
-    * { box-sizing: border-box; }
-    body { min-height: 100vh; overflow-x: hidden; }
-
-    .topbar {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 18px 28px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .fork-cite {
-      display: inline-flex; align-items: center; gap: 8px;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 13px; font-weight: 650;
-      max-width: min(420px, 52vw);
-    }
-    .fork-cite a {
-      color: var(--pink);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .fork-cite a:hover { color: var(--pink-deep); }
-    .fork-cite a:focus-visible {
-      outline: 2px solid var(--pink);
-      outline-offset: 2px;
-      border-radius: 4px;
-    }
-    .scenario {
-      display: inline-flex; align-items: center; gap: 8px;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 13px; font-weight: 650;
-    }
-    .scenario select {
-      border: 0; background: transparent; outline: 0;
-      font: inherit; font-weight: 650; color: var(--ink);
-    }
-    .top-actions { display: flex; gap: 8px; }
-    .chip {
-      border: 1px solid rgba(26,35,50,.08);
-      background: rgba(255,255,255,.65);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 12px; font-weight: 650;
-      color: var(--muted);
-    }
-    .chip.on { color: var(--pink); border-color: rgba(255,79,154,.28); background: var(--pink-soft); }
-
-    .stage {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 28px 40px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
-      gap: 22px;
-      min-height: calc(100vh - 90px);
-    }
-
-    .orb-panel {
-      border-radius: 28px;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      overflow: hidden;
-      position: relative;
-      min-height: 620px;
-    }
-    .orb-stage {
-      position: relative;
-      display: grid;
-      place-items: center;
-      padding: 40px 24px 20px;
-    }
-    .orb {
-      width: min(340px, 56vw);
-      height: min(340px, 56vw);
-      border-radius: 50%;
-      position: relative;
-      background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,.9), transparent 35%),
-        radial-gradient(circle at 50% 50%, #F7C9DC 0%, #C9CDD4 32%, #9AA0AB 58%, transparent 72%);
-      filter: blur(0);
-      box-shadow:
-        0 0 80px rgba(255,79,154,.28),
-        0 0 160px rgba(201,205,212,.4),
-        inset 0 0 60px rgba(255,255,255,.28);
-      animation: breathe 4.2s ease-in-out infinite;
-    }
-    .orb::before, .orb::after {
-      content: "";
-      position: absolute; inset: -18%;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,79,154,.28), transparent 60%);
-      animation: drift 7s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-    .orb::after {
-      inset: -8%;
-      background: radial-gradient(circle at 70% 60%, rgba(201,205,212,.55), transparent 55%);
-      animation-duration: 5.5s;
-    }
-    .orb.speaking {
-      animation: pulseTalk 1.1s ease-in-out infinite;
-      box-shadow:
-        0 0 100px rgba(255,79,154,.45),
-        0 0 180px rgba(201,205,212,.55),
-        inset 0 0 60px rgba(255,255,255,.3);
-    }
-    .orb.listening {
-      animation: listenPulse 1.8s ease-in-out infinite;
-    }
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.04); }
-    }
-    @keyframes pulseTalk {
-      0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.08); filter: brightness(1.08); }
-    }
-    @keyframes listenPulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.03); opacity: .92; }
-    }
-    @keyframes drift {
-      from { transform: translate(-4%, -2%) rotate(0deg); }
-      to { transform: translate(5%, 3%) rotate(12deg); }
-    }
-
-    .status-block { text-align: center; margin-top: 8px; }
-    .status-text {
-      font-size: 15px; font-weight: 650; color: var(--ink);
-      min-height: 24px;
-    }
-    .status-sub { margin-top: 6px; color: var(--muted); font-size: 13px; }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 14px;
-      padding: 22px 20px 28px;
-      border-top: 1px solid rgba(255,255,255,.4);
-      background: rgba(255,255,255,.25);
-    }
-    .ctrl {
-      width: 56px; height: 56px; border-radius: 50%;
-      border: 1px solid rgba(26,35,50,.08);
-      background: rgba(255,255,255,.85);
-      display: grid; place-items: center;
-      color: var(--ink);
-      transition: transform .15s, background .15s;
-    }
-    .ctrl:hover { transform: translateY(-2px); }
-    .ctrl svg { width: 22px; height: 22px; }
-    .ctrl.muted { background: #EEF1F5; color: var(--muted); }
-    .ctrl.end {
-      width: 64px; height: 64px;
-      background: linear-gradient(135deg, #FF6B9D, #FF4F9A);
-      border: 0; color: #fff;
-      box-shadow: 0 12px 28px rgba(255,79,154,.35);
-    }
-    .ctrl.primary-gen {
-      width: auto; min-width: 160px; height: 52px; border-radius: 999px;
-      padding: 0 20px; gap: 8px;
-      background: var(--ink); color: #fff; border: 0;
-      font-weight: 700; font-size: 14px;
-      display: none; align-items: center; justify-content: center;
-    }
-    .ctrl.primary-gen.show { display: inline-flex; }
-    .ai-note {
-      text-align: center;
-      padding: 0 0 14px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .side {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      min-height: 0;
-    }
-    .panel {
-      border-radius: 22px;
-    }
-    .panel-head {
-      padding: 16px 18px 10px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .panel-head h2 { margin: 0; font-size: 15px; font-weight: 800; }
-    .progress-pills { display: flex; gap: 6px; }
-    .progress-pills i {
-      width: 28px; height: 6px; border-radius: 99px;
-      background: #E4E9F0; font-style: normal;
-    }
-    .progress-pills i.done { background: var(--ink); }
-    .progress-pills i.active { background: var(--pink); }
-
-    .transcript {
-      height: 280px;
-      overflow-y: auto;
-      padding: 4px 18px 18px;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .bubble {
-      max-width: 92%;
-      padding: 11px 13px;
-      border-radius: 14px;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    .bubble.ai {
-      align-self: flex-start;
-      background: var(--pink-soft);
-      color: var(--ink);
-      border-bottom-left-radius: 4px;
-    }
-    .bubble.user {
-      align-self: flex-end;
-      background: #EEF0F3;
-      color: var(--ink);
-      border-bottom-right-radius: 4px;
-    }
-    .bubble .who { display: block; font-size: 11px; font-weight: 700; opacity: .65; margin-bottom: 4px; }
-
-    .extract { padding: 4px 18px 18px; display: grid; gap: 10px; }
-    .field {
-      background: #FBFCFF;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-    .field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
-    .field .val { font-size: 13px; font-weight: 600; min-height: 18px; }
-    .field.empty .val { color: #B0BCC9; font-weight: 500; }
-    .field[hidden] { display: none; }
-
-    .composer {
-      display: flex; gap: 8px; padding: 0 18px 16px;
-    }
-    .composer input {
-      flex: 1; border: 1px solid #D5DEE8; border-radius: 12px;
-      padding: 11px 12px; outline: 0; background: #fff; font: inherit; font-size: 13px;
-    }
-    .composer input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255,79,154,.14); }
-    .composer button {
-      border: 0; border-radius: 12px; padding: 0 16px;
-      background: var(--ink); color: #fff; font-weight: 700; font-size: 13px;
-    }
-
-    .result-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(18, 22, 36, .45);
-      backdrop-filter: blur(6px);
-      z-index: 40;
-      align-items: center; justify-content: center;
-      padding: 24px;
-    }
-    .result-overlay.show { display: flex; }
-    .result-card {
-      width: min(560px, 100%);
-      background: #fff;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 30px 80px rgba(0,0,0,.2);
-    }
-    .result-card h3 { margin: 0 0 6px; font-size: 22px; }
-    .result-card .sub { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
-    .result-meta {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;
-    }
-    .result-meta div {
-      background: #F6F8FB; border-radius: 12px; padding: 12px;
-    }
-    .result-meta span { display: block; color: var(--muted); font-size: 11px; }
-    .result-meta b { display: block; margin-top: 4px; font-size: 13px; }
-    .steps-mini { display: grid; gap: 8px; margin-bottom: 20px; }
-    .steps-mini div {
-      display: flex; gap: 10px; align-items: center;
-      border: 1px solid #E8EEF5; border-radius: 10px; padding: 10px;
-      font-size: 13px;
-    }
-    .steps-mini i {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--pink-soft); color: var(--pink);
-      display: grid; place-items: center;
-      font-style: normal; font-size: 11px; font-weight: 800;
-    }
-    .result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .result-actions .btn {
-      border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 700; font-size: 14px;
-    }
-    .btn-main { background: var(--pink); color: #fff; }
-    .btn-sec { background: #EEF2F6; color: var(--ink); }
-
-    .toast {
-      position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px);
-      opacity: 0; pointer-events: none;
-      background: var(--ink); color: #fff;
-      padding: 11px 16px; border-radius: 12px; font-size: 13px;
-      transition: .22s; z-index: 50;
-    }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-    @media (max-width: 900px) {
-      .stage { grid-template-columns: 1fr; padding: 12px 16px 32px; }
-      .orb-panel { min-height: 480px; }
-      .transcript { height: 220px; }
-      .topbar { padding: 14px 16px 0; flex-wrap: wrap; }
-      .fork-cite { max-width: 100%; }
-    }
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(circle at 82% 9%,rgba(255,79,154,.13),transparent 26%),radial-gradient(circle at 12% 88%,rgba(255,255,255,.9),transparent 32%),linear-gradient(145deg,#f5f6f8,#dfe2e8 52%,#f6f6f8);font-family:"Noto Sans SC",sans-serif;min-height:100dvh}button,input,textarea{font:inherit}button,a{cursor:pointer}button{color:inherit}.grain{position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E")}.shell{position:relative;z-index:1;width:min(1420px,calc(100% - 32px));margin:auto;padding:16px 0 30px}.topnav{height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand-link{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-family:Outfit,sans-serif;font-size:19px;font-weight:800}.brand-link img{width:34px;height:34px}.brand-link em{color:var(--pink)}.nav-actions{display:flex;align-items:center;gap:9px}.nav-actions a{border-radius:999px;padding:9px 13px;color:var(--ink);background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);text-decoration:none;font-size:11px;font-weight:800}.nav-actions .dark{color:#fff;background:var(--ink);border-color:var(--ink)}
+    .glass{border:1px solid rgba(255,255,255,.82);background:rgba(255,255,255,.52);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 24px 70px rgba(61,66,78,.14);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+    .entry{min-height:calc(100dvh - 104px);display:grid;place-items:center;padding:30px}.entry-card{width:min(1050px,100%);padding:42px;border-radius:34px}.entry-head{text-align:center}.entry-head .eyebrow{margin:0;color:var(--pink);font:800 11px Outfit,sans-serif;letter-spacing:.14em}.entry-head h1{margin:10px 0 0;font-size:clamp(35px,5vw,62px);letter-spacing:-.055em;line-height:1.05}.entry-head h1 em{color:var(--pink);font-style:italic}.entry-head>p{max-width:600px;margin:15px auto 0;color:var(--muted);font-size:14px;line-height:1.75}.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}.mode-card{position:relative;min-height:240px;display:flex;flex-direction:column;align-items:flex-start;border:1px solid rgba(37,40,48,.08);border-radius:25px;padding:24px;background:rgba(255,255,255,.72);text-align:left;transition:.2s ease;overflow:hidden}.mode-card::after{content:"";position:absolute;right:-35px;bottom:-48px;width:130px;height:130px;border-radius:50%;background:rgba(255,79,154,.08)}.mode-card:hover{transform:translateY(-5px);border-color:rgba(255,79,154,.35);box-shadow:0 20px 40px rgba(67,72,84,.12)}.mode-icon{width:45px;height:45px;display:grid;place-items:center;border-radius:15px;color:#fff;background:var(--ink);font:800 16px Outfit,sans-serif}.mode-card:nth-child(2) .mode-icon{background:var(--pink)}.mode-card:nth-child(3) .mode-icon{color:var(--ink);background:#dfe2e8}.mode-card h2{margin:20px 0 0;font-size:18px}.mode-card p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.7}.mode-card b{margin-top:auto;padding-top:18px;color:var(--pink);font-size:11px}.resume-draft{display:none;width:100%;margin-top:14px;border:1px solid rgba(255,79,154,.2);border-radius:16px;padding:12px 15px;color:var(--ink);background:rgba(255,255,255,.7);font-size:11px;font-weight:800;text-align:left}.resume-draft.show{display:flex;align-items:center;justify-content:space-between;gap:12px}.resume-draft span{color:var(--pink)}.entry-note{margin:20px 0 0;text-align:center;color:var(--muted);font-size:11px}
+    .studio{display:none;height:calc(100dvh - 90px);min-height:680px;border-radius:30px;overflow:hidden}.studio.show{display:grid;grid-template-rows:auto minmax(0,1fr)}.studio-head{display:grid;grid-template-columns:minmax(220px,1fr) minmax(320px,1.5fr) auto;align-items:center;gap:20px;padding:14px 18px;border-bottom:1px solid rgba(37,40,48,.08);background:rgba(255,255,255,.58)}.studio-title{display:flex;align-items:center;gap:10px;min-width:0}.studio-title button{width:34px;height:34px;border:0;border-radius:11px;background:rgba(37,40,48,.06)}.studio-title h1{margin:0;font-size:14px}.studio-title p{margin:3px 0 0;color:var(--muted);font-size:9px}.stage-progress{display:flex;align-items:center;justify-content:center;gap:5px}.stage-chip{display:flex;align-items:center;gap:5px;color:#9a9da7;font-size:9px;font-weight:800}.stage-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:#cdd0d7}.stage-chip.done{color:#555964}.stage-chip.done::before{background:#555964}.stage-chip.active{color:var(--pink)}.stage-chip.active::before{background:var(--pink);box-shadow:0 0 0 4px rgba(255,79,154,.11)}.stage-line{width:22px;height:1px;background:#d8dae0}.score-pill{min-width:100px;display:flex;align-items:center;gap:9px;border-radius:14px;padding:8px 10px;background:#fff}.score-ring{--score:0;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--pink) calc(var(--score)*1%),#e8e9ed 0);position:relative;font:800 9px Outfit,sans-serif}.score-ring::before{content:"";position:absolute;inset:4px;border-radius:50%;background:#fff}.score-ring span{position:relative}.score-copy b,.score-copy small{display:block}.score-copy b{font-size:10px}.score-copy small{margin-top:2px;color:var(--muted);font-size:8px}
+    .studio-body{min-height:0;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(430px,.92fr)}.co-create{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;border-right:1px solid rgba(37,40,48,.08);background:rgba(247,248,251,.56)}.co-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(37,40,48,.07)}.companion-id{display:flex;align-items:center;gap:9px}.companion-id img{width:38px;height:38px;object-fit:contain;border-radius:13px;background:linear-gradient(145deg,#fff,var(--pink-soft))}.companion-id h2{margin:0;font-size:13px}.companion-id p{margin:3px 0 0;color:var(--muted);font-size:9px}.mode-badge{border-radius:999px;padding:6px 9px;color:var(--pink);background:rgba(255,79,154,.09);font-size:9px;font-weight:800}.messages{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:13px;padding:20px}.message{max-width:min(660px,90%);display:flex;align-items:flex-start;gap:8px}.message.user{align-self:flex-end;flex-direction:row-reverse}.message img,.user-avatar{width:28px;height:28px;flex:0 0 auto;border-radius:9px}.message img{object-fit:contain;background:var(--pink-soft)}.user-avatar{display:grid;place-items:center;color:#fff;background:var(--ink);font-size:9px;font-weight:900}.bubble{padding:11px 13px;border-radius:4px 15px 15px;background:#fff;box-shadow:0 7px 20px rgba(28,31,38,.06);font-size:12px;line-height:1.75;white-space:pre-wrap}.message.user .bubble{border-radius:15px 4px 15px 15px;color:#fff;background:var(--ink)}.quick-options{display:flex;flex-wrap:wrap;gap:6px;margin:0 20px 12px}.quick-options button{border:1px solid rgba(255,79,154,.2);border-radius:999px;padding:7px 10px;color:var(--pink);background:#fff;font-size:9px;font-weight:800}.composer{position:relative;padding:12px 16px 15px;border-top:1px solid rgba(37,40,48,.08);background:rgba(255,255,255,.68)}.attachments{display:flex;gap:6px;overflow:auto;margin-bottom:7px}.attachment{flex:0 0 auto;display:flex;align-items:center;gap:7px;max-width:210px;border:1px solid rgba(37,40,48,.08);border-radius:11px;padding:6px 8px;background:#fff;font-size:9px}.attachment i{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;color:var(--pink);background:var(--pink-soft);font-style:normal;font-weight:900}.attachment span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.composer-box{display:flex;align-items:flex-end;gap:7px;border:1px solid rgba(37,40,48,.12);border-radius:17px;padding:6px;background:#fff;box-shadow:0 9px 25px rgba(33,37,46,.06)}.icon-btn{width:38px;height:38px;flex:0 0 auto;border:0;border-radius:12px;background:#f0f1f4;font-weight:900}.icon-btn.recording{color:#fff;background:var(--pink);animation:pulse 1.2s infinite}.composer textarea{flex:1;min-height:40px;max-height:150px;resize:none;border:0;outline:0;padding:9px 3px;background:transparent;font-size:12px;line-height:1.55}.send{height:38px;flex:0 0 auto;border:0;border-radius:12px;padding:0 16px;color:#fff;background:var(--pink);font-size:10px;font-weight:900}.send:disabled{opacity:.45}.composer-hint{margin:7px 5px 0;color:var(--muted);font-size:8px}.voice-pop{position:absolute;left:58px;bottom:74px;display:none;width:min(360px,calc(100% - 78px));border:1px solid rgba(255,79,154,.18);border-radius:17px;padding:13px;background:#fff;box-shadow:0 18px 45px rgba(30,34,44,.18)}.voice-pop.show{display:block}.voice-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.voice-wave{display:flex;align-items:center;gap:3px}.voice-wave i{width:3px;height:15px;border-radius:9px;background:var(--pink);animation:wave .8s ease-in-out infinite}.voice-wave i:nth-child(2){animation-delay:.12s}.voice-wave i:nth-child(3){animation-delay:.24s}.voice-wave i:nth-child(4){animation-delay:.36s}.voice-pop p{margin:9px 0 0;color:var(--muted);font-size:10px}.voice-pop button{margin-top:10px;border:0;border-radius:9px;padding:7px 10px;background:var(--ink);color:#fff;font-size:9px;font-weight:800}
+    .preview{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);background:rgba(255,255,255,.66)}.preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid rgba(37,40,48,.08)}.preview-head h2{margin:0;font-size:13px}.preview-head p{margin:3px 0 0;color:var(--muted);font-size:9px}.preview-tabs{display:flex;gap:4px;padding:4px;border-radius:12px;background:#eceef2}.preview-tabs button{border:0;border-radius:9px;padding:7px 9px;color:var(--muted);background:transparent;font-size:9px;font-weight:800}.preview-tabs button.active{color:#fff;background:var(--ink)}.preview-scroll{min-height:0;overflow:auto;padding:18px}.preview-panel{display:none}.preview-panel.active{display:block}.draft-card{border:1px solid rgba(37,40,48,.08);border-radius:23px;padding:20px;background:#fff;box-shadow:0 14px 38px rgba(43,47,57,.08)}.draft-label{display:flex;align-items:center;gap:6px;color:var(--pink);font-size:9px;font-weight:900;letter-spacing:.08em}.draft-label::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--pink)}.draft-title{width:100%;margin:9px 0 0;border:0;outline:0;padding:0;background:transparent;font-size:23px;font-weight:900;letter-spacing:-.035em}.state-flow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:17px}.state-box{min-height:88px;border:1px solid rgba(37,40,48,.07);border-radius:14px;padding:11px;background:#f8f8fa}.state-box b{display:block;font-size:9px}.state-box p{margin:6px 0 0;color:var(--muted);font-size:10px;line-height:1.55}.state-arrow{color:var(--pink);font-weight:900}.section-block{margin-top:16px}.section-block h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 7px;font-size:10px}.field-status{border-radius:999px;padding:3px 6px;color:#8a6a00;background:#fff4ca;font-size:7px}.field-status.confirmed{color:#08735e;background:#dff7ef}.preview-value{min-height:38px;border:1px dashed rgba(37,40,48,.12);border-radius:11px;padding:9px;color:var(--muted);background:#fafafd;font-size:10px;line-height:1.6}.tag-list{display:flex;flex-wrap:wrap;gap:5px}.tag{border-radius:999px;padding:5px 8px;color:#555965;background:#eff0f3;font-size:8px;font-weight:800}.flow-list{display:grid;gap:8px}.flow-item{display:grid;grid-template-columns:27px minmax(0,1fr);gap:8px;align-items:start;border:1px solid rgba(37,40,48,.07);border-radius:12px;padding:9px;background:#fff}.flow-item i{width:27px;height:27px;display:grid;place-items:center;border-radius:9px;color:#fff;background:var(--pink);font:800 9px Outfit,sans-serif;font-style:normal}.flow-item b{font-size:9px}.flow-item p{margin:3px 0 0;color:var(--muted);font-size:9px;line-height:1.5}.empty-state{padding:28px 15px;border:1px dashed rgba(37,40,48,.14);border-radius:15px;color:var(--muted);text-align:center;font-size:10px}.missing-list{display:grid;gap:6px;margin-top:12px}.missing-item{display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:10px;padding:9px;background:#fff7df;font-size:9px}.missing-item button{border:0;color:var(--pink);background:transparent;font-size:8px;font-weight:900}.quality-hero{display:grid;grid-template-columns:100px minmax(0,1fr);gap:14px;align-items:center}.quality-total{width:100px;height:100px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--pink) calc(var(--q)*1%),#eaebef 0);position:relative}.quality-total::before{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff}.quality-total div{position:relative;text-align:center}.quality-total b{display:block;font:900 28px/1 Outfit,sans-serif}.quality-total span{color:var(--muted);font-size:8px}.quality-bars{display:grid;gap:7px}.quality-row{display:grid;grid-template-columns:70px minmax(0,1fr) 24px;align-items:center;gap:7px;font-size:8px}.bar{height:5px;border-radius:99px;background:#e9eaee;overflow:hidden}.bar i{display:block;height:100%;border-radius:inherit;background:var(--pink)}.test-actions,.publish-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.test-actions button,.publish-actions button{border:0;border-radius:10px;padding:9px 11px;font-size:9px;font-weight:900}.primary{color:#fff;background:var(--pink)}.secondary{background:#eceef2}.publish-actions button:disabled{opacity:.35}.test-list{display:grid;gap:8px;margin-top:13px}.test-card{border:1px solid rgba(37,40,48,.08);border-radius:13px;padding:10px;background:#fff}.test-card header{display:flex;align-items:center;justify-content:space-between;gap:8px}.test-card h4{margin:0;font-size:9px}.test-card span{border-radius:999px;padding:3px 6px;font-size:7px;font-weight:900}.test-card span.pass{color:#08735e;background:#dff7ef}.test-card span.warn{color:#9a6800;background:#fff0c0}.test-card p{margin:6px 0 0;color:var(--muted);font-size:8px;line-height:1.55}.toast{position:fixed;z-index:50;left:50%;bottom:24px;transform:translate(-50%,16px);opacity:0;border-radius:999px;padding:10px 15px;color:#fff;background:var(--ink);font-size:10px;font-weight:800;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .choice-builder{width:100%;display:grid;gap:10px;border:1px solid rgba(37,40,48,.08);border-radius:17px;padding:12px;background:rgba(255,255,255,.9);box-shadow:0 10px 25px rgba(33,37,46,.06)}.choice-group b{display:block;margin-bottom:6px;font-size:9px}.choice-grid{display:flex;flex-wrap:wrap;gap:5px}.quick-options .choice-card{border:1px solid rgba(37,40,48,.09);border-radius:10px;padding:7px 9px;color:#666a75;background:#f7f7f9;font-size:8px;font-weight:800}.quick-options .choice-card.selected{border-color:var(--pink);color:var(--pink);background:rgba(255,79,154,.08);box-shadow:inset 0 0 0 1px rgba(255,79,154,.08)}.choice-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:2px}.quick-options .choice-actions button{border:0;border-radius:10px;padding:8px 11px;font-size:8px;font-weight:900}.quick-options .choice-custom{color:var(--muted);background:#eff0f3}.quick-options .choice-confirm{color:#fff;background:var(--pink)}.quick-options .choice-confirm:disabled{opacity:.35}
+    @keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,79,154,.12)}}@keyframes wave{50%{height:6px}}
+    @media(max-width:1000px){.studio{height:auto;min-height:calc(100dvh - 90px)}.studio-body{grid-template-columns:1fr}.co-create{height:680px;border-right:0;border-bottom:1px solid rgba(37,40,48,.08)}.preview{min-height:700px}.studio-head{grid-template-columns:1fr auto}.stage-progress{grid-column:1/-1;grid-row:2}.mode-grid{grid-template-columns:1fr}.mode-card{min-height:170px}.entry{padding:15px}.entry-card{padding:26px}}
+    @media(max-width:620px){.shell{width:calc(100% - 16px);padding-top:8px}.topnav{height:52px}.nav-actions a:not(.dark){display:none}.entry{padding:4px}.entry-card{padding:22px 15px;border-radius:24px}.entry-head h1{font-size:37px}.studio{border-radius:20px}.studio-head{padding:10px}.score-copy{display:none}.stage-progress{justify-content:flex-start;overflow:auto;padding:3px}.studio-body{display:block}.co-create{height:calc(100dvh - 158px);min-height:610px}.preview{min-height:700px}.preview-head{align-items:flex-start;flex-direction:column}.preview-scroll{padding:10px}.state-flow{grid-template-columns:1fr}.state-arrow{transform:rotate(90deg);text-align:center}.composer{padding:9px}.messages{padding:14px 10px}.message{max-width:96%}.mode-card{min-height:155px}.mode-card h2{margin-top:12px}.studio-title p{display:none}}
   </style>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
-  <img src="assets/hero-chrome-ornament.png" alt="" aria-hidden="true" style="position:fixed;right:-8%;top:-12%;width:min(640px,70vw);opacity:.55;pointer-events:none;z-index:0">
-  <div class="topbar">
-    <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>Wowgrowth</em></span></a>
-    <div class="fork-cite glass" id="forkCite" hidden></div>
-    <div class="scenario glass">
-      <span aria-hidden="true">▦</span>
-      <label for="scenarioSelect">访谈情景</label>
-      <select id="scenarioSelect">
-        <option value="career">实习 / 求职经验</option>
-        <option value="campus">社团 / 校园项目</option>
-        <option value="research">科研 / 保研</option>
-        <option value="study">学习方法</option>
-      </select>
-    </div>
-    <div class="top-actions">
-      <button type="button" class="chip" id="captionToggle">字幕开</button>
-      <a class="chip" href="pet-demo/">退出</a>
-    </div>
-  </div>
+  <div class="grain"></div>
+  <div class="shell">
+    <nav class="topnav">
+      <a class="brand-link" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>Wowgrowth</em></span></a>
+      <div class="nav-actions"><a href="my-tasks.html">学习任务</a><a class="dark" href="pet-demo/">返回首页</a></div>
+    </nav>
 
-  <main class="stage">
-    <section class="orb-panel glass" aria-label="语音访谈舞台">
-      <div class="orb-stage">
-        <div class="orb listening" id="orb" aria-hidden="true"></div>
-        <div class="status-block">
-          <div class="status-text" id="statusText">准备开始访谈</div>
-          <div class="status-sub" id="statusSub">点击下方麦克风，或直接在右侧输入回答</div>
+    <section class="entry" id="entry">
+      <div class="entry-card glass">
+        <header class="entry-head">
+          <p class="eyebrow">AI SKILL CREATOR</p>
+          <h1>把你的经验，变成<br>别人能用的 <em>Skill</em></h1>
+          <p>你负责提供想法、经历或材料，AI 帮你明确任务、补齐方法、测试质量，并生成可执行的 Skill。</p>
+        </header>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="idea"><span class="mode-icon">01</span><h2>从一个想法开始</h2><p>适合还只有模糊方向，例如“我想做一个考研复习 Skill”。</p><b>和 AI 一起明确任务 →</b></button>
+          <button class="mode-card" data-mode="experience"><span class="mode-icon">02</span><h2>从我的经验开始</h2><p>讲述你真正做过的事、踩过的坑和判断方法。</p><b>把经历变成方法 →</b></button>
+          <button class="mode-card" data-mode="material"><span class="mode-icon">03</span><h2>从已有材料开始</h2><p>上传笔记、文章、简历、计划或视频，再由 AI 提取结构。</p><b>上传并开始整理 →</b></button>
         </div>
+        <button class="resume-draft" id="resumeDraft" type="button"><b>继续上次的 Skill 草稿</b><span id="resumeDraftTitle">继续编辑 →</span></button>
+        <p class="entry-note">不会让你写 Prompt。所有内容都可以继续修改，未发布前仅自己可见。</p>
       </div>
-      <div class="controls">
-        <button type="button" class="ctrl" id="micBtn" title="麦克风" aria-label="切换麦克风">
-          <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/></svg>
-        </button>
-        <button type="button" class="ctrl" id="notesBtn" title="访谈笔记" aria-label="聚焦笔记面板">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8a2 2 0 0 1 2 2v14l-6-3-6 3V6a2 2 0 0 1 2-2z"/></svg>
-        </button>
-        <button type="button" class="ctrl primary-gen" id="genBtn">交给 skill-creator 生成</button>
-        <button type="button" class="ctrl end" id="endBtn" title="结束访谈" aria-label="结束访谈">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-      <div class="ai-note">内容由 AI 生成 · 访谈信息仅用于生成本地 Skill 草稿</div>
     </section>
 
-    <aside class="side">
-      <section class="panel glass">
-        <div class="panel-head">
-          <h2 class="display">访谈对话</h2>
-          <div class="progress-pills" id="progressPills" aria-label="访谈进度">
-            <i class="active"></i><i></i><i></i><i></i>
+    <main class="studio glass" id="studio">
+      <header class="studio-head">
+        <div class="studio-title"><button id="backEntry" aria-label="返回创建方式">←</button><div><h1 id="studioTitle">新的 Skill 草稿</h1><p id="autosave">刚刚自动保存</p></div></div>
+        <div class="stage-progress" id="stageProgress"></div>
+        <div class="score-pill"><div class="score-ring" id="scoreRing"><span id="scoreNumber">0%</span></div><div class="score-copy"><b>Skill 完整度</b><small id="scoreHint">等待开始</small></div></div>
+      </header>
+      <div class="studio-body">
+        <section class="co-create">
+          <header class="co-head"><div class="companion-id"><img id="companionAvatar" src="assets/companion-cat-transparent.png" alt="成长搭子"><div><h2>AI 共创区</h2><p>文字为主，语音只负责转成文字</p></div></div><span class="mode-badge" id="modeBadge">想法模式</span></header>
+          <div class="messages" id="messages" aria-live="polite"></div>
+          <div class="quick-options" id="quickOptions"></div>
+          <div class="composer">
+            <div class="attachments" id="attachments"></div>
+            <div class="voice-pop" id="voicePop"><div class="voice-top"><div class="voice-wave"><i></i><i></i><i></i><i></i></div><b id="voiceStatus">正在聆听…</b></div><p id="voiceText">说完后，识别文字会放入输入框，你可以修改后再发送。</p><button id="stopVoice" type="button">停止并插入输入框</button></div>
+            <div class="composer-box"><button class="icon-btn" id="addFile" type="button" title="上传材料">＋</button><input id="fileInput" type="file" multiple accept=".pdf,.doc,.docx,.txt,.md,.ppt,.pptx,.xls,.xlsx,image/*,video/*" hidden><button class="icon-btn" id="voiceBtn" type="button" title="语音转文字">🎙</button><textarea id="creatorInput" rows="1" placeholder="输入你的想法、经历，或回答 AI 的问题…"></textarea><button class="send" id="sendBtn" type="button">发送</button></div>
+            <p class="composer-hint">Enter 发送 · Shift + Enter 换行 · AI 推测的内容需要你确认后才进入正式草稿</p>
           </div>
-        </div>
-        <div class="transcript" id="transcript" aria-live="polite"></div>
-        <div class="composer">
-          <input id="textInput" type="text" placeholder="也可以打字回答…" aria-label="输入回答">
-          <button type="button" id="sendBtn">发送</button>
-        </div>
-      </section>
+        </section>
 
-      <section class="panel glass" id="notesPanel">
-        <div class="panel-head">
-          <h2 class="display">已沉淀信息</h2>
-          <span style="font-size:12px;color:var(--muted)" id="fillCount">0 / 4</span>
-        </div>
-        <div class="extract">
-          <div class="field empty" id="fDelta" hidden><label>相对原作的改动</label><div class="val">—</div></div>
-          <div class="field empty" id="fExperience"><label>核心经验</label><div class="val">等待你讲述…</div></div>
-          <div class="field empty" id="fGoal"><label>最终成果</label><div class="val">—</div></div>
-          <div class="field empty" id="fPeople"><label>适合谁</label><div class="val">—</div></div>
-          <div class="field empty" id="fObstacle"><label>易卡点</label><div class="val">—</div></div>
-        </div>
-      </section>
-    </aside>
-  </main>
-
-  <div class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
-    <div class="result-card">
-      <h3 class="display" id="resultTitle">Skill 草稿已生成</h3>
-      <p class="sub">访谈信息已交给 skill-creator，生成可运行的成长 Skill 初稿。</p>
-      <div class="result-meta">
-        <div><span>Skill 名称</span><b id="outTitle">—</b></div>
-        <div><span>预计耗时</span><b>12 分钟</b></div>
-        <div><span>适合谁</span><b id="outPeople">—</b></div>
-        <div><span>最终成果</span><b id="outGoal">—</b></div>
+        <aside class="preview">
+          <header class="preview-head"><div><h2>Skill 实时预览</h2><p>你的回答会持续更新右侧结构</p></div><div class="preview-tabs"><button class="active" data-tab="overview">概览</button><button data-tab="workflow">执行逻辑</button><button data-tab="quality">测试与质量</button></div></header>
+          <div class="preview-scroll">
+            <section class="preview-panel active" data-panel="overview">
+              <article class="draft-card">
+                <div class="draft-label">SKILL DRAFT · <span id="draftVersion">V0.1</span></div>
+                <input class="draft-title" id="draftTitle" value="未命名 Skill" aria-label="Skill 名称">
+                <div class="state-flow"><div class="state-box"><b>STARTING STATE</b><p id="startState">等待定义用户当前状态</p></div><span class="state-arrow">→</span><div class="state-box"><b>TARGET STATE</b><p id="targetState">等待定义可验证的目标状态</p></div></div>
+                <div class="section-block"><h3>任务目标 <span class="field-status" id="goalStatus">待补充</span></h3><div class="preview-value" id="goalValue">这个 Skill 具体帮助用户完成什么？</div></div>
+                <div class="section-block"><h3>适合谁 <span class="field-status" id="audienceStatus">待确认</span></h3><div class="tag-list" id="audienceTags"><span class="tag">等待用户画像</span></div></div>
+                <div class="section-block"><h3>不适合谁</h3><div class="preview-value" id="unsuitableValue">等待识别边界条件</div></div>
+                <div class="section-block"><h3>最终交付物</h3><div class="preview-value" id="outputValue">等待定义成果物</div></div>
+              </article>
+              <div class="missing-list" id="missingList"></div>
+            </section>
+            <section class="preview-panel" data-panel="workflow"><article class="draft-card"><div class="draft-label">EXECUTION WORKFLOW</div><div class="section-block"><h3>用户需要提供</h3><div class="tag-list" id="inputTags"><span class="tag">等待定义输入</span></div></div><div class="section-block"><h3>执行步骤</h3><div class="flow-list" id="workflowList"><div class="empty-state">讲述你的具体做法后，这里会生成执行流程</div></div></div><div class="section-block"><h3>判断与分支规则</h3><div class="flow-list" id="rulesList"><div class="empty-state">例如：如果没有实习经历，则先从课程项目中提取能力证据</div></div></div><div class="section-block"><h3>常见错误</h3><div class="preview-value" id="mistakesValue">等待补充踩坑经验</div></div><div class="section-block"><h3>完成标准</h3><div class="preview-value" id="criteriaValue">等待定义“做到什么程度算完成”</div></div></article></section>
+            <section class="preview-panel" data-panel="quality"><article class="draft-card"><div class="quality-hero"><div class="quality-total" id="qualityTotal"><div><b id="qualityScore">0</b><span>质量评分</span></div></div><div><div class="draft-label">SKILL QUALITY</div><p style="margin:7px 0 0;color:var(--muted);font-size:9px;line-height:1.6" id="qualitySummary">补充关键信息后即可进行模拟测试。</p></div></div><div class="quality-bars" id="qualityBars"></div><div class="test-actions"><button class="primary" id="runTest">模拟 3 个用户测试</button><button class="secondary" id="optimizeSkill">一键优化缺项</button></div><div class="test-list" id="testList"><div class="empty-state">测试会检查能否开始、是否缺输入、流程是否有死路，以及输出是否明确。</div></div><div class="publish-actions"><button class="secondary" id="savePrivate">保存为自用草稿</button><button class="primary" id="publishPublic" disabled>发布公开 Skill</button></div></article></section>
+          </div>
+        </aside>
       </div>
-      <div class="steps-mini" id="outSteps"></div>
-      <div class="result-actions">
-        <button type="button" class="btn btn-main" id="publishDraft">发布到试用池</button>
-        <a class="btn btn-sec" id="previewLink" href="skill-detail.html?id=resume">预览功能页</a>
-        <button type="button" class="btn btn-sec" id="continueEdit">继续补充访谈</button>
-      </div>
-    </div>
+    </main>
   </div>
   <div class="toast" id="toast"></div>
-
-  <script src="creators-data.js"></script>
+  <script src="companion-state.js"></script>
   <script>
-    const originTitles = {
-      resume: "社团经历项目化表达",
-      career: "内容运营实习上岸路线",
-      research: "科研入门：从读论文到找选题",
-      demo: "竞赛 Demo 一周共创营",
-      exam: "期末复习计划生成器",
-      interview: "运营岗模拟面试追问",
-      "resume-sysu": "中大迎新晚会 · 社团口径版",
-      "resume-quant": "没有后台数据时怎么量化",
-      "resume-sysu-cs": "中大计院竞赛经历版",
-      "career-xhs": "小红书内容实习 28 天",
-      "exam-lab": "实验课期末双线突击"
+    const DRAFT_KEY="growth-fork-creator-studio-v1";
+    const params=new URLSearchParams(location.search);
+    const forkId=params.get("fork");
+    const bountyId=params.get("bounty");
+    const companion=window.GrowthCompanion?.get()||{name:"小猫",image:"assets/companion-cat-transparent.png"};
+    const $=s=>document.querySelector(s);const $$=s=>Array.from(document.querySelectorAll(s));
+    const emptyDraft=()=>({id:`skill-${Date.now()}`,mode:"",title:"未命名 Skill",task:{problem:"",goal:"",startingState:"",targetState:""},audience:{profile:"",tags:[],unsuitableFor:"",confirmed:false},execution:{requiredInputs:[],steps:[],decisionRules:[],commonMistakes:"",output:"",completionCriteria:""},context:{schoolDependency:"待判断",professionalDependency:"待判断",timeSensitivity:"待判断",survivorBiasRisk:"待判断"},evidence:{summary:"",materials:[]},quality:{tested:false,testCases:[],scores:{},totalScore:0},publishing:{level:"draft",visibility:"private",version:"0.1"},messages:[],questionKey:""});
+    let draft=emptyDraft();try{const saved=JSON.parse(localStorage.getItem(DRAFT_KEY));if(saved?.id)draft=saved}catch(_){ }
+    let recognition=null;let voiceBuffer="";
+    const modeNames={idea:"想法模式",experience:"经验模式",material:"材料模式",remix:"二创模式",bounty:"悬赏创作"};
+    const stageDefs=[{id:"task",label:"任务定义"},{id:"audience",label:"用户定义"},{id:"method",label:"方法提取"},{id:"test",label:"测试优化"},{id:"publish",label:"发布"}];
+    const questions={
+      goal:"先说清最具体的任务：这个 Skill 最终要帮助一名学生完成什么？尽量用“完成/产出/做出……”来描述。",
+      startingState:"使用这个 Skill 之前，学生通常处在什么状态？从下面三组卡片中各选一项；如果情况特殊，也可以补充说明。",
+      targetState:"完成 Skill 后，用户应该达到什么可验证的状态？他手上会多出什么成果？",
+      audience:"我初步理解了任务。请确认它最适合的年级、能力基础和专业范围；情况特殊时可以补充说明。",
+      steps:"请像教一个第一次做的人一样，按顺序讲讲你当时具体怎么做。可以用 1、2、3 分点。",
+      rules:"步骤已经有了，但还缺少判断条件：什么情况下应该换一种做法？请至少提供一个“如果……就……”规则。",
+      mistakes:"你踩过什么坑？哪些看起来正确的做法其实容易失败？",
+      criteria:"做到什么程度才算真正完成？请给出可以检查的标准，而不是“做得差不多”。",
+      evidence:"最后补充可信来源：这是你的亲身经历、课程经验，还是来自上传材料？结果可能还受到学校、GPA、资源等哪些条件影响？"
     };
-    const remixLanding = {
-      resume: "resume-sysu",
-      career: "career-xhs",
-      exam: "exam-lab",
-      "resume-sysu": "resume-sysu-cs"
-    };
-
-    const params = new URLSearchParams(location.search);
-    const forkId = params.get("fork");
-    const forkTitle = forkId && originTitles[forkId];
-    const isFork = Boolean(forkTitle);
-    const bountyId = params.get("bounty");
-    const bountyFor = params.get("for");
-    const bounty = bountyId ? bountyById(bountyId) : null;
-    const bountyOwner = bountyFor ? creatorById(bountyFor) : (bounty ? creatorById(bounty.ownerId) : null);
-    const isBounty = Boolean(bounty && bountyOwner);
-
-    if (isBounty && !isClaimedByMe(bounty.id)) {
-      claimBounty(bounty.id, "林");
+    function esc(v){const d=document.createElement("div");d.textContent=String(v??"");return d.innerHTML}
+    function toast(t){$("#toast").textContent=t;$("#toast").classList.add("show");setTimeout(()=>$("#toast").classList.remove("show"),2200)}
+    function save(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));$("#autosave").textContent="刚刚自动保存"}
+    function splitItems(text){return String(text).split(/\n|(?:^|\s)\d+[.、]|[；;]/).map(x=>x.trim().replace(/^[-•]\s*/,"")).filter(x=>x.length>2)}
+    function getMissing(){const checks=[
+      ["goal",draft.task.goal,"任务目标"],["startingState",draft.task.startingState,"Starting State"],["targetState",draft.task.targetState,"Target State"],["audience",draft.audience.profile,"适用用户"],["steps",draft.execution.steps.length>=3,"执行步骤"],["rules",draft.execution.decisionRules.length,"判断规则"],["mistakes",draft.execution.commonMistakes,"常见错误"],["criteria",draft.execution.completionCriteria,"完成标准"],["evidence",draft.evidence.summary||draft.evidence.materials.length,"来源证据"]];
+      return checks.filter(x=>!x[1]).map(x=>({key:x[0],label:x[2]}));
     }
-
-    const baseQuestions = [
-      {
-        key: "experience",
-        ask: "先随便聊聊：你做成过什么，值得别人复用？像和朋友复盘一样说就行。",
-        field: "fExperience",
-        label: "核心经验"
-      },
-      {
-        key: "goal",
-        ask: "这段经历最终拿到了什么结果？比如面试机会、作品、比赛名次。",
-        field: "fGoal",
-        label: "最终成果"
-      },
-      {
-        key: "people",
-        ask: "什么样的同学最适合用你的方法？年级、专业或起点说一下。",
-        field: "fPeople",
-        label: "适合谁"
-      },
-      {
-        key: "obstacle",
-        ask: "他们最容易在哪一步卡住？我会据此写进 Skill 的兜底提示。",
-        field: "fObstacle",
-        label: "易卡点"
-      }
-    ];
-    const questions = isFork
-      ? [
-          {
-            key: "delta",
-            ask: `你在二创「${forkTitle}」。想改什么：校情、专业，还是原作里你踩过的坑？`,
-            field: "fDelta",
-            label: "相对原作的改动"
-          },
-          ...baseQuestions
-        ]
-      : baseQuestions;
-
-    const state = {
-      step: 0,
-      muted: false,
-      captions: true,
-      answers: { delta: "", experience: "", goal: "", people: "", obstacle: "" },
-      speaking: false
-    };
-
-    if (isFork) {
-      const cite = document.getElementById("forkCite");
-      cite.hidden = false;
-      cite.innerHTML = `二创自 <a href="skill-detail.html?id=${encodeURIComponent(forkId)}">${forkTitle}</a>`;
-      document.getElementById("fDelta").hidden = false;
-      const pills = document.getElementById("progressPills");
-      pills.innerHTML = "<i class=\"active\"></i><i></i><i></i><i></i><i></i>";
-      document.title = `二创 ${forkTitle} · Wowgrowth`;
-      document.getElementById("previewLink").href = `skill-detail.html?id=${remixLanding[forkId] || forkId}`;
-    } else if (isBounty) {
-      const cite = document.getElementById("forkCite");
-      cite.hidden = false;
-      cite.innerHTML = `接单：为 <a href="creator.html?id=${encodeURIComponent(bountyOwner.id)}&tab=bounty">${bountyOwner.name}</a> 制作「${bounty.title}」· ${bounty.reward} 积分`;
-      document.title = `接单 ${bounty.title} · Wowgrowth`;
-      document.getElementById("statusSub").textContent = bounty.need;
+    function completeness(){const done=9-getMissing().length;return Math.round(done/9*100)}
+    function currentStage(){const c=completeness();if(c<34)return"task";if(c<56)return"audience";if(c<89)return"method";if(!draft.quality.tested)return"test";return"publish"}
+    function nextQuestion(){return getMissing()[0]?.key||""}
+    function addMessage(role,text){draft.messages.push({role,text});renderMessages();save()}
+    function renderMessages(){const box=$("#messages");box.innerHTML=draft.messages.map(m=>`<div class="message ${m.role==="user"?"user":""}">${m.role==="user"?'<span class="user-avatar">林</span>':`<img src="${esc(companion.image)}" alt="${esc(companion.name)}">`}<div class="bubble">${esc(m.text)}</div></div>`).join("");box.scrollTop=box.scrollHeight}
+    function assistantAsk(key){draft.questionKey=key;if(!key){addMessage("assistant","Skill 草稿的关键结构已经补齐。下一步可以运行模拟测试，检查不同学生使用时是否会卡住。");showTab("quality");return}addMessage("assistant",questions[key]);renderQuickOptions(key)}
+    function renderChoiceBuilder(groups){$("#quickOptions").innerHTML=`<div class="choice-builder">${groups.map((g,i)=>`<div class="choice-group"><b>${esc(g.label)}</b><div class="choice-grid">${g.items.map(x=>`<button class="choice-card" type="button" data-choice-group="${i}" data-choice="${esc(x)}">${esc(x)}</button>`).join("")}</div></div>`).join("")}<div class="choice-actions"><button class="choice-custom" type="button">其他 / 补充说明</button><button class="choice-confirm" type="button" disabled>确认这些情况</button></div></div>`;const selected=new Map();$$(".choice-card").forEach(b=>b.onclick=()=>{const group=b.dataset.choiceGroup;$$(`[data-choice-group="${group}"]`).forEach(x=>x.classList.remove("selected"));b.classList.add("selected");selected.set(group,b.dataset.choice);$(".choice-confirm").disabled=selected.size<groups.length});$(".choice-custom").onclick=()=>{$("#creatorInput").placeholder="补充你的特殊情况…";$("#creatorInput").focus()};$(".choice-confirm").onclick=()=>{$("#creatorInput").value=groups.map((g,i)=>`${g.label}：${selected.get(String(i))}`).join("；");handleSend()}}
+    function renderQuickOptions(key){if(key==="startingState"){renderChoiceBuilder([{label:"当前阶段",items:["大一探索期","大二积累期","大三冲刺期","毕业年级","研究生阶段"]},{label:"已有基础",items:["完全零基础","有课程基础","做过相关项目","有一次实践经历"]},{label:"最主要的卡点",items:["不知道从哪开始","信息太多不会取舍","缺少可展示成果","执行总是中断","不知道是否达标"]}]);return}if(key==="audience"){renderChoiceBuilder([{label:"主要年级",items:["大一—大二","大二—大三","大三—大四","研究生"]},{label:"能力基础",items:["零基础","有课程基础","有项目基础","已有一次实践"]},{label:"适用范围",items:["通用专业","经管相关","理工相关","人文社科相关","艺术设计相关"]}]);return}const map={goal:["帮学生完成一份成果","帮学生制定可执行计划","帮学生做出关键决策"],rules:["没有相关经历时怎么办","基础不足时先做什么","时间不够时如何取舍"],criteria:["有一份可提交成果","可以开始真实行动","通过一份检查清单"]};const list=map[key]||[];$("#quickOptions").innerHTML=list.map(x=>`<button type="button">${esc(x)}</button>`).join("");$$("#quickOptions>button").forEach(b=>b.onclick=()=>{$("#creatorInput").value=b.textContent;autoSize()})}
+    function inferTitle(text){const clean=String(text).replace(/[，。！？,.!?]/g," ").trim();if(!clean)return"未命名 Skill";const short=clean.length>22?clean.slice(0,22):clean;return `${short.replace(/^(我想|希望|帮助)/,"")} Skill`}
+    function applyAnswer(key,text){if(key==="goal"){draft.task.problem=text;draft.task.goal=text;draft.title=inferTitle(text);draft.execution.output=text.match(/(?:一份|一个|完成|产出|生成)([^，。]{2,18})/)?.[0]||"与任务目标对应的可使用成果"}
+      else if(key==="startingState")draft.task.startingState=text;
+      else if(key==="targetState"){draft.task.targetState=text;if(draft.execution.output==="与任务目标对应的可使用成果")draft.execution.output=text}
+      else if(key==="audience"){draft.audience.profile=text;draft.audience.tags=splitItems(text.replace(/[，、]/g,"；")).slice(0,5);draft.audience.confirmed=true;draft.audience.unsuitableFor=`不满足上述前置条件，或目标与“${draft.task.goal.slice(0,18)}”无关的学生`}
+      else if(key==="steps"){draft.execution.steps=splitItems(text);if(draft.execution.steps.length<3)draft.execution.steps=[text,"根据当前情况选择具体做法","完成成果并按标准检查"]}
+      else if(key==="rules")draft.execution.decisionRules=splitItems(text);
+      else if(key==="mistakes")draft.execution.commonMistakes=text;
+      else if(key==="criteria")draft.execution.completionCriteria=text;
+      else if(key==="evidence"){draft.evidence.summary=text;draft.context.survivorBiasRisk=/学校|gpa|资源|背景|导师/i.test(text)?"已提示条件影响":"需要补充条件影响"}
+      if(!draft.execution.requiredInputs.length)draft.execution.requiredInputs=["当前情况与目标","已有材料或经历","可投入时间"];
     }
-
-    const orb = document.getElementById("orb");
-    const statusText = document.getElementById("statusText");
-    const statusSub = document.getElementById("statusSub");
-    const transcript = document.getElementById("transcript");
-    const micBtn = document.getElementById("micBtn");
-    const genBtn = document.getElementById("genBtn");
-    const toast = document.getElementById("toast");
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = "zh-CN";
-      recognition.interimResults = false;
-      recognition.continuous = false;
-      recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript.trim();
-        if (text) handleAnswer(text);
-      };
-      recognition.onerror = () => setStatus("没听清，可以再说一次或打字", "也可以点右侧发送");
-      recognition.onend = () => {
-        if (!state.speaking && !state.muted && state.step < questions.length) {
-          setOrb("listening");
-          setStatus("正在聆听…", "说完后稍等，或直接打字发送");
-        }
-      };
-    }
-
-    function notice(msg) {
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2200);
-    }
-
-    function setOrb(mode) {
-      orb.classList.remove("speaking", "listening");
-      if (mode) orb.classList.add(mode);
-    }
-
-    function setStatus(main, sub) {
-      statusText.textContent = main;
-      if (sub) statusSub.textContent = sub;
-    }
-
-    function addBubble(who, text) {
-      if (!state.captions && who === "ai") return;
-      const div = document.createElement("div");
-      div.className = `bubble ${who}`;
-      div.innerHTML = `<span class="who">${who === "ai" ? "成长助手" : "你"}</span>${text}`;
-      transcript.appendChild(div);
-      transcript.scrollTop = transcript.scrollHeight;
-    }
-
-    function updateProgress() {
-      document.querySelectorAll("#progressPills i").forEach((el, i) => {
-        el.classList.toggle("done", i < state.step);
-        el.classList.toggle("active", i === state.step);
-      });
-      const needed = questions.length;
-      const filled = questions.filter(q => state.answers[q.key]).length;
-      document.getElementById("fillCount").textContent = `${filled} / ${needed}`;
-      if (filled >= needed) genBtn.classList.add("show");
-    }
-
-    function fillField(id, value) {
-      const el = document.getElementById(id);
-      el.classList.remove("empty");
-      el.querySelector(".val").textContent = value;
-    }
-
-    function speak(text, after) {
-      window.speechSynthesis.cancel();
-      if (state.muted) {
-        after && after();
-        return;
-      }
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "zh-CN";
-      u.rate = 1.02;
-      state.speaking = true;
-      setOrb("speaking");
-      setStatus("AI 正在说话", "访谈进行中");
-      u.onend = () => {
-        state.speaking = false;
-        after && after();
-      };
-      window.speechSynthesis.speak(u);
-    }
-
-    function askCurrent() {
-      if (state.step >= questions.length) {
-        setOrb("");
-        setStatus("信息已齐，可以一键生成", "点击下方交给 skill-creator");
-        genBtn.classList.add("show");
-        addBubble("ai", "很好，关键信息已经齐了。我可以把它们交给 skill-creator，一键生成 Skill 草稿。");
-        return;
-      }
-      const q = questions[state.step];
-      addBubble("ai", q.ask);
-      speak(q.ask, () => {
-        setOrb("listening");
-        setStatus(state.muted ? "你已静音" : "正在聆听…", "用语音或文字回答都可以");
-        if (!state.muted && recognition) {
-          try { recognition.start(); } catch (_) {}
-        }
-      });
-      updateProgress();
-    }
-
-    function handleAnswer(text) {
-      if (state.step >= questions.length) return;
-      const q = questions[state.step];
-      addBubble("user", text);
-      state.answers[q.key] = text;
-      fillField(q.field, text);
-      state.step += 1;
-      updateProgress();
-      if (recognition) { try { recognition.stop(); } catch (_) {} }
-      setTimeout(askCurrent, 450);
-    }
-
-    function startInterview() {
-      const hello = isFork
-        ? `你好，这是一次二创访谈。我们会保留「${forkTitle}」的骨架，只把你真正改过的经验写进去。`
-        : "你好，我是成长助手。接下来用访谈方式帮你把经验沉淀成 Skill。";
-      addBubble("ai", hello);
-      speak(hello, askCurrent);
-    }
-
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      const input = document.getElementById("textInput");
-      const text = input.value.trim();
-      if (!text) return;
-      input.value = "";
-      handleAnswer(text);
-    });
-    document.getElementById("textInput").addEventListener("keydown", e => {
-      if (e.key === "Enter") document.getElementById("sendBtn").click();
-    });
-
-    micBtn.addEventListener("click", () => {
-      state.muted = !state.muted;
-      micBtn.classList.toggle("muted", state.muted);
-      if (state.muted) {
-        window.speechSynthesis.cancel();
-        if (recognition) { try { recognition.stop(); } catch (_) {} }
-        setOrb("");
-        setStatus("你已静音", "可以继续打字回答");
-        micBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/><path d="M4 4l16 16"/></svg>`;
-      } else {
-        setStatus("麦克风已开", "继续访谈");
-        micBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/></svg>`;
-        if (!state.speaking && recognition) { try { recognition.start(); } catch (_) {} }
-        setOrb("listening");
-      }
-    });
-
-    document.getElementById("captionToggle").addEventListener("click", (e) => {
-      state.captions = !state.captions;
-      e.currentTarget.textContent = state.captions ? "字幕开" : "字幕关";
-      e.currentTarget.classList.toggle("on", state.captions);
-    });
-
-    document.getElementById("notesBtn").addEventListener("click", () => {
-      document.getElementById("notesPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-
-    document.getElementById("endBtn").addEventListener("click", () => {
-      window.speechSynthesis.cancel();
-      if (recognition) { try { recognition.stop(); } catch (_) {} }
-      if (Object.values(state.answers).filter(Boolean).length >= 2) {
-        genBtn.classList.add("show");
-        setStatus("访谈已结束", "信息足够时可直接生成");
-        notice("已结束访谈，可生成草稿");
-      } else {
-        location.href = "pet-demo/";
-      }
-    });
-
-    function buildSkill() {
-      const a = state.answers;
-      const title = a.experience
-        ? (a.experience.length > 22 ? a.experience.slice(0, 22) + "…" : a.experience)
-        : (isFork ? `${forkTitle} · 二创` : "我的成长经验 Skill");
-      document.getElementById("resultTitle").textContent = isFork ? "二创草稿已生成" : "Skill 草稿已生成";
-      document.querySelector("#resultOverlay .sub").textContent = isFork
-        ? `已基于「${forkTitle}」生成可运行的二创初稿，发布后会挂在原作的二创列表里。`
-        : "访谈信息已交给 skill-creator，生成可运行的成长 Skill 初稿。";
-      document.getElementById("outTitle").textContent = title + (isFork ? "" : " · Skill");
-      document.getElementById("outPeople").textContent = a.people || "有相似起点的同学";
-      document.getElementById("outGoal").textContent = a.delta || a.goal || "可复用的成长成果";
-      document.getElementById("outSteps").innerHTML = [
-        isFork ? `对照原作，写下你改动的部分：${a.delta || "校情 / 专业 / 补丁"}` : "盘点经验中的关键动作与证据",
-        "按适合人群改写可执行步骤",
-        "针对易卡点加入兜底提示",
-        "输出可试跑的 Skill 结构"
-      ].map((t, i) => `<div><i>${i + 1}</i><span>${t}</span></div>`).join("");
-      document.getElementById("resultOverlay").classList.add("show");
-    }
-
-    genBtn.addEventListener("click", () => {
-      setStatus("正在调用 skill-creator…", "根据访谈信息生成结构");
-      setTimeout(buildSkill, 700);
-    });
-
-    document.getElementById("continueEdit").addEventListener("click", () => {
-      document.getElementById("resultOverlay").classList.remove("show");
-    });
-    document.getElementById("publishDraft").addEventListener("click", () => {
-      if (isBounty) {
-        const result = deliverClaimedBounty(bounty.id);
-        notice(result.ok
-          ? `已发给 ${bountyOwner.name}，+${result.points} 积分`
-          : `已生成，可回 ${bountyOwner.name} 主页完成交付`);
-        setTimeout(() => {
-          location.href = `creator.html?id=${encodeURIComponent(bountyOwner.id)}&tab=bounty`;
-        }, 900);
-        return;
-      }
-      notice(isFork ? "已发布，正在打开二创页" : "已发布到试用池");
-      const landing = isFork
-        ? (remixLanding[forkId] || forkId)
-        : "resume";
-      if (typeof recordPublishedSkill === "function") {
-        recordPublishedSkill({
-          id: "pub-" + Date.now(),
-          title: document.getElementById("outTitle").textContent || "新的成长 Skill",
-          typeLabel: isFork ? "二创 Skill" : "单 Skill",
-          users: "0",
-          href: `skill-detail.html?id=${landing}`
-        });
-      }
-      setTimeout(() => { location.href = `skill-detail.html?id=${landing}`; }, 900);
-    });
-
-    document.getElementById("scenarioSelect").addEventListener("change", () => {
-      notice("已切换访谈情景");
-    });
-
-    startInterview();
+    function parseAIJson(content){const cleaned=String(content||"").replace(/```(?:json)?/gi,"").replace(/```/g,"").trim();const start=cleaned.indexOf("{");const end=cleaned.lastIndexOf("}");if(start<0||end<=start)throw new Error("AI 未返回结构化草稿");return JSON.parse(cleaned.slice(start,end+1))}
+    async function requestCreatorInference(latestText){const snapshot={title:draft.title,goal:draft.task.goal,startingState:draft.task.startingState,targetState:draft.task.targetState,audience:draft.audience.profile,steps:draft.execution.steps,decisionRules:draft.execution.decisionRules,output:draft.execution.output,completionCriteria:draft.execution.completionCriteria,materials:draft.evidence.materials.map(x=>x.name)};const prompt=`你是大学生 Skill Creator。不要连续采访用户。请基于用户已经提供的信息，主动推理并给出一版具体、可执行的 Skill 方案。合理推断 Starting State、Target State、用户画像、执行步骤、判断规则、常见错误、输出和完成标准；不要虚构用户的个人经历、数据、学校资源或成功结果。只有当缺少的信息会显著改变方案时，才在 criticalQuestion 中追问一个最关键问题，否则留空。assistantSummary 要直接告诉用户你已经补出了什么方案和关键建议，不要复述问题。只返回合法 JSON，不使用 Markdown，不添加 JSON 之外的文字。\n\nJSON 字段：{"assistantSummary":"","title":"","goal":"","startingState":"","targetState":"","audienceProfile":"","audienceTags":[],"unsuitableFor":"","requiredInputs":[],"steps":[],"decisionRules":[],"commonMistakes":"","output":"","completionCriteria":"","criticalQuestion":""}\n\n当前草稿：${JSON.stringify(snapshot)}\n用户最新补充：${latestText}`;const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);try{const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:prompt}],activeSkills:["大学生 Skill Creator"]}),signal:controller.signal});const data=await response.json();if(!response.ok)throw new Error(data.error||"AI 暂时不可用");return parseAIJson(data.content)}finally{clearTimeout(timer)}}
+    function buildLocalInference(text){const t=String(text);let domain="通用成长任务";let steps=["明确目标成果和当前差距","整理已有材料、经历与可投入时间","按优先级生成一份可执行方案","完成第一版成果并进行检查","根据反馈修订并进入真实行动"];let rules=["如果缺少必要材料，先生成材料清单并补齐最小输入","如果时间不足，优先完成能直接形成成果的核心步骤","如果基础不足，先完成前置能力检查再进入正式流程"];let mistakes="目标过大、一次加入太多步骤、没有明确成果物，以及只执行却不检查结果。";let output="一份可以直接使用并继续修改的任务成果";let criteria="形成明确成果物，完成关键检查项，并能够开始下一次真实行动。";
+      if(/券商|投行|金融.*实习|实习.*简历/.test(t)){domain="券商实习准备";steps=["拆解目标岗位的能力与关键词","盘点课程、社团、竞赛和项目经历","将经历改写成岗位相关的结果证据","完成一页简历并建立目标公司清单","开始首轮投递并按回复率复盘"];rules=["如果没有实习经历，就从课程项目和社团经历提取可迁移能力","如果财务基础不足，先完成基础知识检测和补充学习","如果时间不足，先完成一个岗位方向、一页简历和首批五次投递"];mistakes="照抄岗位描述、虚构数据、只写职责不写结果，以及同时投递过多方向。";output="一页券商实习简历、目标公司清单和首轮投递计划";criteria="简历包含至少三条有行动和结果的经历，目标公司不少于二十家，并完成首批五次真实投递。"}
+      else if(/考研|期末|复习|考试/.test(t)){domain="考试复习";steps=["确认考试时间、科目范围和目标分数","用一次诊断梳理掌握度与薄弱章节","按剩余时间分配基础、强化和模拟阶段","生成每日复习清单并安排错题复盘","用模拟测试检查结果并调整计划"];rules=["如果距离考试少于两周，优先高频考点和错题","如果基础正确率低于六成，先回到概念和基础题","如果连续两天未完成计划，缩小每日任务而不是继续累积"];mistakes="平均用力、只看不练、计划过满，以及没有根据正确率调整重点。";output="分阶段复习计划、每日清单和复盘表";criteria="每天任务可在可用时间内完成，覆盖核心章节，并至少完成一次模拟测试和错题复盘。"}
+      else if(/保研|夏令营|升学/.test(t)){domain="保研准备";steps=["盘点成绩、科研、竞赛和英语基础","确定院校层级与项目匹配范围","整理简历、个人陈述和证明材料","建立院校时间线与联系导师计划","进行面试准备并动态调整申请组合"];rules=["如果科研经历偏弱，先强化课程项目和研究兴趣表达","如果学校资源依赖较高，增加公开项目和跨校信息来源","如果申请时间紧，优先截止时间近且匹配度高的项目"];mistakes="只看学校名气、不核对项目要求、材料表述空泛，以及把个人成功路径当成普适结论。";output="院校清单、申请材料包和时间推进表";criteria="完成分层院校清单、核心申请材料第一版，并明确每个项目的截止时间和下一行动。"}
+      else if(/文献|论文|综述|科研/.test(t)){domain="科研写作";steps=["收敛研究主题并形成检索问题","建立关键词和文献纳入标准","按主题、方法和结论整理文献","比较共识、分歧和研究空白","形成综述结构并完成可编辑初稿"];rules=["如果文献数量过多，先按相关性和质量筛选","如果观点冲突，分别记录样本、方法和情境差异","如果缺少可靠来源，不生成具体引用和数据"];mistakes="把综述写成摘要堆积、没有比较关系、虚构引用，以及缺少研究空白。";output="文献矩阵、综述结构和可编辑初稿";criteria="核心文献均有来源，形成清晰主题结构，并明确至少一个研究不足或后续问题。"}
+      const audience=t.match(/(?:大[一二三四]|研究生|本科生|专科生|毕业生)(?:到|至|—|-)?(?:大[一二三四]|研究生)?[^，。]{0,28}/)?.[0]||"处于相关任务准备阶段、具备基本学习能力的大学生";const time=(t.match(/(?:在)?[^，。]{0,6}(?:天|周|月)内/)?.[0]||"一个可执行周期内").replace(/^在/,"");return{assistantSummary:`我先按“${domain}”给出了一版可执行方案：先判断用户起点，再用五步流程形成成果，并加入基础不足、时间不足和材料不足时的替代路径。右侧已经生成完整草稿，你可以直接检查，不需要逐项回答。`,title:draft.title,goal:draft.task.goal,startingState:`${audience}，尚未完成目标成果，当前需要明确路径、整理材料并解决最主要卡点。`,targetState:`在${time}完成${output}，并能够进入真实使用或行动阶段。`,audienceProfile:audience,audienceTags:[audience,domain,"需要可执行方案"],unsuitableFor:"目标与该任务不一致、缺少必要前置条件，或需要专业资质判断的用户。",requiredInputs:["当前阶段与目标","已有材料和相关经历","可投入时间与截止日期"],steps,decisionRules:rules,commonMistakes:mistakes,output,completionCriteria:criteria,criticalQuestion:""}}
+    function mergeAIInference(ai){const setText=(obj,key,value)=>{if(!obj[key]&&typeof value==="string"&&value.trim())obj[key]=value.trim()};setText(draft,"title",ai.title);if(draft.title==="未命名 Skill"&&ai.title)draft.title=ai.title;setText(draft.task,"goal",ai.goal);setText(draft.task,"startingState",ai.startingState);setText(draft.task,"targetState",ai.targetState);if(!draft.audience.profile&&ai.audienceProfile){draft.audience.profile=ai.audienceProfile;draft.audience.confirmed=false}if(!draft.audience.tags.length&&Array.isArray(ai.audienceTags))draft.audience.tags=ai.audienceTags.filter(Boolean).slice(0,6);setText(draft.audience,"unsuitableFor",ai.unsuitableFor);if(!draft.execution.requiredInputs.length&&Array.isArray(ai.requiredInputs))draft.execution.requiredInputs=ai.requiredInputs.filter(Boolean);if(draft.execution.steps.length<3&&Array.isArray(ai.steps))draft.execution.steps=ai.steps.filter(Boolean);if(!draft.execution.decisionRules.length&&Array.isArray(ai.decisionRules))draft.execution.decisionRules=ai.decisionRules.filter(Boolean);setText(draft.execution,"commonMistakes",ai.commonMistakes);setText(draft.execution,"output",ai.output);setText(draft.execution,"completionCriteria",ai.completionCriteria)}
+    async function handleSend(){const input=$("#creatorInput");const text=input.value.trim();if(!text)return;input.value="";autoSize();addMessage("user",text);const key=draft.questionKey||nextQuestion();applyAnswer(key,text);if(key==="evidence"){save();renderAll();assistantAsk(nextQuestion());return}const localAI=buildLocalInference(text);mergeAIInference(localAI);draft.questionKey=nextQuestion();renderAll();addMessage("assistant",localAI.assistantSummary);if(nextQuestion()==="evidence")setTimeout(()=>assistantAsk("evidence"),140);else if(nextQuestion())setTimeout(()=>assistantAsk(nextQuestion()),140);$("#sendBtn").disabled=true;$("#sendBtn").textContent="AI 完善中";try{const deepAI=await requestCreatorInference(text);mergeAIInference(deepAI);draft.questionKey=nextQuestion();renderAll();if(deepAI.assistantSummary&&deepAI.assistantSummary!==localAI.assistantSummary)addMessage("assistant",`DeepSeek 已进一步完善右侧方案：${deepAI.assistantSummary}`)}catch(error){toast("已先使用本地方案，DeepSeek 本轮响应较慢")}finally{$("#sendBtn").disabled=false;$("#sendBtn").textContent="发送"}}
+    function renderProgress(){const active=currentStage();$("#stageProgress").innerHTML=stageDefs.map((s,i)=>`${i?'<span class="stage-line"></span>':''}<span class="stage-chip ${stageDefs.findIndex(x=>x.id===active)>i?'done':''} ${s.id===active?'active':''}">${s.label}</span>`).join("")}
+    function fieldStatus(id,done,confirmed=true){const el=$(id);el.textContent=done?(confirmed?"已确认":"AI 推测"):"待补充";el.classList.toggle("confirmed",!!done&&confirmed)}
+    function renderOverview(){ $("#draftTitle").value=draft.title;$("#studioTitle").textContent=draft.title;$("#startState").textContent=draft.task.startingState||"等待定义用户当前状态";$("#targetState").textContent=draft.task.targetState||"等待定义可验证的目标状态";$("#goalValue").textContent=draft.task.goal||"这个 Skill 具体帮助用户完成什么？";$("#audienceTags").innerHTML=(draft.audience.tags.length?draft.audience.tags:["等待用户画像"]).map(x=>`<span class="tag">${esc(x)}</span>`).join("");$("#unsuitableValue").textContent=draft.audience.unsuitableFor||"等待识别边界条件";$("#outputValue").textContent=draft.execution.output||"等待定义成果物";fieldStatus("#goalStatus",draft.task.goal);fieldStatus("#audienceStatus",draft.audience.profile,draft.audience.confirmed);$("#missingList").innerHTML=getMissing().slice(0,4).map(x=>`<div class="missing-item"><span>还缺：${x.label}</span><button data-ask="${x.key}">现在补充 →</button></div>`).join("");$$("[data-ask]").forEach(b=>b.onclick=()=>{assistantAsk(b.dataset.ask);$("#creatorInput").focus()})}
+    function renderWorkflow(){ $("#inputTags").innerHTML=(draft.execution.requiredInputs.length?draft.execution.requiredInputs:["等待定义输入"]).map(x=>`<span class="tag">${esc(x)}</span>`).join("");$("#workflowList").innerHTML=draft.execution.steps.length?draft.execution.steps.map((x,i)=>`<div class="flow-item"><i>0${i+1}</i><div><b>${esc(x)}</b><p>由 Creator 根据创作者经验整理</p></div></div>`).join(""):'<div class="empty-state">讲述你的具体做法后，这里会生成执行流程</div>';$("#rulesList").innerHTML=draft.execution.decisionRules.length?draft.execution.decisionRules.map((x,i)=>`<div class="flow-item"><i>R${i+1}</i><div><b>${esc(x)}</b><p>执行时根据用户条件触发</p></div></div>`).join(""):'<div class="empty-state">例如：如果没有实习经历，则先从课程项目中提取能力证据</div>';$("#mistakesValue").textContent=draft.execution.commonMistakes||"等待补充踩坑经验";$("#criteriaValue").textContent=draft.execution.completionCriteria||"等待定义“做到什么程度算完成”"}
+    const qualityNames={clarity:"任务清晰度",audience:"用户适配度",execution:"可执行性",workflow:"流程完整度",logic:"判断逻辑",output:"输出明确度",trust:"可信度"};
+    function calculateQuality(){const s={clarity:draft.task.goal?92:30,audience:draft.audience.profile?88:25,execution:draft.execution.steps.length>=3?86:30,workflow:Math.min(95,25+draft.execution.steps.length*18),logic:draft.execution.decisionRules.length?82:38,output:draft.execution.output&&draft.execution.completionCriteria?88:45,trust:draft.evidence.summary||draft.evidence.materials.length?80:35};s.total=Math.round(Object.values(s).reduce((a,b)=>a+b,0)/7);return s}
+    function renderQuality(){const s=calculateQuality();draft.quality.scores=s;draft.quality.totalScore=s.total;$("#qualityScore").textContent=s.total;$("#qualityTotal").style.setProperty("--q",s.total);$("#qualityBars").innerHTML=Object.entries(qualityNames).map(([k,n])=>`<div class="quality-row"><span>${n}</span><div class="bar"><i style="width:${s[k]}%"></i></div><b>${s[k]}</b></div>`).join("");$("#qualitySummary").textContent=getMissing().length?`建议先补充：${getMissing().slice(0,2).map(x=>x.label).join("、")}`:draft.quality.tested?"结构完整且已完成模拟测试，可以进入发布判断。":"结构已完整，建议运行模拟用户测试。";$("#publishPublic").disabled=!(completeness()>=75&&draft.quality.tested&&s.total>=70);renderTests()}
+    function renderTests(){if(!draft.quality.testCases.length){$("#testList").innerHTML='<div class="empty-state">测试会检查能否开始、是否缺输入、流程是否有死路，以及输出是否明确。</div>';return}$("#testList").innerHTML=draft.quality.testCases.map(t=>`<article class="test-card"><header><h4>${esc(t.name)}</h4><span class="${t.pass?'pass':'warn'}">${t.pass?'适配良好':'需要补充'}</span></header><p>${esc(t.result)}</p></article>`).join("")}
+    function renderAll(){const c=completeness();$("#scoreNumber").textContent=`${c}%`;$("#scoreRing").style.setProperty("--score",c);$("#scoreHint").textContent=getMissing().length?`还缺 ${getMissing().length} 项`:"结构已完整";$("#modeBadge").textContent=modeNames[draft.mode]||"共创模式";renderProgress();renderOverview();renderWorkflow();renderQuality();save()}
+    function showTab(tab){$$('[data-tab]').forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));$$('[data-panel]').forEach(p=>p.classList.toggle("active",p.dataset.panel===tab))}
+    function openStudio(){$("#entry").style.display="none";$("#studio").classList.add("show");$("#companionAvatar").src=companion.image;renderMessages();renderQuickOptions(draft.questionKey);renderAll();$("#creatorInput").focus()}
+    function startMode(mode){draft=emptyDraft();draft.mode=mode;if(mode==="remix")draft.title=`${forkId||"原 Skill"} · 二创`;if(mode==="bounty")draft.title=`悬赏 ${bountyId||"Skill"}`;const hello={idea:"先不用想 Skill 名字。告诉我你想帮助大学生解决什么问题，我会先把它收敛成一个具体任务。",experience:"先讲一段你真正做过的经历：当时遇到了什么问题，最后取得了什么结果？",material:"先上传已有材料，或者简单说明这些材料记录了什么经验。我会先提取任务和适用人群。",remix:`我们会保留原 Skill「${forkId}」的骨架，只提取你真正修改过的经验。先说你想改什么。`,bounty:`这是悬赏任务「${bountyId}」。先描述你准备交付的具体成果。`}[mode];draft.messages=[{role:"assistant",text:`${companion.name}：正在调用 Skill Creator。${hello}`}];draft.questionKey="goal";openStudio()}
+    function runTests(){if(completeness()<55){toast("先补齐任务、用户和主要步骤再测试");return}const audience=draft.audience.profile||"核心目标用户";draft.quality.testCases=[{name:`A · ${audience.slice(0,18)}`,pass:true,result:"输入条件明确，可以顺利开始，并能产出目标成果。"},{name:"B · 基础较弱的相邻用户",pass:!!draft.execution.decisionRules.length,result:draft.execution.decisionRules.length?"通过判断规则获得替代路径，可以继续执行。":"缺少基础不足时的替代路径，可能在中途卡住。"},{name:"C · 背景或专业不同的用户",pass:!!draft.audience.unsuitableFor,result:draft.audience.unsuitableFor?"不适用边界已提示，不会把个人经验误包装为普适方法。":"缺少不适用人群和学校、专业依赖判断。"}];draft.quality.tested=true;save();renderProgress();renderQuality();toast("已完成 3 个模拟用户测试")}
+    function optimize(){const missing=getMissing()[0];if(missing){showTab(missing.key==="steps"||missing.key==="rules"||missing.key==="mistakes"||missing.key==="criteria"?"workflow":"overview");assistantAsk(missing.key);toast(`下一步补充：${missing.label}`)}else{toast("关键结构已完整，可以运行测试")}}
+    function autoSize(){const el=$("#creatorInput");el.style.height="auto";el.style.height=`${Math.min(150,Math.max(40,el.scrollHeight))}px`}
+    $$("[data-mode]").forEach(b=>b.onclick=()=>startMode(b.dataset.mode));$("#resumeDraft").onclick=openStudio;$("#backEntry").onclick=()=>{if(confirm("返回后当前内容仍会保存在草稿中。")){$("#studio").classList.remove("show");$("#entry").style.display="grid";if(draft.mode){$("#resumeDraft").classList.add("show");$("#resumeDraftTitle").textContent=`${draft.title} →`}}};
+    $$('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));$("#sendBtn").onclick=handleSend;$("#creatorInput").oninput=autoSize;$("#creatorInput").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend()}};$("#draftTitle").oninput=e=>{draft.title=e.target.value;save();$("#studioTitle").textContent=draft.title};
+    $("#addFile").onclick=()=>$("#fileInput").click();$("#fileInput").onchange=e=>{Array.from(e.target.files).forEach(f=>draft.evidence.materials.push({name:f.name,size:f.size,type:f.type}));$("#attachments").innerHTML=draft.evidence.materials.map(f=>`<span class="attachment"><i>文</i><span>${esc(f.name)}</span></span>`).join("");if(draft.mode==="material"&&!draft.task.goal)$("#creatorInput").value=`这些材料记录了：`;renderAll();toast(`已添加 ${e.target.files.length} 份材料`)};
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){recognition=new SR();recognition.lang="zh-CN";recognition.continuous=true;recognition.interimResults=true;recognition.onresult=e=>{voiceBuffer=Array.from(e.results).map(r=>r[0].transcript).join("");$("#voiceText").textContent=voiceBuffer||"正在聆听…"};recognition.onerror=()=>{$("#voiceStatus").textContent="没有听清，请重试"}}
+    function stopVoice(){try{recognition?.stop()}catch(_){}$("#voicePop").classList.remove("show");$("#voiceBtn").classList.remove("recording");if(voiceBuffer){$("#creatorInput").value=[$("#creatorInput").value,voiceBuffer].filter(Boolean).join(" ");autoSize();$("#creatorInput").focus()}voiceBuffer=""}
+    $("#voiceBtn").onclick=()=>{if(!recognition){toast("当前浏览器不支持语音识别，可以继续使用文字输入");return}voiceBuffer="";$("#voiceText").textContent="说完后，识别文字会放入输入框，你可以修改后再发送。";$("#voicePop").classList.add("show");$("#voiceBtn").classList.add("recording");try{recognition.start()}catch(_){}};$("#stopVoice").onclick=stopVoice;
+    $("#runTest").onclick=runTests;$("#optimizeSkill").onclick=optimize;$("#savePrivate").onclick=()=>{draft.publishing.visibility="private";save();toast("已保存为仅自己可用的草稿")};$("#publishPublic").onclick=()=>{draft.publishing.visibility="public";draft.publishing.level="public";save();toast("已发布为公开 Skill");setTimeout(()=>location.href="skill-detail.html?id=resume",800)};
+    if(forkId)startMode("remix");else if(bountyId)startMode("bounty");else if(draft.mode){$("#resumeDraft").classList.add("show");$("#resumeDraftTitle").textContent=`${draft.title} →`}
   </script>
 </body>
 </html>

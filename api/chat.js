@@ -31,7 +31,7 @@ async function requestDeepSeek(messages, activeSkills = []) {
       model: "deepseek-chat",
       messages: [{
         role: "system",
-        content: `${SYSTEM_PROMPT}\n\n当前用户已组合调用的 Skill：${activeSkills.length ? activeSkills.join("、") : "文献综述撰写 Skill"}。直接执行用户当前要求；只有当用户询问流程时才解释各 Skill 的分工。不要假装已经执行用户未提供的数据分析、可视化或外部检索。`
+        content: `${SYSTEM_PROMPT}\n\n当前用户已组合调用的 Skill：${activeSkills.length ? activeSkills.join("、") : "尚未指定，请根据用户当前学习目标直接提供帮助；若用户要求整理笔记、知识点、复习材料或自测题，优先按笔记整理复习包处理"}。直接执行用户当前要求；只有当用户询问流程时才解释各 Skill 的分工。不要假装已经执行用户未提供的数据分析、可视化或外部检索。`
       }, ...messages],
       temperature: 0.55,
       max_tokens: 1000
@@ -45,6 +45,34 @@ async function requestDeepSeek(messages, activeSkills = []) {
   const content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error("模型没有返回可用内容。");
   return content;
+}
+
+async function requestStudyNotes(sourceText, fileNames = []) {
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) throw new Error("服务端尚未配置 DEEPSEEK_API_KEY。");
+  const response = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: "deepseek-chat",
+      response_format: { type: "json_object" },
+      messages: [{
+        role: "system",
+        content: `你是“笔记整理复习包 Skill”。根据材料生成可直接学习的完整复习包，必须只返回 JSON，不要 Markdown。结构：
+{"title":"标题","subtitle":"材料说明","summary":"一句话主线","sections":[{"title":"章节标题","paragraphs":["正文"],"bullets":["要点"]}],"knowledge":[{"id":"K01","group":"分组","title":"知识点","plain":"人话解释","formula":"必要的公式或关键词","limit":"易错点或适用边界"}],"quiz":[{"k":"K01","type":"概念选择","q":"题目","o":["选项A","选项B","选项C","选项D"],"a":0,"why":"答案解释","wrong":"常见误区"}],"overview":[{"label":"主线节点","text":"一句解释"}]}
+要求：sections 覆盖材料主线；knowledge 生成 6到12项；quiz 生成 5到10道且 a 为0到3；不编造材料没有的具体事实。`
+      }, {
+        role: "user",
+        content: `文件：${fileNames.join("、") || "用户材料"}\n\n材料正文：\n${sourceText.slice(0, 26000)}`
+      }],
+      temperature: 0.35,
+      max_tokens: 4000
+    })
+  });
+  if (!response.ok) throw new Error(`DeepSeek 请求失败（${response.status}）：${(await response.text()).slice(0, 240)}`);
+  const content = (await response.json())?.choices?.[0]?.message?.content;
+  if (!content) throw new Error("模型没有返回可用的复习包。");
+  try { return JSON.parse(content); } catch (_) { throw new Error("复习包结构生成失败，请重新上传。"); }
 }
 
 module.exports = async (req, res) => {
@@ -61,3 +89,4 @@ module.exports = async (req, res) => {
 module.exports.requestDeepSeek = requestDeepSeek;
 module.exports.getMessages = getMessages;
 module.exports.getActiveSkills = getActiveSkills;
+module.exports.requestStudyNotes = requestStudyNotes;
