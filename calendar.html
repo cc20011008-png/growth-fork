@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习日历 · 成长 Fork</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="calendar.css">
+</head>
+<body>
+  <div class="cal-app">
+    <aside class="sidebar">
+      <a class="side-brand" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 21V11"/>
+          <path d="M12 14c-4-1-6-4-6-8 4 0 6 2 6 6z"/>
+          <path d="M12 12c3-.5 6-3 7-7-4 .2-6 2.5-7 7z"/>
+        </svg>
+        <strong>成长 Fork</strong>
+      </a>
+      <nav class="side-nav">
+        <a href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg>
+          <span>今日</span>
+        </a>
+        <a class="on" href="calendar.html" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6.5c3.2-1.6 6.4-1.6 8 0 1.6-1.6 4.8-1.6 8 0V18c-3.2-1.4-6.4-1.4-8 0-1.6-1.4-4.8-1.4-8 0V6.5z"/><path d="M12 6.5V18"/></svg>
+          <span>学习</span>
+        </a>
+        <a href="my-tasks.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8z"/><path d="M8 8V6.5A1.5 1.5 0 0 1 9.5 5h5A1.5 1.5 0 0 1 16 6.5V8"/></svg>
+          <span>项目</span>
+        </a>
+        <a href="my-growth.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M4 19h16"/></svg>
+          <span>复盘</span>
+        </a>
+        <a href="school-zone.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13l2.2-7h11.6L20 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6z"/><path d="M4 13h4.2l1.3 2h5l1.3-2H20"/></svg>
+          <span>资源</span>
+        </a>
+        <a href="my-growth.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3.5l2.4 5.4 5.9.6-4.4 3.8 1.3 5.7L12 16.6 6.8 19l1.3-5.7L3.7 9.5l5.9-.6L12 3.5z"/></svg>
+          <span>成就</span>
+        </a>
+      </nav>
+      <div class="side-pet">
+        <img src="assets/companion-cat.png" alt="小猫">
+        <span>小猫陪伴中</span>
+      </div>
+    </aside>
+
+    <main class="cal-main">
+      <header class="cal-head">
+        <div>
+          <div class="cal-title-row">
+            <h1 id="cal-month-label">2026年8月</h1>
+            <div class="month-shift">
+              <button type="button" id="cal-prev" aria-label="上一月">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+              </button>
+              <button type="button" id="cal-next" aria-label="下一月">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="cal-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l1.6 5.2L19 9.2l-5.4 1.6L12 16l-1.6-5.2L5 9.2l5.4-1.5L12 2.5z"/></svg>
+            小猫根据你的学习自动更新
+          </p>
+        </div>
+        <div class="cal-tools">
+          <label>
+            <span class="sr-only">视图</span>
+            <select class="view-select" aria-label="日历视图">
+              <option selected>月视图</option>
+            </select>
+          </label>
+          <button class="today-btn" type="button" id="cal-today">
+            <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+            回到今天
+          </button>
+        </div>
+      </header>
+
+      <section class="cal-board" aria-label="学习月历">
+        <div class="cal-weekdays">
+          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span><i class="legend-dot"></i>自动战绩 (根据学习自动记录)</span>
+          <span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF4F9A" aria-hidden="true"><path d="M7.2 18c-2.4 0-4.2-1.9-4.2-4.5C3 9.6 5.8 6.2 10 5.2l.7 1.6C8.2 7.6 6.6 9.4 6.4 11.4c.5-.4 1.2-.6 2-.6 1.8 0 3.1 1.2 3.1 3 0 1.9-1.5 3.2-4.3 3.2zm9.5 0c-2.4 0-4.2-1.9-4.2-4.5 0-3.9 2.8-7.3 7-8.3l.7 1.6c-2.5.8-4.1 2.6-4.3 4.6.5-.4 1.2-.6 2-.6 1.8 0 3.1 1.2 3.1 3 0 1.9-1.5 3.2-4.3 3.2z"/></svg>
+            有感悟 (记录学习感悟)
+          </span>
+        </div>
+        <img class="cal-mascot" src="assets/companion-cat-cut.png" alt="">
+      </section>
+
+      <section class="day-sheet" id="day-sheet" aria-label="单日详情"></section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <style>
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+  </style>
+  <script src="calendar.js"></script>
+</body>
+</html>

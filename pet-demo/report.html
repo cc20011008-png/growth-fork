@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据统计 · MeowPlan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../brand.css">
+  <link rel="stylesheet" href="./css/shell.css">
+  <link rel="stylesheet" href="./css/app-shell.css">
+  <link rel="stylesheet" href="./css/report.css">
+  <link rel="stylesheet" href="./css/focus-bond.css">
+</head>
+<body class="app-body">
+  <div class="app-frame">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <main class="app-main">
+      <article class="report-card glass-pane">
+        <img class="pet-stamp" id="report-pet" src="../assets/companion-cat-transparent.png" alt="">
+        <h1 class="display" id="report-title">月度成长小结</h1>
+        <p class="letter" id="report-letter"></p>
+        <div class="report-metrics">
+          <div><b id="m-focus">0</b><span>专注分钟</span></div>
+          <div><b id="m-battles">0</b><span>完成战役</span></div>
+          <div><b id="m-skills">0</b><span>Skill 实践</span></div>
+        </div>
+        <section class="report-block">
+          <h2>高光时刻</h2>
+          <ul id="report-highlights"></ul>
+        </section>
+        <section class="report-block">
+          <h2>Skill 洞察</h2>
+          <p class="muted" id="report-top-skill"></p>
+          <p class="muted" id="report-reflections"></p>
+        </section>
+        <section class="report-block">
+          <h2>还可以更好</h2>
+          <p class="muted" id="report-tip"></p>
+        </section>
+        <div class="report-actions">
+          <a class="btn btn-ghost" href="./calendar.html">看看日历</a>
+          <a class="btn btn-pink" href="./index.html">回到今日</a>
+        </div>
+      </article>
+    </main>
+  </div>
+  <script type="module" src="./js/app-report.js"></script>
+</body>
+</html>

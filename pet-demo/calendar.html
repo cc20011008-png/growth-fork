@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习日历 · MeowPlan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../brand.css">
+  <link rel="stylesheet" href="./css/shell.css">
+  <link rel="stylesheet" href="./css/app-shell.css">
+  <link rel="stylesheet" href="./css/calendar.css">
+  <link rel="stylesheet" href="./css/focus-bond.css">
+</head>
+<body class="app-body">
+  <div class="app-frame">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <main class="app-main">
+      <header class="cal-head">
+        <div>
+          <h1 class="display" id="cal-month-label">学习日历</h1>
+          <p id="cal-pet-note">宠物根据你的学习自动更新</p>
+        </div>
+        <div class="nav-actions">
+          <button class="btn btn-ghost" type="button" id="cal-prev">上一月</button>
+          <button class="btn btn-ghost" type="button" id="cal-next">下一月</button>
+          <a class="btn btn-pink" href="./report.html">看月报</a>
+        </div>
+      </header>
+      <div class="cal-layout">
+        <section class="cal-grid-wrap glass-pane">
+          <div class="cal-weekdays">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </section>
+        <aside class="day-panel glass-pane" id="day-panel" aria-label="单日详情"></aside>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="./js/app-calendar.js"></script>
+</body>
+</html>

@@ -145,7 +145,7 @@
       color: #fff;
     }
     .pills button:focus-visible,
-    .school-search:focus-within,
+    .hub-search:focus-within,
     .rank-row:focus-visible,
     .school-card:focus-visible {
       outline: 2px solid var(--pink);
@@ -161,33 +161,91 @@
       padding: 4px;
     }
 
-    .school-search {
+    .hub-bar {
       display: flex;
       align-items: center;
-      gap: 10px;
-      border-radius: 14px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin: 0 0 10px;
+      padding: 8px 10px 8px 8px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 10px 28px rgba(90, 96, 110, 0.08);
     }
-    .school-search svg { flex-shrink: 0; color: var(--muted); }
-    .school-search input {
+    .hub-tabs {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+    .hub-tabs a,
+    .hub-tabs span {
+      padding: 8px 14px;
+      border-radius: 12px;
+      color: #3A3A40;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .hub-tabs a:hover { color: var(--ink); }
+    .hub-tabs a.on {
+      color: var(--pink);
+      background: rgba(255, 79, 154, 0.12);
+    }
+    .hub-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(20, 20, 22, 0.08);
+    }
+    .hub-search svg {
+      flex-shrink: 0;
+      color: #B0B4BA;
+    }
+    .hub-search input {
       border: 0;
       outline: 0;
       flex: 1;
       min-width: 0;
       background: transparent;
-      font-size: 14px;
+      font-size: 13px;
+      color: var(--ink);
     }
-    .school-search input::placeholder { color: #8A8E98; }
+    .hub-search input::placeholder { color: #B0B4BA; }
+    .hub-count {
+      flex: 0 0 auto;
+      color: #9AA0A8;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .hub-upload {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .hub-upload:hover { background: var(--pink-deep); }
+    .hub-upload:active { transform: scale(0.98); }
     .hint {
       margin: 0 0 18px;
       color: var(--muted);
       font-size: 12px;
-    }
-    .count-line {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 13px;
     }
 
     .school-grid {
@@ -310,6 +368,12 @@
     @media (max-width: 860px) {
       .school-grid { grid-template-columns: 1fr 1fr; }
       .filters { flex-direction: column; align-items: flex-start; }
+      .hub-bar {
+        flex-wrap: wrap;
+        border-radius: 18px;
+      }
+      .hub-search { min-width: 100%; order: 3; }
+      .hub-count { margin-left: auto; }
     }
     @media (max-width: 580px) {
       .school-grid { grid-template-columns: 1fr; }
@@ -340,7 +404,6 @@
       <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
       <div class="nav-links">
         <a href="index.html">首页</a>
-        <a href="skills.html">全部 Skill</a>
         <a class="active" href="school-zone.html">学校专区<span class="nav-new">NEW</span></a>
         <a href="campus-map.html">附近创作者</a>
         <a href="my-growth.html">我的成长</a>
@@ -376,15 +439,23 @@
       <button class="how-join" type="button" id="howJoin">如何入驻?</button>
     </div>
 
-    <div class="school-search glass">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-        <circle cx="8" cy="8" r="5.25" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-      <input id="schoolSearch" type="search" placeholder="请输入学校名称" aria-label="搜索学校名称">
+    <div class="hub-bar" role="search">
+      <nav class="hub-tabs" aria-label="专区范围">
+        <a href="skills.html">技能</a>
+        <a class="on" href="school-zone.html" aria-current="page">学校</a>
+        <span>专家课</span>
+      </nav>
+      <label class="hub-search">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="5.25" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12.2 12.2L16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <input id="schoolSearch" type="search" placeholder="搜索成长 Skill 名称、目标或场景" aria-label="搜索成长 Skill 名称、目标或场景">
+      </label>
+      <span class="hub-count" id="countLine">共 0 个</span>
+      <a class="hub-upload" href="create-skill.html">+ 上传 Skill</a>
     </div>
     <p class="hint">北京高校专区为平台演示数据，非官方校方入驻。点击学校进入该校 Skill 列表。</p>
-    <p class="count-line" id="countLine"></p>
     <div class="school-grid" id="schoolGrid"></div>
   </div>
 
@@ -449,10 +520,11 @@
       const q = query.trim();
       const list = GROWTH_SCHOOLS.filter(s => {
         const catOk = cat === "全部" || s.cats.indexOf(cat) !== -1;
-        const qOk = !q || s.name.indexOf(q) !== -1 || s.short.indexOf(q) !== -1;
+        const hay = [s.name, s.short, s.desc, ...(s.tags || []), ...(s.catalog || []).map(item => item.title)].join(" ");
+        const qOk = !q || hay.indexOf(q) !== -1;
         return catOk && qOk;
       });
-      document.getElementById("countLine").textContent = `共 ${list.length} 所学校`;
+      document.getElementById("countLine").textContent = `共 ${list.length} 个`;
       if (!list.length) {
         grid.innerHTML = `<div class="empty"><b>没有找到这所学校</b>试试换个关键词，或查看全部北京高校。<button type="button" id="resetFilters">查看全部</button></div>`;
         document.getElementById("resetFilters").addEventListener("click", () => {

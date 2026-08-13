@@ -41,7 +41,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   const relativePath = decodeURIComponent(req.url.split("?")[0] === "/" ? "/index.html" : req.url.split("?")[0]);
-  const target = path.resolve(root, `.${relativePath}`);
+  let target = path.resolve(root, `.${relativePath}`);
+  if (target.startsWith(root) && fs.existsSync(target) && fs.statSync(target).isDirectory()) {
+    target = path.join(target, "index.html");
+  }
   if (!target.startsWith(root) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     return res.end("Not found");
