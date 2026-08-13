@@ -514,9 +514,9 @@ if (planRoot || gridRoot) {
 
   const FOCUS_DURATIONS = [15, 25, 45, 50];
   const FOCUS_PETS = {
-    cat: { name: "小猫", src: "assets/focus-study-cat.png" },
-    dog: { name: "小狗", src: "assets/focus-study-dog.png" },
-    capybara: { name: "水豚", src: "assets/focus-study-capybara.png" },
+    cat: { name: "小猫", src: "assets/focus-study-cat.png", doorSrc: "assets/focus-study-cat.png" },
+    dog: { name: "小狗", src: "assets/focus-study-dog.png", doorSrc: "assets/focus-door-dog.png" },
+    capybara: { name: "水豚", src: "assets/focus-study-capybara.png", doorSrc: "assets/focus-study-capybara.png" },
   };
 
   function currentFocusPet() {
@@ -574,11 +574,11 @@ if (planRoot || gridRoot) {
     node.setAttribute("aria-labelledby", "focus-card-title");
     node.innerHTML = `
       <!--
-        THESIS: Focus is entering the pet's study; the oval campus window is the clock. Refuses a floating pomodoro ring on a blank canvas.
-        OWN-WORLD: Silver-white lounge, chrome-rim glass card, Outfit numerals on the window, one pink arc, studying pet on the bench.
+        THESIS: Focus is sitting at the chrome desk while the oval campus window is the clock. Refuses a floating pomodoro ring on a blank canvas.
+        OWN-WORLD: Silver-white lounge, chrome-rim glass card, Outfit numerals in the right-hand window, one pink arc with a knob, puppy writing at the desk.
         STORY: Pick a duration at the door, sit with the pet, stay until the window runs out or the round breaks.
         FIRST VIEWPORT: Doorway into the room; glass card 进屋专注; 15/25/45/50; pink 开始倒计时.
-        FORM: Window-clock theater + threshold entry. Seed a8c3f1d2 candidate 3, user combo.
+        FORM: Window-clock theater + threshold entry. User comps focus-room-session-desk / focus-room-threshold-door, pet is the puppy.
         FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
       -->
       <div class="focus-scene">
@@ -586,24 +586,26 @@ if (planRoot || gridRoot) {
         <img class="focus-bg focus-bg-run" src="assets/focus-session-bg.png" alt="">
         <div class="focus-window">
           <svg class="focus-arc" viewBox="0 0 200 200" aria-hidden="true">
-            <circle class="focus-arc-stroke" id="focus-arc" cx="100" cy="100" r="94" pathLength="100"/>
+            <circle class="focus-arc-stroke" id="focus-arc" cx="100" cy="100" r="92" pathLength="100"/>
+            <circle class="focus-arc-knob" id="focus-arc-knob" cx="100" cy="8" r="4.2"/>
           </svg>
           <div class="focus-clock-stack">
-            <p class="focus-clock" id="focus-clock">25:00</p>
             <p class="focus-task-label" id="focus-task-label"></p>
+            <p class="focus-clock" id="focus-clock">25:00</p>
           </div>
         </div>
         <img class="focus-pet" id="focus-pet" src="${pet.src}" alt="${pet.name}在书桌前学习">
       </div>
       <div class="focus-hud">
-        <button type="button" class="focus-pill" id="focus-leave">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
-          离开
-        </button>
-        <button type="button" class="focus-pill" id="focus-fs">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg>
-          <span>全屏</span>
-        </button>
+        <button type="button" class="focus-pill" id="focus-leave">离开</button>
+        <p class="focus-hud-status" id="focus-hud-status">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+            <path d="M22 9l-6 6M16 9l6 6"/>
+          </svg>
+          <span id="focus-hud-copy">专注中 · 25 分钟</span>
+        </p>
+        <button type="button" class="focus-pill" id="focus-fs"><span>全屏</span></button>
       </div>
       <div class="focus-door" id="focus-door">
         <button type="button" class="focus-back" id="focus-back">

@@ -40,7 +40,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const relativePath = decodeURIComponent(req.url.split("?")[0] === "/" ? "/index.html" : req.url.split("?")[0]);
+  const urlPath = decodeURIComponent(req.url.split("?")[0]);
+  const relativePath = urlPath === "/" ? "/pet-demo/index.html" : urlPath;
   let target = path.resolve(root, `.${relativePath}`);
   if (target.startsWith(root) && fs.existsSync(target) && fs.statSync(target).isDirectory()) {
     target = path.join(target, "index.html");
