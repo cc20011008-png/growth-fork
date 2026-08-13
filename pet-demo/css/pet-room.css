@@ -131,7 +131,8 @@ body.pet-room-body::after {
   bottom: 28px;
   z-index: 16;
   width: min(420px, calc(100vw - 48px));
-  max-height: min(62vh, 640px);
+  min-height: 390px;
+  max-height: min(64vh, 680px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto auto;
   overflow: hidden;

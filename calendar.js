@@ -512,6 +512,274 @@ if (planRoot || gridRoot) {
     saveStore(store);
   }
 
+  const FOCUS_DURATIONS = [15, 25, 45, 50];
+  const FOCUS_PETS = {
+    cat: { name: "小猫", src: "assets/focus-study-cat.png" },
+    dog: { name: "小狗", src: "assets/focus-study-dog.png" },
+    capybara: { name: "水豚", src: "assets/focus-study-capybara.png" },
+  };
+
+  function readPetId() {
+    try {
+      const raw = localStorage.getItem("gf-pet-demo-v3") || localStorage.getItem("gf-pet-demo-v1");
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed?.profile?.petId || "cat";
+    } catch {
+      return "cat";
+    }
+  }
+
+  function formatRemain(sec) {
+    const m = Math.floor(Math.max(0, sec) / 60);
+    const s = Math.max(0, sec) % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+
+  function addBondMinutes(minutes) {
+    try {
+      const raw = localStorage.getItem("gf-pet-demo-v3");
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (!state.bond) return;
+      state.bond.focusMinutesTotal = (state.bond.focusMinutesTotal || 0) + minutes;
+      localStorage.setItem("gf-pet-demo-v3", JSON.stringify(state));
+    } catch {
+      /* pet demo store is optional */
+    }
+  }
+
+  const focus = {
+    root: null,
+    itemId: "",
+    minutes: 25,
+    remain: 0,
+    total: 0,
+    timer: null,
+    wake: null,
+    stage: "idle",
+  };
+
+  function mountFocusRoom() {
+    if (focus.root) return focus.root;
+    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const chips = FOCUS_DURATIONS.map((n) => (
+      `<button type="button" class="focus-chip" data-mins="${n}" aria-pressed="${n === 25 ? "true" : "false"}">${n}分</button>`
+    )).join("");
+    const node = document.createElement("div");
+    node.id = "focus-room";
+    node.className = "focus-room";
+    node.setAttribute("role", "dialog");
+    node.setAttribute("aria-modal", "true");
+    node.setAttribute("aria-labelledby", "focus-card-title");
+    node.innerHTML = `
+      <!--
+        THESIS: Focus is entering the pet's study; the oval campus window is the clock. Refuses a floating pomodoro ring on a blank canvas.
+        OWN-WORLD: Silver-white lounge, chrome-rim glass card, Outfit numerals on the window, one pink arc, studying pet on the bench.
+        STORY: Pick a duration at the door, sit with the pet, stay until the window runs out or the round breaks.
+        FIRST VIEWPORT: Doorway into the room; glass card 进屋专注; 15/25/45/50; pink 开始倒计时.
+        FORM: Window-clock theater + threshold entry. Seed a8c3f1d2 candidate 3, user combo.
+        FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+      -->
+      <div class="focus-scene">
+        <img class="focus-bg" src="assets/pet-home-room-bg.png" alt="">
+        <div class="focus-window">
+          <svg class="focus-ring" viewBox="0 0 200 220" aria-hidden="true">
+            <ellipse class="focus-ring-track" cx="100" cy="110" rx="86" ry="102"/>
+            <ellipse class="focus-ring-arc" id="focus-arc" cx="100" cy="110" rx="86" ry="102" pathLength="1"/>
+          </svg>
+          <div class="focus-clock-stack">
+            <p class="focus-clock" id="focus-clock">25:00</p>
+            <p class="focus-task-label" id="focus-task-label"></p>
+          </div>
+        </div>
+        <img class="focus-pet" id="focus-pet" src="${pet.src}" alt="${pet.name}在书桌前学习">
+      </div>
+      <div class="focus-hud">
+        <button type="button" class="focus-pill" id="focus-leave">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+          离开
+        </button>
+        <button type="button" class="focus-pill" id="focus-fs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg>
+          全屏
+        </button>
+      </div>
+      <div class="focus-door" id="focus-door">
+        <button type="button" class="focus-back" id="focus-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+          返回日计划
+        </button>
+        <div class="focus-card">
+          <h2 id="focus-card-title">进屋专注</h2>
+          <p class="focus-card-task" id="focus-card-task"></p>
+          <div class="focus-chips" role="group" aria-label="专注时长">${chips}</div>
+          <button type="button" class="focus-go" id="focus-start">开始倒计时</button>
+          <p class="focus-warn">中途离开会打断这一轮</p>
+        </div>
+      </div>
+      <div class="focus-result" id="focus-result" hidden>
+        <div class="focus-card">
+          <h2 id="focus-result-title"></h2>
+          <p class="focus-card-task" id="focus-result-copy"></p>
+          <button type="button" class="focus-go" id="focus-result-go">返回日计划</button>
+        </div>
+      </div>
+    `;
+    document.body.append(node);
+    focus.root = node;
+    node.querySelectorAll("[data-mins]").forEach((chip) => {
+      chip.addEventListener("click", () => selectFocusMins(Number(chip.dataset.mins)));
+    });
+    document.getElementById("focus-start").addEventListener("click", startFocusRound);
+    document.getElementById("focus-back").addEventListener("click", () => closeFocusRoom(false));
+    document.getElementById("focus-leave").addEventListener("click", () => breakFocusRound("leave"));
+    document.getElementById("focus-fs").addEventListener("click", toggleFocusFullscreen);
+    document.getElementById("focus-result-go").addEventListener("click", () => closeFocusRoom(false));
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && focus.stage === "run") breakFocusRound("hide");
+    });
+    document.addEventListener("fullscreenchange", () => {
+      focus.root?.classList.toggle("is-fs", Boolean(document.fullscreenElement));
+      const btn = document.getElementById("focus-fs");
+      if (btn) btn.lastChild.textContent = document.fullscreenElement ? " 退出全屏" : " 全屏";
+    });
+    window.addEventListener("keydown", (event) => {
+      if (!focus.root?.classList.contains("show")) return;
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      if (focus.stage === "run") breakFocusRound("leave");
+      else closeFocusRoom(false);
+    });
+    return node;
+  }
+
+  function setFocusStage(stage) {
+    focus.stage = stage;
+    const root = focus.root;
+    if (!root) return;
+    root.classList.toggle("is-door", stage === "door");
+    root.classList.toggle("is-run", stage === "run");
+    root.classList.toggle("is-done", stage === "done");
+    root.classList.toggle("is-broke", stage === "broke");
+    document.getElementById("focus-result").hidden = stage !== "done" && stage !== "broke";
+  }
+
+  function selectFocusMins(mins) {
+    focus.minutes = mins;
+    focus.root?.querySelectorAll("[data-mins]").forEach((chip) => {
+      chip.setAttribute("aria-pressed", chip.dataset.mins === String(mins) ? "true" : "false");
+    });
+    document.getElementById("focus-clock").textContent = formatRemain(mins * 60);
+  }
+
+  function paintFocusClock() {
+    document.getElementById("focus-clock").textContent = formatRemain(focus.remain);
+    const arc = document.getElementById("focus-arc");
+    if (arc && focus.total) {
+      const p = Math.max(0, Math.min(1, focus.remain / focus.total));
+      arc.style.strokeDashoffset = String(1 - p);
+    }
+  }
+
+  function openFocusRoom(itemId) {
+    const record = dayRecord(store, selected);
+    const item = record.todos.find((todo) => todo.id === itemId);
+    if (!item || item.done) return;
+    const root = mountFocusRoom();
+    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    focus.itemId = item.id;
+    selectFocusMins(25);
+    document.getElementById("focus-pet").src = pet.src;
+    document.getElementById("focus-pet").alt = `${pet.name}在书桌前学习`;
+    document.getElementById("focus-card-task").textContent = item.text;
+    document.getElementById("focus-task-label").textContent = item.text;
+    document.getElementById("focus-result").hidden = true;
+    root.classList.add("show");
+    document.body.style.overflow = "hidden";
+    setFocusStage("door");
+    document.getElementById("focus-start").focus();
+  }
+
+  async function startFocusRound() {
+    focus.total = focus.minutes * 60;
+    focus.remain = focus.total;
+    paintFocusClock();
+    setFocusStage("run");
+    clearInterval(focus.timer);
+    focus.timer = setInterval(() => {
+      focus.remain -= 1;
+      paintFocusClock();
+      if (focus.remain <= 0) completeFocusRound();
+    }, 1000);
+    try {
+      focus.wake = await navigator.wakeLock?.request("screen");
+    } catch {
+      focus.wake = null;
+    }
+    try {
+      await focus.root.requestFullscreen();
+    } catch {
+      /* user can still tap 全屏 */
+    }
+  }
+
+  function stopFocusTimer() {
+    if (focus.timer) clearInterval(focus.timer);
+    focus.timer = null;
+    focus.wake?.release?.();
+    focus.wake = null;
+  }
+
+  function completeFocusRound() {
+    if (focus.stage !== "run") return;
+    stopFocusTimer();
+    const minutes = focus.minutes;
+    const record = dayRecord(store, selected);
+    const item = record.todos.find((todo) => todo.id === focus.itemId);
+    if (item) {
+      item.done = true;
+      item.focusMinutes = minutes;
+      persistDay(selected, record);
+    }
+    addBondMinutes(minutes);
+    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    document.getElementById("focus-result-title").textContent = "专注完成";
+    document.getElementById("focus-result-copy").textContent = `${pet.name}陪你坐完了 ${minutes} 分钟。这件事已勾进今日计划。`;
+    setFocusStage("done");
+    render();
+  }
+
+  function breakFocusRound(reason) {
+    if (focus.stage !== "run") return;
+    stopFocusTimer();
+    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const copy = reason === "hide"
+      ? `切走页面会打断这一轮。${pet.name}还在书桌前等你回来。`
+      : `中途离开会打断这一轮。任务仍留在日计划里。`;
+    document.getElementById("focus-result-title").textContent = "这一轮被打断了";
+    document.getElementById("focus-result-copy").textContent = copy;
+    setFocusStage("broke");
+  }
+
+  async function toggleFocusFullscreen() {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+      return;
+    }
+    await focus.root?.requestFullscreen().catch(() => {});
+  }
+
+  async function closeFocusRoom() {
+    stopFocusTimer();
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
+    focus.root?.classList.remove("show", "is-door", "is-run", "is-done", "is-broke", "is-fs");
+    document.body.style.overflow = "";
+    focus.stage = "idle";
+    focus.itemId = "";
+  }
+
   function render() {
     if (isDayPage) {
       const title = document.getElementById("plan-title");

@@ -23,15 +23,16 @@ function loadMap(loader, url, { repeat = 1 } = {}) {
 }
 
 function liquidMaterial(color, timeUniform, map) {
-  const mat = new THREE.MeshPhysicalMaterial({
-    color,
-    map: map || null,
-    metalness: 0.96,
-    roughness: 0.16,
-    envMapIntensity: 1.55,
+    const mat = new THREE.MeshPhysicalMaterial({
+    color: 0xeef0f4,
+    metalness: 0.92,
+    roughness: 0.18,
+    envMapIntensity: 1.85,
     clearcoat: 1,
-    clearcoatRoughness: 0.1,
+    clearcoatRoughness: 0.14,
     reflectivity: 1,
+    iridescence: 0.12,
+    iridescenceIOR: 1.3,
   });
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = timeUniform;
@@ -40,9 +41,9 @@ function liquidMaterial(color, timeUniform, map) {
       .replace(
         "#include <begin_vertex>",
         `#include <begin_vertex>
-        float ripple = sin(transformed.x * 1.7 + uTime * 0.32) * 0.055
-          + sin(transformed.y * 2.2 - uTime * 0.21) * 0.048
-          + sin(transformed.z * 1.5 + uTime * 0.17) * 0.04;
+        float ripple = sin(transformed.x * 1.4 + uTime * 0.28) * 0.035
+          + sin(transformed.y * 1.8 - uTime * 0.18) * 0.03
+          + sin(transformed.z * 1.2 + uTime * 0.14) * 0.025;
         transformed += normalize(normal) * ripple;`,
       );
   };
@@ -87,14 +88,14 @@ export class SilverPetRoomScene {
     this.renderer.setSize(width, height);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.02;
+    this.renderer.toneMappingExposure = 1.18;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.container.append(this.renderer.domElement);
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xc5c9d0);
-    this.scene.fog = new THREE.Fog(0xc5c9d0, 12, 22);
+    this.scene.background = new THREE.Color(0xe6e8ed);
+    this.scene.fog = new THREE.Fog(0xe6e8ed, 16, 28);
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -167,10 +168,10 @@ export class SilverPetRoomScene {
   }
 
   #lights() {
-    const hemi = new THREE.HemisphereLight(0xf4f5f7, 0x8a909a, 0.7);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bcc4, 1.05);
     this.scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffffff, 1.15);
+    const key = new THREE.DirectionalLight(0xffffff, 1.35);
     key.position.set(4.2, 7.2, 5.5);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
@@ -183,11 +184,15 @@ export class SilverPetRoomScene {
     key.shadow.bias = -0.0004;
     this.scene.add(key);
 
-    const pinkFill = new THREE.PointLight(0xff4f9a, 2.4, 14, 1.6);
+    const camFill = new THREE.DirectionalLight(0xf7f8fa, 0.55);
+    camFill.position.set(2.2, 3.4, 6.4);
+    this.scene.add(camFill);
+
+    const pinkFill = new THREE.PointLight(0xff4f9a, 1.6, 14, 1.6);
     pinkFill.position.set(-1.2, 2.8, -2.4);
     this.scene.add(pinkFill);
 
-    const rim = new THREE.DirectionalLight(0xffc1dc, 0.55);
+    const rim = new THREE.DirectionalLight(0xffd0e4, 0.45);
     rim.position.set(-6, 3.2, -2);
     this.scene.add(rim);
   }
@@ -205,7 +210,11 @@ export class SilverPetRoomScene {
       windowMap.repeat.set(1, 1);
     }
 
-    this.liquid = liquidMaterial(0xd5d8de, this.timeUniform, silver);
+    this.liquid = liquidMaterial(0xeef0f4, this.timeUniform);
+    if (silver) {
+      this.liquid.roughnessMap = silver;
+      this.liquid.roughness = 0.22;
+    }
     this.pink = new THREE.MeshPhysicalMaterial({
       color: 0xff6aa8,
       map: velvet,
@@ -260,7 +269,7 @@ export class SilverPetRoomScene {
 
     this.#window(room, windowMap);
     this.#blobs(room);
-    this.#shelf(room);
+    this.#art(room);
     this.#rug(room, rug);
     this.#sofa(room);
     this.#ottoman(room);
@@ -316,31 +325,25 @@ export class SilverPetRoomScene {
     });
   }
 
-  #shelf(room) {
-    const niche = new THREE.Mesh(
-      new RoundedBoxGeometry(2.4, 1.35, 0.42, 4, 0.08),
+  #art(room) {
+    const frame = new THREE.Mesh(
+      new RoundedBoxGeometry(1.15, 1.15, 0.08, 3, 0.04),
       this.chrome,
     );
-    niche.position.set(-2.35, 2.85, -3.92);
-    room.add(niche);
-
-    const colors = [0xff4f9a, 0xff7ab3, 0xf4f5f7, 0xff4f9a, 0xe83384, 0xffc1dc];
-    colors.forEach((hex, i) => {
-      const book = new THREE.Mesh(
-        new RoundedBoxGeometry(0.12, 0.62, 0.28, 2, 0.02),
-        new THREE.MeshPhysicalMaterial({ color: hex, roughness: 0.55, metalness: 0.08 }),
-      );
-      book.position.set(-3.15 + i * 0.22, 2.62, -3.78);
-      book.castShadow = true;
-      room.add(book);
-    });
-
-    const jar = new THREE.Mesh(
-      new THREE.SphereGeometry(0.16, 24, 16),
-      this.chrome,
+    frame.position.set(-2.45, 2.65, -4.02);
+    room.add(frame);
+    const painting = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.98, 0.98),
+      new THREE.MeshPhysicalMaterial({
+        color: 0xff7ab3,
+        roughness: 0.45,
+        metalness: 0.12,
+        emissive: 0xff4f9a,
+        emissiveIntensity: 0.08,
+      }),
     );
-    jar.position.set(-1.55, 3.28, -3.78);
-    room.add(jar);
+    painting.position.set(-2.45, 2.65, -3.97);
+    room.add(painting);
   }
 
   #rug(room, map) {
@@ -480,8 +483,8 @@ export class SilverPetRoomScene {
       side: THREE.DoubleSide,
       depthWrite: true,
     });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.72, 1.72), mat);
-    mesh.position.set(0.48, 1.18, 0.62);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.05, 2.05), mat);
+    mesh.position.set(0.48, 1.28, 0.62);
     mesh.castShadow = false;
     this.petMesh = mesh;
     room.add(mesh);
@@ -492,7 +495,7 @@ export class SilverPetRoomScene {
     const t = this.clock.getElapsedTime();
     if (!this.reducedMotion) this.timeUniform.value = t;
     if (this.petMesh && !this.reducedMotion) {
-      this.petMesh.position.y = 1.18 + Math.sin(t * 1.5) * 0.028;
+      this.petMesh.position.y = 1.28 + Math.sin(t * 1.5) * 0.028;
       this.petMesh.rotation.y = Math.sin(t * 0.6) * 0.06;
     }
     this.controls.update();
