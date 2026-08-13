@@ -13,6 +13,12 @@ const SKILL_ICON = {
 const PLUS = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
 const SEND = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 18-2.5-7L4 12z"/></svg>`;
 
+const HISTORY_TASKS = [
+  { id: "ops", title: "内容运营实习冲刺", blurb: "第 8 天 · 完成第一版运营案例", status: "doing", skill: "内容运营实习上岸路线" },
+  { id: "lit", title: "文献综述撰写", blurb: "已整理 8 篇论文的主题与方法", status: "doing", skill: "文献综述撰写 Skill" },
+  { id: "club", title: "社团经历项目化", blurb: "已产出 3 条简历项目", status: "done", skill: "社团经历项目化表达" },
+];
+
 function esc(text) {
   const node = document.createElement("div");
   node.textContent = text;
@@ -45,23 +51,41 @@ export function mountRoomChat(state) {
   let activeSkills = [SKILLS[0].title];
   let conversation = [];
   let sending = false;
+  let activeTaskId = "lit";
+  let expanded = false;
 
   root.innerHTML = `
-    <header class="room-chat-head">
-      <img class="room-chat-face" src="${pet.faceImage || pet.image}" alt="">
-      <h2>和我聊聊今天的学习</h2>
-    </header>
-    <div class="room-messages" id="room-messages"></div>
-    <section class="room-help" aria-label="可用 Skill">
-      <div class="room-skills" id="room-skills"></div>
-    </section>
-    <div class="room-attach" id="room-attach" hidden></div>
-    <form class="room-compose" id="room-compose">
-      <button class="room-plus" type="button" id="room-attach-btn" aria-label="添加本地素材">${PLUS}</button>
-      <input id="room-file" type="file" multiple accept=".pdf,.doc,.docx,.txt,.md,.csv,.xlsx,.xls,image/*,video/*" hidden>
-      <input id="room-input" autocomplete="off" placeholder="继续描述你的材料、需求或卡点…" aria-label="和${pet.name}对话">
-      <button class="room-send" type="submit" id="room-send" aria-label="发送">${SEND}<span>发送</span></button>
-    </form>
+    <aside class="room-history" id="room-history" aria-label="历史任务">
+      <div class="room-history-head">
+        <h2>历史任务</h2>
+        <span>${HISTORY_TASKS.length} 条记录</span>
+      </div>
+      <div class="room-task-list" id="room-task-list"></div>
+      <button class="room-new-task" type="button" id="room-new-task">+ 开启新任务</button>
+      <p class="room-history-foot">任务会记下你调用的 Skill、上传的材料与成果。</p>
+    </aside>
+    <div class="room-chat-main">
+      <header class="room-chat-head">
+        <img class="room-chat-face" src="${pet.faceImage || pet.image}" alt="">
+        <div class="room-chat-titles">
+          <h2 id="room-chat-title">和我聊聊今天的学习</h2>
+          <p id="room-chat-sub">${pet.name}陪你推进可验证的下一步</p>
+        </div>
+        <span class="room-status" id="room-status">Skill 运行中</span>
+        <button class="room-collapse" type="button" id="room-collapse" aria-label="收起对话">收起</button>
+      </header>
+      <div class="room-messages" id="room-messages"></div>
+      <section class="room-help" aria-label="可用 Skill">
+        <div class="room-skills" id="room-skills"></div>
+      </section>
+      <div class="room-attach" id="room-attach" hidden></div>
+      <form class="room-compose" id="room-compose">
+        <button class="room-plus" type="button" id="room-attach-btn" aria-label="添加本地素材">${PLUS}</button>
+        <input id="room-file" type="file" multiple accept=".pdf,.doc,.docx,.txt,.md,.csv,.xlsx,.xls,image/*,video/*" hidden>
+        <input id="room-input" autocomplete="off" placeholder="继续描述你的材料、需求或卡点…" aria-label="和${pet.name}对话">
+        <button class="room-send" type="submit" id="room-send" aria-label="发送">${SEND}<span>发送</span></button>
+      </form>
+    </div>
   `;
 
   const feed = $("#room-messages", root);
@@ -69,9 +93,71 @@ export function mountRoomChat(state) {
   const attachHost = $("#room-attach", root);
   const input = $("#room-input", root);
   const sendBtn = $("#room-send", root);
+  const titleEl = $("#room-chat-title", root);
+  const subEl = $("#room-chat-sub", root);
+  const statusEl = $("#room-status", root);
 
   function persist() {
     saveState(state);
+  }
+
+  function expand() {
+    if (expanded) return;
+    expanded = true;
+    root.classList.add("is-workbench");
+    document.body.classList.add("workbench-open");
+    const task = HISTORY_TASKS.find((item) => item.id === activeTaskId);
+    if (task) paintTask(task, false);
+    window.setTimeout(() => input.focus(), 280);
+  }
+
+  function collapse() {
+    if (!expanded) return;
+    expanded = false;
+    root.classList.remove("is-workbench");
+    document.body.classList.remove("workbench-open");
+    titleEl.textContent = "和我聊聊今天的学习";
+    subEl.textContent = `${pet.name}陪你推进可验证的下一步`;
+  }
+
+  function paintTask(task, resetChat) {
+    activeTaskId = task.id;
+    titleEl.textContent = task.title;
+    subEl.textContent = task.status === "done" ? "已完成，可继续复盘或沉淀。" : "Skill 已加入任务，可继续补充材料并推进下一步。";
+    statusEl.textContent = task.status === "done" ? "已完成" : "Skill 运行中";
+    statusEl.classList.toggle("done", task.status === "done");
+    $$(".room-task-card", root).forEach((card) => {
+      card.classList.toggle("active", card.dataset.task === task.id);
+    });
+    if (task.skill && !activeSkills.includes(task.skill)) {
+      activeSkills = [task.skill, ...activeSkills.filter((s) => s !== task.skill)].slice(0, 5);
+      renderSkills();
+    }
+    if (resetChat) {
+      feed.innerHTML = "";
+      conversation = [];
+      addBubble("assistant", formatText(`我们接着做「${task.title}」。把材料和卡点丢给我就行。`));
+      remember("assistant", `接着做「${task.title}」。`);
+    }
+  }
+
+  function renderHistory() {
+    const list = $("#room-task-list", root);
+    list.innerHTML = HISTORY_TASKS.map((task) => `
+      <button class="room-task-card${task.id === activeTaskId ? " active" : ""}${task.status === "done" ? " done" : ""}" type="button" data-task="${task.id}">
+        <b>${esc(task.title)}</b>
+        <span>${esc(task.blurb)}</span>
+        <em>${task.status === "done" ? "已完成" : "进行中"}</em>
+      </button>
+    `).join("");
+    list.querySelectorAll(".room-task-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const task = HISTORY_TASKS.find((item) => item.id === card.dataset.task);
+        if (!task) return;
+        expand();
+        paintTask(task, true);
+      });
+    });
   }
 
   function renderSkills() {
@@ -128,6 +214,7 @@ export function mountRoomChat(state) {
   }
 
   function pickSkill(title) {
+    expand();
     if (!activeSkills.includes(title)) activeSkills.push(title);
     if (activeSkills[0] !== title) {
       activeSkills = [title, ...activeSkills.filter((s) => s !== title)];
@@ -153,6 +240,7 @@ export function mountRoomChat(state) {
     const files = attachments.splice(0);
     renderAttach();
     if (!text && !files.length) return;
+    expand();
 
     const fileNote = files.length
       ? `\n\n我上传了：${files.map((f) => `${f.name}（${fileBadge(f)}，${fileSize(f.size)}）`).join("；")}。`
@@ -203,13 +291,32 @@ export function mountRoomChat(state) {
     event.target.value = "";
     renderAttach();
   });
+  input.addEventListener("focus", expand);
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       send();
     }
   });
+  $("#room-collapse", root).addEventListener("click", collapse);
+  $("#room-new-task", root).addEventListener("click", () => {
+    expand();
+    titleEl.textContent = "新任务";
+    subEl.textContent = "先告诉我你这次最想推进什么。";
+    statusEl.textContent = "待开始";
+    statusEl.classList.remove("done");
+    $$(".room-task-card", root).forEach((card) => card.classList.remove("active"));
+    feed.innerHTML = "";
+    conversation = [];
+    addBubble("assistant", formatText("新任务开始。你现在最想完成哪一件事？"));
+    remember("assistant", "新任务开始。");
+    input.focus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") collapse();
+  });
 
+  renderHistory();
   renderSkills();
   const prior = (state.today.messages || []).filter((m) => m.role === "user" || m.role === "assistant");
   if (prior.length) {
@@ -223,4 +330,8 @@ export function mountRoomChat(state) {
   }
 
   requestAnimationFrame(() => root.classList.add("in"));
+}
+
+function $$(sel, root) {
+  return [...(root || document).querySelectorAll(sel)];
 }

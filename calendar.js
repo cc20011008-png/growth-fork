@@ -656,6 +656,15 @@ if (planRoot || gridRoot) {
     return node;
   }
 
+  function paintFocusPet() {
+    const pet = currentFocusPet();
+    const img = document.getElementById("focus-pet");
+    if (!img) return;
+    const door = focus.stage === "door";
+    img.src = door ? pet.doorSrc : pet.src;
+    img.alt = `${pet.name}在书桌前学习`;
+  }
+
   function setFocusStage(stage) {
     focus.stage = stage;
     const root = focus.root;
@@ -665,6 +674,7 @@ if (planRoot || gridRoot) {
     root.classList.toggle("is-done", stage === "done");
     root.classList.toggle("is-broke", stage === "broke");
     document.getElementById("focus-result").hidden = stage !== "done" && stage !== "broke";
+    paintFocusPet();
   }
 
   function selectFocusMins(mins) {
@@ -673,14 +683,24 @@ if (planRoot || gridRoot) {
       chip.setAttribute("aria-pressed", chip.dataset.mins === String(mins) ? "true" : "false");
     });
     document.getElementById("focus-clock").textContent = formatRemain(mins * 60);
+    const hud = document.getElementById("focus-hud-copy");
+    if (hud) hud.textContent = `专注中 · ${mins} 分钟`;
   }
 
   function paintFocusClock() {
     document.getElementById("focus-clock").textContent = formatRemain(focus.remain);
     const arc = document.getElementById("focus-arc");
+    const knob = document.getElementById("focus-arc-knob");
     if (arc && focus.total) {
       const p = Math.max(0, Math.min(1, focus.remain / focus.total));
-      arc.style.strokeDasharray = `${(32 * p).toFixed(2)} 100`;
+      const frac = 0.28 * p;
+      arc.style.strokeDasharray = `${(frac * 100).toFixed(2)} 100`;
+      if (knob) {
+        const sweep = 360 * frac;
+        const rad = ((-90 + sweep) * Math.PI) / 180;
+        knob.setAttribute("cx", (100 + 92 * Math.cos(rad)).toFixed(2));
+        knob.setAttribute("cy", (100 + 92 * Math.sin(rad)).toFixed(2));
+      }
     }
   }
 
@@ -689,11 +709,9 @@ if (planRoot || gridRoot) {
     const item = record.todos.find((todo) => todo.id === itemId);
     if (!item || item.done) return;
     const root = mountFocusRoom();
-    const pet = currentFocusPet();
     focus.itemId = item.id;
     selectFocusMins(25);
-    document.getElementById("focus-pet").src = pet.src;
-    document.getElementById("focus-pet").alt = `${pet.name}在书桌前学习`;
+    paintFocusPet();
     document.getElementById("focus-card-task").textContent = item.text;
     document.getElementById("focus-task-label").textContent = item.text;
     document.getElementById("focus-result").hidden = true;
