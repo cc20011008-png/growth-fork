@@ -1,4 +1,4 @@
-import { $, el, toast } from "../lib/dom.js";
+import { $, $$, el, toast } from "../lib/dom.js";
 import { getPet, saveState } from "../lib/store.js";
 import { SKILLS } from "../config/skills.js";
 
@@ -114,6 +114,7 @@ export function mountRoomChat(state) {
   function collapse() {
     if (!expanded) return;
     expanded = false;
+    input.blur();
     root.classList.remove("is-workbench");
     document.body.classList.remove("workbench-open");
     titleEl.textContent = "和我聊聊今天的学习";
@@ -330,8 +331,4 @@ export function mountRoomChat(state) {
   }
 
   requestAnimationFrame(() => root.classList.add("in"));
-}
-
-function $$(sel, root) {
-  return [...(root || document).querySelectorAll(sel)];
 }

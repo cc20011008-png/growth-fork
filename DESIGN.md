@@ -173,16 +173,16 @@ Daily Plan 开始专注 walks into that same silver lounge from the other door. 
 
 ## Surfaces
 
-- **Home**: Soft chrome-ring nest + companion pet, brand wordmark hero signal, glass search → task match
+- **Home** (`pet-demo/index.html`): The liquid-silver pet apartment is the site home. Compact chrome-rim study sheet sits mid-left; focusing the compose input grows it into a 学习-style workbench (历史任务 + chat). Marketplace lives at `index.html` as 市集.
 - **Match**: Stage (task + AI 完善) above, selectable skill tray + combo path below
-- **Store**: Full Skill catalog + wish pool, same chrome/pink system
+- **Store** (`index.html`): Full Skill catalog + wish pool, same chrome/pink system. Nav label 市集.
 - **Create**: Web voice interview with chrome/pink AI orb
 - **Detail**: App Store-like skill page + effect-preview chat
 - **Map / Growth**: Campus heat map; personal homepage (`my-growth.html`) matches creator identity (small circular avatar + school certification, 关注 / 粉丝) plus 学习成就 / 专注时长 / 宠物情况, then 我的成长书架 as a Pomodoro-style learning stats board, then the same four shelves as nearby creators: 发布 / 用过（宠物在学习对话框完成后亲自沉淀评价）/ 收藏 / 需求悬赏
 - **School Zone**: Nav opens the certified school's Skill page (`school-skills.html`); switch to 全国视角 for the Beijing directory (`school-zone.html?view=national`). Campus page groups Skills into 专业 / 社团 / 实验室 / 竞赛与实践 circles.
 - **Learn** (`my-tasks.html`): Skill 学习工作台（原计划/任务页）
 - **Daily Plan**: `calendar.html` 日计划 to-do；`plan-calendar.html` 月历。同属导航「每日计划」，点日历换页而非同页下翻。勾选完成会同步到日历格子。未完成事项上的 **开始专注** opens a fullscreen overlay (`focus-room.css` via `calendar.js`): doorway `assets/focus-threshold-bg.png` with chrome-rim glass 进屋专注 and duration chips 15 / 25 / 45 / 50 (default 25); **开始倒计时** enters the study (`assets/focus-session-bg.png`) where Outfit numerals sit in the oval window with one pink arc and the companion studies from `assets/focus-study-cat.png` / `focus-study-dog.png` / `focus-study-capybara.png`. **离开**, tab-hide, or Escape interrupts the round (the todo stays open). Completing the countdown marks the todo done and records the minutes.
-- **My Pet** (`pet-demo/index.html`): Full-bleed orbitable 3D liquid-silver apartment (mercury walls and floor, bubblegum-pink sofa / rug / cushion, chrome drum and lamp, pink-neon oval window). The chosen companion PNG sits on the pink cushion, center-right. Overlay frosted-pill nav. Chrome-rim glass study sheet lower-left (Skill chips + compose from 学习页; the pet is the learning agent). No today-plan checklist. At 860px and below, nav links hide and the sheet docks to the bottom 42dvh.
+- **My Pet / Home** (`pet-demo/index.html`): Full-bleed orbitable 3D liquid-silver apartment (mercury walls and floor, bubblegum-pink sofa / rug / cushion, chrome drum and lamp, pink-neon oval window). The chosen companion PNG sits on the pink cushion, center-right. Overlay frosted-pill nav (首页 active). Compact chrome-rim glass study sheet is a left column, vertically centered (Skill chips + compose; the pet is the learning agent). Clicking / focusing the compose input grows the sheet into a 学习-style workbench: left 历史任务, right chat, with 收起 / Escape to collapse. No today-plan checklist. At 860px and below, nav links hide, the sheet docks to the bottom 42dvh, and the workbench fills the viewport without the history column.
 
 ## Colors
 
@@ -225,7 +225,7 @@ Silver field, one pink voice. Pink is furniture, neon, active nav, user bubbles,
 
 ## Layout
 
-Mist pages sit in a 1400px shell with 28px side padding (16px below 720px). My Pet does not use that shell: the 3D stage is `position: fixed; inset: 0`. Overlay nav is `width: min(1280px, calc(100% - 40px))`, horizontally centered, 18px from the top. The study sheet is `left: 28px; bottom: 28px; width: min(420px, calc(100vw - 48px))`, min-height 390px, max-height `min(64vh, 680px)`. The orbit hint sits `right: 28px; bottom: 28px`. The pet reads center-right on the cushion; the sheet must not cover it.
+Mist pages sit in a 1400px shell with 28px side padding (16px below 720px). Home / My Pet does not use that shell: the 3D stage is `position: fixed; inset: 0`. Overlay nav is `width: min(1280px, calc(100% - 40px))`, horizontally centered, 18px from the top. Compact study sheet is `left: max(56px, 5.5vw); top: 50%; width: min(480px, 36vw); height: min(560px, 62vh)` with `translateY(-50%)`. Expanded workbench is `top: 88px; left: max(32px, 3vw); right: max(32px, 18vw); bottom: 28px; max-width: 1120px`. The orbit hint sits `right: 28px; bottom: 28px`. The pet reads center-right on the cushion; the compact sheet must not cover it.
 
 Daily Plan focus is the same full-bleed overlay model: `position: fixed; inset: 0; z-index: 80`. The doorway photograph fills the scene; the glass card is centered (`width: min(100%, 440px)`). After start, the window-clock sits at `top: 36%; left: 50%`, `width: min(52vw, 640px)`, aspect 1.08. The studying pet sits `left: 38%; bottom: 7%`, `width: min(28vw, 340px)` (doorway stage: `left: 22%; bottom: 10%`). A frosted HUD docks to the bottom edge during the run.
 

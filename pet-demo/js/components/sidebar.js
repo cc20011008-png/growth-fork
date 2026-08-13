@@ -23,17 +23,17 @@ export function renderSidebar(state, { active = "plan" } = {}) {
   const pet = getPet(state);
 
   host.innerHTML = `
-    <a class="side-brand fork-brand" href="../index.html">
+    <a class="side-brand fork-brand" href="./index.html">
       <span class="side-sprout">${ICONS.sprout}</span>
       <strong>成长 Fork</strong>
     </a>
     <nav class="side-nav">
-      <a href="../index.html"><span>首页</span></a>
+      <a class="on" href="./index.html"><span>首页</span></a>
+      <a href="../index.html"><span>市集</span></a>
       <a href="../my-tasks.html"><span>学习</span></a>
       <a href="../calendar.html"><span>每日计划</span></a>
       <a href="../school-zone.html"><span>学校专区</span></a>
       <a href="../campus-map.html"><span>附近 Skill 创作者</span></a>
-      <a class="on" href="./index.html"><span>我的宠物</span></a>
     </nav>
     <a class="user-entry" href="../my-growth.html" aria-label="林的主页" title="林 · 已登录">
       <img src="../assets/avatar-student.png" alt="林" width="40" height="40">
