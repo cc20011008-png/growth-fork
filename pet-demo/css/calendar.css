@@ -246,8 +246,8 @@
 .cal-mascot {
   position: absolute;
   right: -8px;
-  bottom: 28px;
-  width: min(220px, 28vw);
+  bottom: 20px;
+  width: min(300px, 36vw);
   pointer-events: none;
   filter: drop-shadow(0 18px 28px rgba(70, 76, 90, 0.14));
   z-index: 2;

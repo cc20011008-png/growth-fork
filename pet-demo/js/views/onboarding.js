@@ -11,13 +11,13 @@ export function mountOnboarding(state, { onDone }) {
   }
 
   root.hidden = false;
-  let petId = state.profile.petId || "dog";
+  let petId = "dog";
 
   root.innerHTML = "";
   const card = el("div", { className: "onboard-card glass-pane" });
   card.append(
     el("p", { className: "pill pill-pink", text: "Pet Agent Demo" }),
-    el("h1", { className: "display", text: "选一个陪你打成长仗的宠物" }),
+    el("h1", { className: "display", text: "小狗会陪你打成长仗" }),
     el("p", { className: "lead", text: "你越学习，它越懂你。今日目标、计划、Skill 与日历，都由它陪你完成。" }),
   );
 
@@ -28,14 +28,14 @@ export function mountOnboarding(state, { onDone }) {
       <input id="user-name" maxlength="12" placeholder="例如：小林" value="${state.profile.name || ""}">
     </div>
     <div class="field">
-      <label>宠物性格会跟着走</label>
-      <input value="选完宠物就出发" disabled>
+      <label>成长搭子</label>
+      <input value="小狗 · 热情行动派" disabled>
     </div>
   `;
   card.append(profile);
 
   const grid = el("div", { className: "pet-pick" });
-  PET_LIST.forEach((pet) => {
+  PET_LIST.filter((pet) => pet.id === "dog").forEach((pet) => {
     const btn = el("button", {
       className: `pet-option${pet.id === petId ? " selected" : ""}`,
       type: "button",
@@ -63,12 +63,12 @@ export function mountOnboarding(state, { onDone }) {
   const start = el("button", {
     className: "btn btn-pink",
     type: "button",
-    text: "和宠物一起出发",
+    text: "和小狗一起出发",
     on: {
       click: () => {
         const name = ($("#user-name")?.value || "").trim() || "同学";
         state.profile.name = name;
-        state.profile.petId = petId;
+        state.profile.petId = "dog";
         state.onboarded = true;
         saveState(state);
         root.hidden = true;

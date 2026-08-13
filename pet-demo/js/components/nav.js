@@ -12,7 +12,7 @@ export function renderNav({ active = "home", pet = null, userName = "同学", mo
   const host = $("#app-nav");
   if (!host) return;
 
-  const plannerName = pet ? `${pet.name}计划官` : "小猫计划官";
+  const plannerName = pet ? `${pet.name}计划官` : "小狗计划官";
 
   if (mode === "home") {
     host.className = "topbar";

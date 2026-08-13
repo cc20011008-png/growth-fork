@@ -59,9 +59,8 @@ body.pet-room-body::after {
   align-items: center;
 }
 
-.pet-room-body .brand span {
-  color: var(--ink);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+.pet-room-body .brand em {
+  color: var(--pink);
 }
 
 .pet-room-body .nav-links {
@@ -127,27 +126,29 @@ body.pet-room-body::after {
 
 .room-chat {
   position: fixed;
-  left: max(24px, calc((100vw - 1280px) / 2 + 8px));
-  bottom: 28px;
+  left: max(56px, 5.5vw);
+  top: 50%;
+  bottom: auto;
   z-index: 16;
-  width: min(420px, calc(100vw - 48px));
-  min-height: 390px;
-  max-height: min(64vh, 680px);
+  width: min(480px, 36vw);
+  height: min(560px, 62vh);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto auto;
   overflow: hidden;
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(201, 205, 212, 0.95);
   background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.5) 48%, rgba(240, 242, 246, 0.42) 100%);
+    linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(236, 238, 242, 0.5) 48%, rgba(201, 205, 212, 0.28) 100%);
   box-shadow:
-    inset 0 1px 0 #fff,
-    0 0 0 1px rgba(201, 205, 212, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(150, 156, 168, 0.28),
+    0 0 0 1px rgba(201, 205, 212, 0.7),
+    0 0 0 3px rgba(244, 245, 247, 0.55),
     0 28px 64px rgba(70, 76, 90, 0.2);
   backdrop-filter: blur(28px) saturate(170%);
   -webkit-backdrop-filter: blur(28px) saturate(170%);
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(calc(-50% + 16px));
   filter: blur(8px);
   animation: roomChatIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
@@ -155,14 +156,14 @@ body.pet-room-body::after {
 @keyframes roomChatIn {
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-50%);
     filter: blur(0);
   }
 }
 
 .room-chat.in {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(-50%);
   filter: blur(0);
 }
 
@@ -174,8 +175,8 @@ body.pet-room-body::after {
 }
 
 .room-chat-face {
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
   background: #fff;
@@ -218,8 +219,8 @@ body.pet-room-body::after {
 
 .room-msg-face,
 .room-msg-mark {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
   border-radius: 50%;
 }
@@ -271,26 +272,38 @@ body.pet-room-body::after {
 }
 
 .room-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
 }
 
 .room-skill {
-  border: 1px solid rgba(20, 20, 22, 0.08);
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #3d4148;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  border: 1px solid rgba(255, 79, 154, 0.18);
+  border-radius: 14px;
+  padding: 8px 9px;
+  background: rgba(255, 79, 154, 0.1);
+  color: var(--ink);
   font-size: 11px;
   font-weight: 700;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.room-skill svg {
+  width: 16px;
+  height: 16px;
+  color: var(--pink);
 }
 
 .room-skill:hover,
 .room-skill.on {
   color: var(--pink);
-  border-color: rgba(255, 79, 154, 0.35);
-  background: rgba(255, 79, 154, 0.1);
+  border-color: rgba(255, 79, 154, 0.45);
+  background: rgba(255, 79, 154, 0.16);
 }
 
 .room-attach {
@@ -423,10 +436,17 @@ body.pet-room-body::after {
   .room-chat {
     left: 12px;
     right: 12px;
+    top: auto;
     bottom: 12px;
     width: auto;
-    max-height: 46dvh;
+    height: auto;
+    min-height: 0;
+    max-height: 42dvh;
     border-radius: 22px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+    filter: none;
   }
   .orbit-hint {
     right: 16px;
@@ -439,11 +459,12 @@ body.pet-room-body::after {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) and (min-width: 861px) {
   .room-chat {
     opacity: 1;
-    transform: none;
+    transform: translateY(-50%);
     filter: none;
+    animation: none;
     transition: none;
   }
 }

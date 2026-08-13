@@ -28,12 +28,14 @@
       display: flex; flex-wrap: wrap; gap: 16px;
       margin-top: 14px; color: var(--muted); font-size: 13px;
     }
-    .facts b { color: var(--ink); font-weight: 700; }
+    .facts a:hover { color: var(--ink); }
+    .facts a b { color: var(--ink); }
     .id-actions { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
     .id-actions .btn { width: 100%; }
     .id-actions .btn:focus-visible,
     .school-gate .btn:focus-visible,
     .shelf-tabs button:focus-visible,
+    .creator-tabs button:focus-visible,
     .text-btn:focus-visible {
       outline: 2px solid var(--pink); outline-offset: 2px;
     }
@@ -93,11 +95,11 @@
     }
     .focus-week b { color: var(--ink); font-weight: 650; }
     .pet-pane {
-      display: grid; grid-template-columns: 92px 1fr;
+      display: grid; grid-template-columns: 128px 1fr;
       gap: 14px; align-items: center;
     }
     .pet-pane img {
-      width: 92px; height: 92px; object-fit: contain;
+      width: 128px; height: 128px; object-fit: contain;
       filter: drop-shadow(0 10px 18px rgba(20,20,22,.12));
     }
     .pet-pane b { display: block; font-size: 16px; }
@@ -273,22 +275,94 @@
       .shelf-ring .ring-value, .skill-ring .ring-value { transition: none; }
     }
 
-    .impact { margin-top: 20px; }
-    .impact-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-    .impact-card { padding: 14px; border-radius: 12px; background: rgba(255,255,255,.55); }
-    .impact-card b { display: block; font-size: 19px; }
-    .impact-card span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
-    .representative {
-      display: flex; gap: 10px; align-items: center;
-      padding: 13px; margin-top: 12px; border-radius: 12px;
+    .facts a:hover b { color: var(--pink); }
+
+    .creator-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+    .creator-tabs button {
+      padding: 7px 10px; border: 1px solid var(--line); border-radius: 99px;
+      color: var(--muted); background: rgba(255,255,255,.7); font-size: 12px;
+    }
+    .creator-tabs button.active { color: #fff; background: var(--ink); border-color: var(--ink); }
+    .creator-tabs button:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+    .creator-empty { padding: 28px 4px; color: var(--muted); font-size: 13px; }
+    .pub-row, .used-row, .save-row {
+      display: grid; gap: 4px;
+      padding: 14px 2px;
+      border-bottom: 1px solid var(--line);
+    }
+    .pub-row:first-child, .used-row:first-child, .save-row:first-child { padding-top: 12px; }
+    .pub-row:last-child, .used-row:last-child, .save-row:last-child { border-bottom: 0; padding-bottom: 2px; }
+    .pub-row:hover b, .save-row:hover b { color: var(--pink); }
+    .type-label { color: var(--pink); font-size: 11px; font-weight: 700; }
+    .pub-row b, .used-row b, .save-row b { font-size: 14px; letter-spacing: -.02em; }
+    .pub-row span, .save-row span { color: var(--muted); font-size: 12px; }
+    .used-meta { color: var(--muted); font-size: 12px; }
+    .pet-note {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 10px; align-items: start;
+      margin-top: 10px;
+    }
+    .pet-note img {
+      width: 52px; height: 52px; object-fit: contain;
+      filter: drop-shadow(0 6px 10px rgba(20,20,22,.12));
+    }
+    .pet-note p {
+      margin: 0; color: var(--ink); font-size: 13px; line-height: 1.55;
+    }
+    .pet-note em {
+      display: block; margin-top: 4px;
+      font-style: normal; color: var(--pink); font-size: 11px; font-weight: 700;
+    }
+    .bounty-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 12px;
+      padding: 12px 0 14px;
+    }
+    .bounty-head p { margin: 0; max-width: 52ch; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .bounty-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .points-chip {
+      font-size: 12px; font-weight: 700; color: var(--ink);
+      padding: 7px 12px; border-radius: 999px;
       background: var(--pink-soft);
     }
-    .representative .mini {
-      width: 36px; height: 36px; display: grid; place-items: center;
-      border-radius: 10px; color: var(--pink); background: #fff; font-size: 17px;
+    .bounty-form {
+      display: none; margin-bottom: 8px; padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
     }
-    .representative b { display: block; font-size: 13px; }
-    .representative span { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .bounty-form.open { display: grid; gap: 12px; }
+    .bounty-form label {
+      display: grid; gap: 6px;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    .bounty-form input, .bounty-form textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px;
+      background: #fff; color: var(--ink); font: inherit; font-size: 14px;
+      padding: 10px 12px; outline: none;
+    }
+    .bounty-form textarea { min-height: 88px; resize: vertical; line-height: 1.55; }
+    .bounty-form input:focus, .bounty-form textarea:focus {
+      border-color: var(--pink); box-shadow: 0 0 0 3px var(--pink-soft);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 120px; gap: 12px; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .bounty-item {
+      padding: 14px 2px;
+      border-bottom: 1px solid var(--line);
+    }
+    .bounty-item:last-child { border-bottom: 0; }
+    .bounty-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+    .bounty-item h3 { margin: 0; font-size: 15px; }
+    .reward { font-size: 12px; font-weight: 800; color: var(--pink); }
+    .bounty-item .need { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .bounty-meta {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      margin-top: 10px; color: var(--muted); font-size: 12px;
+    }
+    .bounty-meta b { color: var(--ink); }
+    .rec-list { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+    .rec-list li { font-size: 12px; color: var(--muted); }
+    .rec-list b { color: var(--ink); }
 
     .badge-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
     .badge {
@@ -330,9 +404,11 @@
       .section { padding: 17px; }
       .impact-grid, .badge-grid { grid-template-columns: 1fr; }
       .school-gate form { flex-direction: column; }
-      .pet-pane { grid-template-columns: 72px 1fr; }
+      .pet-pane { grid-template-columns: 96px 1fr; }
+      .pet-pane img { width: 96px; height: 96px; }
       .shelf-ring { width: 148px; height: 148px; }
       .shelf-ring-copy strong { font-size: 30px; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -363,9 +439,9 @@
         <div id="schoolSlot"></div>
         <p class="bio" id="profileBio">你的成长伙伴正在实习冲刺工作台整理案例。</p>
         <div class="facts">
-          <span><b>6</b> 已完成</span>
-          <span><b>2</b> 个作品</span>
-          <span><b>12</b> 收藏待开始</span>
+          <a href="campus-map.html"><b id="followMetric">0</b> 关注</a>
+          <span><b id="fanMetric">0</b> 粉丝</span>
+          <span><b id="workMetric">0</b> 个作品</span>
           <span><b id="pointsMetric">0</b> 悬赏积分</span>
         </div>
       </div>
@@ -472,20 +548,18 @@
             </div>
           </div>
         </section>
-        <section class="section glass impact">
+        <section class="section glass" id="creatorShelf">
           <div class="section-head">
-            <div><h2 class="display">我的创作影响力</h2><p>你的经验正在帮助和你一样的人。</p></div>
-            <button class="text-btn" id="createSkill">创作 Skill →</button>
+            <div><h2 class="display">我发布与用过的 Skill</h2><p>发布、用过、收藏和悬赏，都沉淀在这里。</p></div>
+            <a class="text-btn" href="create-skill.html">发布 Skill →</a>
           </div>
-          <div class="impact-grid">
-            <div class="impact-card"><b>2</b><span>已创作 Skill</span></div>
-            <div class="impact-card"><b>89</b><span>被 Fork 次数</span></div>
-            <div class="impact-card"><b>14</b><span>共创建议被采纳</span></div>
+          <div class="creator-tabs" role="tablist" id="creatorTabs">
+            <button type="button" class="active" data-creator-tab="published" role="tab" aria-selected="true">发布的 Skill</button>
+            <button type="button" data-creator-tab="used" role="tab" aria-selected="false">用过的 Skill</button>
+            <button type="button" data-creator-tab="saved" role="tab" aria-selected="false">收藏的 Skill</button>
+            <button type="button" data-creator-tab="bounty" role="tab" aria-selected="false">需求悬赏</button>
           </div>
-          <div class="representative">
-            <div class="mini">✦</div>
-            <div><b>代表作：校园公众号经历 → 内容运营简历项目</b><span>1,284 人使用 · 76% 完成率 · 帮助 27 人提交成果</span></div>
-          </div>
+          <div id="creatorPane"></div>
         </section>
       </div>
       <aside>
@@ -520,9 +594,7 @@
     const CERT_MARK = `<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#FF4F9A"/><path d="M4.4 8.2l2.3 2.3 5-5.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const SCHOOL_OPTIONS = ["北京大学","清华大学","中国人民大学","北京邮电大学","北京师范大学","北京航空航天大学","北京理工大学","中国农业大学","对外经济贸易大学","中央财经大学","北京交通大学","首都医科大学"];
     const PETS = {
-      "小猫": { mood: "温柔 · 松弛", image: "assets/companion-cat-face.png", greeting: "慢一点也没关系，我们先走一小步。" },
-      "小狗": { mood: "热情 · 行动派", image: "assets/companion-dog-transparent.png", greeting: "准备好了吗？我们现在就出发！" },
-      "水豚": { mood: "稳定 · 不焦虑", image: "assets/companion-capybara-transparent.png", greeting: "没完成也没关系，今天接着来。" }
+      "小狗": { mood: "热情 · 行动派", image: "assets/companion-dog-transparent.png", greeting: "准备好了吗？我们现在就出发！" }
     };
     const ACHIEVE_META = {
       "streak-3": { title: "连续学习 3 天", blurb: "习惯已经点着了。" },
@@ -540,7 +612,15 @@
     function readProfile() {
       try {
         const raw = localStorage.getItem(ONBOARDING_PROFILE_KEY);
-        return raw ? JSON.parse(raw) : null;
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (!parsed) return null;
+        if (parsed.pet !== "小狗" || !String(parsed.image || "").includes("dog")) {
+          parsed.pet = "小狗";
+          parsed.greeting = "准备好了吗？我们现在就出发！";
+          parsed.image = "assets/companion-dog-transparent.png";
+          persistProfile(parsed);
+        }
+        return parsed;
       } catch (_) {
         return null;
       }
@@ -758,8 +838,8 @@
     }
 
     function renderPet(profile, store) {
-      const name = profile?.pet || (store?.profile?.petId === "dog" ? "小狗" : store?.profile?.petId === "capybara" ? "水豚" : "小猫");
-      const meta = PETS[name] || PETS["小猫"];
+      const name = "小狗";
+      const meta = PETS["小狗"];
       const greeting = profile?.greeting || meta.greeting;
       const image = meta.image;
       const level = store?.bond?.level;
@@ -797,8 +877,156 @@
       paintShelfStats(store);
     }
 
-    document.getElementById("pointsMetric").textContent = readPoints();
-    hydrateProfile(readProfile());
+    function paintIdentityMetrics() {
+      document.getElementById("followMetric").textContent = myFollowingCount();
+      document.getElementById("fanMetric").textContent = myFollowerCount();
+      document.getElementById("workMetric").textContent = myPublishedSkills().length;
+      document.getElementById("pointsMetric").textContent = readPoints();
+    }
+
+    function bountyStatusLabel(b) {
+      if (b.status === "delivered") return "已交付";
+      return "征集中";
+    }
+
+    function renderCreatorPane(tab, formOpen) {
+      const pane = document.getElementById("creatorPane");
+      if (tab === "published") {
+        const list = myPublishedSkills();
+        pane.innerHTML = list.length
+          ? list.map(s => `
+              <a class="pub-row" href="${esc(s.href)}">
+                <span class="type-label">${esc(s.typeLabel)}</span>
+                <b>${esc(s.title)}</b>
+                <span>${esc(s.users)} 人使用</span>
+              </a>`).join("")
+          : `<p class="creator-empty">还没有发布 Skill。语音访谈生成后，会出现在这里。</p>`;
+        return;
+      }
+      if (tab === "used") {
+        const list = readPetReviews();
+        pane.innerHTML = list.length
+          ? list.map(r => `
+              <article class="used-row">
+                <span class="type-label">${esc(r.typeLabel)}</span>
+                <b><a href="${esc(r.href)}">${esc(r.skillTitle)}</a></b>
+                <p class="used-meta">学习对话框完成「${esc(r.taskTitle)}」 · ${esc(r.completedAt)}</p>
+                <div class="pet-note">
+                  <img src="${esc(r.petImage)}" alt="">
+                  <div>
+                    <p>「${esc(r.note)}」</p>
+                    <em>${esc(r.petName)} · 亲自沉淀 · ${esc(r.verdict)}</em>
+                  </div>
+                </div>
+              </article>`).join("")
+          : `<p class="creator-empty">还没有用过的 Skill。在学习对话框里把一次任务跑完，宠物会来这里写下评价。</p>`;
+        return;
+      }
+      if (tab === "saved") {
+        const list = mySavedSkills();
+        pane.innerHTML = list.length
+          ? list.map(s => `
+              <a class="save-row" href="${esc(s.href)}">
+                <span class="type-label">${esc(s.typeLabel)}</span>
+                <b>${esc(s.title)}</b>
+                <span>${esc(s.users)} 人使用 · 已收藏</span>
+              </a>`).join("")
+          : `<p class="creator-empty">还没有收藏。去首页或学校专区把想试的 Skill 收进来。</p>`;
+        return;
+      }
+
+      const list = bountiesFor(MY_CREATOR_ID);
+      pane.innerHTML = `
+        <div class="bounty-head">
+          <p>你需要什么样的 Skill？说清楚场景与产出，附近创作者可接单制作，或推荐合适 Skill。</p>
+          <div class="bounty-tools">
+            <span class="points-chip">我的积分 · ${readPoints()}</span>
+            <button class="btn btn-pink" type="button" id="toggleBountyForm">${formOpen ? "收起表单" : "发布悬赏"}</button>
+          </div>
+        </div>
+        <form class="bounty-form ${formOpen ? "open" : ""}" id="selfBountyForm">
+          <label>需求标题
+            <input name="title" maxlength="48" required placeholder="例如：课设怎么讲成实习作品">
+          </label>
+          <label>具体需要什么
+            <textarea name="need" maxlength="280" required placeholder="现状、卡点、希望 Skill 帮你做到哪一步"></textarea>
+          </label>
+          <div class="form-row">
+            <label>悬赏积分
+              <input name="reward" type="number" min="20" max="500" step="10" value="80">
+            </label>
+            <div class="form-actions" style="align-self:end">
+              <button class="btn btn-ghost" type="button" id="cancelBountyForm">取消</button>
+              <button class="btn btn-ink" type="submit">发布</button>
+            </div>
+          </div>
+        </form>
+        <div id="selfBountyList"></div>
+      `;
+      const host = document.getElementById("selfBountyList");
+      host.innerHTML = list.length
+        ? list.map(b => {
+            const recs = recsFor(b.id);
+            return `
+              <article class="bounty-item">
+                <div class="bounty-top">
+                  <h3>${esc(b.title)}</h3>
+                  <span class="reward">${b.reward} 积分</span>
+                </div>
+                <p class="need">${esc(b.need)}</p>
+                <div class="bounty-meta">
+                  <span>状态 <b>${bountyStatusLabel(b)}</b></span>
+                  <span>发布于 ${esc(b.createdAt)}</span>
+                  <span>推荐 <b>${recs.length}</b></span>
+                </div>
+                ${recs.length ? `<ul class="rec-list">${recs.map(r => `<li><b>${esc(r.from)}</b> 推荐了「${esc(r.skillTitle)}」</li>`).join("")}</ul>` : `<p class="used-meta" style="margin-top:8px">等待同学接单或推荐。</p>`}
+              </article>`;
+          }).join("")
+        : `<p class="creator-empty">还没有发布需求悬赏。</p>`;
+    }
+
+    function renderCreatorShelf() {
+      const tabs = document.getElementById("creatorTabs");
+      const counts = {
+        published: myPublishedSkills().length,
+        used: readPetReviews().length,
+        saved: mySavedSkills().length,
+        bounty: bountiesFor(MY_CREATOR_ID).length
+      };
+      const labels = {
+        published: "发布的 Skill",
+        used: "用过的 Skill",
+        saved: "收藏的 Skill",
+        bounty: "需求悬赏"
+      };
+      tabs.querySelectorAll("[data-creator-tab]").forEach(btn => {
+        const key = btn.dataset.creatorTab;
+        btn.textContent = `${labels[key]} · ${counts[key]}`;
+      });
+      renderCreatorPane(creatorTab, bountyFormOpen);
+      const toggle = document.getElementById("toggleBountyForm");
+      const cancel = document.getElementById("cancelBountyForm");
+      const form = document.getElementById("selfBountyForm");
+      if (toggle) toggle.addEventListener("click", () => { bountyFormOpen = !bountyFormOpen; renderCreatorShelf(); });
+      if (cancel) cancel.addEventListener("click", () => { bountyFormOpen = false; renderCreatorShelf(); });
+      if (form) form.addEventListener("submit", event => {
+        event.preventDefault();
+        const fd = new FormData(form);
+        const title = String(fd.get("title") || "").trim();
+        const need = String(fd.get("need") || "").trim();
+        const reward = Number(fd.get("reward") || 80);
+        if (!title || !need) return;
+        postBounty(MY_CREATOR_ID, title, need, reward);
+        bountyFormOpen = false;
+        creatorTab = "bounty";
+        const toast = document.getElementById("toast");
+        toast.textContent = "悬赏已发布，等待接单或推荐";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2200);
+        paintIdentityMetrics();
+        renderCreatorShelf();
+      });
+    }
 
     document.querySelectorAll(".shelf-tabs button").forEach(button => {
       button.addEventListener("click", () => {
@@ -817,7 +1045,23 @@
         panel.hidden = false;
       });
     });
-    document.getElementById("createSkill").addEventListener("click", () => { window.location.href = "create-skill.html"; });
+    let creatorTab = "published";
+    let bountyFormOpen = false;
+    paintIdentityMetrics();
+    hydrateProfile(readProfile());
+    renderCreatorShelf();
+    document.getElementById("creatorTabs").addEventListener("click", event => {
+      const btn = event.target.closest("[data-creator-tab]");
+      if (!btn) return;
+      creatorTab = btn.dataset.creatorTab;
+      bountyFormOpen = false;
+      document.querySelectorAll("#creatorTabs [data-creator-tab]").forEach(item => {
+        const on = item === btn;
+        item.classList.toggle("active", on);
+        item.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      renderCreatorShelf();
+    });
     document.getElementById("openCurrent").addEventListener("click", () => { const toast = document.getElementById("toast"); toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 2200); });
 
     (function ingestMatch() {

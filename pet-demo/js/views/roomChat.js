@@ -2,6 +2,14 @@ import { $, el, toast } from "../lib/dom.js";
 import { getPet, saveState } from "../lib/store.js";
 import { SKILLS } from "../config/skills.js";
 
+const SKILL_ICON = {
+  "literature-review": `<svg viewBox="0 0 24 24"><path d="M5 5h9v14H5zM14 8h5v11h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  "resume-polish": `<svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  "cold-email": `<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  "interview-drill": `<svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 20c1.2-3 3.2-4.5 6-4.5S16.8 17 18 20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
+  "data-clean": `<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  "study-outline": `<svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h10M5 18h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+};
 const PLUS = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
 const SEND = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 18-2.5-7L4 12z"/></svg>`;
 
@@ -41,14 +49,10 @@ export function mountRoomChat(state) {
   root.innerHTML = `
     <header class="room-chat-head">
       <img class="room-chat-face" src="${pet.faceImage || pet.image}" alt="">
-      <div>
-        <h2>和我聊聊今天的学习</h2>
-        <p>${pet.name} · ${pet.personality}</p>
-      </div>
+      <h2>和我聊聊今天的学习</h2>
     </header>
     <div class="room-messages" id="room-messages"></div>
     <section class="room-help" aria-label="可用 Skill">
-      <p>我可以帮你</p>
       <div class="room-skills" id="room-skills"></div>
     </section>
     <div class="room-attach" id="room-attach" hidden></div>
@@ -73,7 +77,7 @@ export function mountRoomChat(state) {
   function renderSkills() {
     skillHost.innerHTML = SKILLS.map((skill) => {
       const on = activeSkills.includes(skill.title) ? " on" : "";
-      return `<button class="room-skill${on}" type="button" data-skill="${esc(skill.title)}">${esc(skill.title.replace(/ Skill$/, ""))}</button>`;
+      return `<button class="room-skill${on}" type="button" data-skill="${esc(skill.title)}">${SKILL_ICON[skill.id] || ""}${esc(skill.title.replace(/ Skill$/, ""))}</button>`;
     }).join("");
     skillHost.querySelectorAll(".room-skill").forEach((btn) => {
       btn.addEventListener("click", () => pickSkill(btn.dataset.skill));

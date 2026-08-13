@@ -749,6 +749,15 @@
       const landing = isFork
         ? (remixLanding[forkId] || forkId)
         : "resume";
+      if (typeof recordPublishedSkill === "function") {
+        recordPublishedSkill({
+          id: "pub-" + Date.now(),
+          title: document.getElementById("outTitle").textContent || "新的成长 Skill",
+          typeLabel: isFork ? "二创 Skill" : "单 Skill",
+          users: "0",
+          href: `skill-detail.html?id=${landing}`
+        });
+      }
       setTimeout(() => { location.href = `skill-detail.html?id=${landing}`; }, 900);
     });
 

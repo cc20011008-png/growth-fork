@@ -340,6 +340,15 @@
       reward: 120,
       status: "open",
       createdAt: "2026-08-07"
+    },
+    {
+      id: "b-lin-1",
+      ownerId: "lin",
+      title: "把公众号运营案例收成可投递作品",
+      need: "已有第一版案例，缺数据和岗位口径。需要能追问指标、再压成简历项目的 Skill。",
+      reward: 80,
+      status: "open",
+      createdAt: "2026-08-11"
     }
   ];
 
@@ -469,5 +478,143 @@
     }
     var total = root.addPoints(bounty.reward);
     return { ok: true, points: bounty.reward, total: total };
+  };
+
+  /* —— 当前登录用户「林」的主页数据 —— */
+  root.MY_CREATOR_ID = "lin";
+  root.MY_FOLLOWERS_BASE = 48;
+  var REVIEW_KEY = "growth-fork-pet-reviews";
+  var PUBLISHED_KEY = "growth-fork-my-published";
+  var TASK_DONE_KEY = "growth-fork-task-done";
+
+  root.myFollowingCount = function myFollowingCount() {
+    return root.readFollows().length;
+  };
+
+  root.myFollowerCount = function myFollowerCount() {
+    return root.MY_FOLLOWERS_BASE;
+  };
+
+  function resolveCompanion() {
+    return {
+      name: "小狗",
+      image: "assets/companion-dog-transparent.png"
+    };
+  }
+
+  root.resolveCompanion = resolveCompanion;
+
+  root.composePetReviewNote = function composePetReviewNote(skillTitle, petName) {
+    var base = "这次你把任务跑完了。我记下了卡点和产出，下一场同类事情可以少绕一圈。";
+    if (/社团|简历|项目化/.test(skillTitle)) base = "你把活动数据补上之后，这条路径才真正跑通。下一场先写结果数字，STAR 会更稳。";
+    else if (/综述|文献/.test(skillTitle)) base = "材料已经够用。缺口那一栏比堆论文标题更值钱，下一场开写先钉住它。";
+    else if (/运营|实习/.test(skillTitle)) base = "案例有了第一版。把阅读和互动数字写进去，这条实习路径才站得住。";
+    else if (/面试/.test(skillTitle)) base = "答法已经能开口。下一轮先讲结果，再补行动，追问会稳很多。";
+    return "跑完了！" + base;
+  };
+
+  var seedReviews = [
+    {
+      skillId: "resume",
+      skillTitle: "社团经历项目化表达",
+      href: "skill-detail.html?id=resume",
+      typeLabel: "单 Skill",
+      taskTitle: "社团经历项目化",
+      completedAt: "2026-08-12",
+      petName: "小狗",
+      petImage: "assets/companion-dog-transparent.png",
+      verdict: "跑通了",
+      note: "跑完了！你把活动数据补上之后，这条路径才真正跑通。下一场先写结果数字，STAR 会更稳。"
+    }
+  ];
+
+  root.readPetReviews = function readPetReviews() {
+    var user = readJson(REVIEW_KEY, []);
+    if (!Array.isArray(user)) user = [];
+    var map = {};
+    seedReviews.concat(user).forEach(function (r) {
+      map[String(r.skillId) + "::" + String(r.taskTitle)] = Object.assign({}, r, {
+        petName: "小狗",
+        petImage: "assets/companion-dog-transparent.png"
+      });
+    });
+    return Object.keys(map).map(function (k) { return map[k]; })
+      .sort(function (a, b) { return String(b.completedAt).localeCompare(String(a.completedAt)); });
+  };
+
+  root.recordPetSkillReview = function recordPetSkillReview(payload) {
+    var pet = resolveCompanion();
+    var skillTitle = String((payload && payload.skillTitle) || "已调用 Skill");
+    var taskTitle = String((payload && payload.taskTitle) || skillTitle);
+    var skillId = String((payload && payload.skillId) || "general");
+    var item = {
+      skillId: skillId,
+      skillTitle: skillTitle,
+      href: (payload && payload.href) || ("skill-detail.html?id=" + encodeURIComponent(skillId)),
+      typeLabel: (payload && payload.typeLabel) || "单 Skill",
+      taskTitle: taskTitle,
+      completedAt: new Date().toISOString().slice(0, 10),
+      petName: pet.name,
+      petImage: pet.image,
+      verdict: "跑通了",
+      note: root.composePetReviewNote(skillTitle, pet.name)
+    };
+    var list = readJson(REVIEW_KEY, []);
+    if (!Array.isArray(list)) list = [];
+    list = list.filter(function (r) { return !(r.skillId === item.skillId && r.taskTitle === item.taskTitle); });
+    list.unshift(item);
+    writeJson(REVIEW_KEY, list);
+    return item;
+  };
+
+  var seedPublished = [
+    skill("resume", "校园公众号经历 → 内容运营简历项目", { typeLabel: "单 Skill", users: "1,284" }),
+    skill("demo", "竞赛 Demo 一周共创营", { typeLabel: "组合路径", users: "493" })
+  ];
+
+  root.myPublishedSkills = function myPublishedSkills() {
+    var extra = readJson(PUBLISHED_KEY, []);
+    if (!Array.isArray(extra)) extra = [];
+    var map = {};
+    seedPublished.concat(extra).forEach(function (s) { map[s.id] = s; });
+    return Object.keys(map).map(function (k) { return map[k]; });
+  };
+
+  root.recordPublishedSkill = function recordPublishedSkill(entry) {
+    var list = readJson(PUBLISHED_KEY, []);
+    if (!Array.isArray(list)) list = [];
+    var item = Object.assign({
+      id: "pub-" + Date.now(),
+      typeLabel: "单 Skill",
+      users: "0",
+      href: "skill-detail.html?id=resume"
+    }, entry || {});
+    list = list.filter(function (s) { return s.id !== item.id; });
+    list.unshift(item);
+    writeJson(PUBLISHED_KEY, list);
+    return item;
+  };
+
+  root.mySavedSkills = function mySavedSkills() {
+    return [
+      skill("research", "科研入门：从读论文到找选题", { typeLabel: "专家路径", users: "672" }),
+      skill("exam", "期末复习计划生成器", { users: "3,214" })
+    ];
+  };
+
+  root.readDoneTasks = function readDoneTasks() {
+    var list = readJson(TASK_DONE_KEY, ["社团经历项目化"]);
+    return Array.isArray(list) ? list : ["社团经历项目化"];
+  };
+
+  root.markTaskDone = function markTaskDone(title) {
+    var list = root.readDoneTasks();
+    if (list.indexOf(title) === -1) list.push(title);
+    writeJson(TASK_DONE_KEY, list);
+    return list;
+  };
+
+  root.hasPetReviewForTask = function hasPetReviewForTask(taskTitle) {
+    return root.readPetReviews().some(function (r) { return r.taskTitle === taskTitle; });
   };
 })(window);

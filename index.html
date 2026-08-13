@@ -75,7 +75,7 @@
     .pet-step { grid-template-rows:auto 1fr auto; gap:24px; padding:34px 18px 8px; text-align:center; }
     .pet-heading h2 { margin:0; font-size:clamp(28px,3vw,42px); letter-spacing:-.04em; }
     .pet-heading p { margin:9px 0 0; color:var(--muted); font-size:14px; }
-    .pet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:stretch; }
+    .pet-grid { display:grid; grid-template-columns:minmax(240px, 420px); justify-content:center; gap:16px; align-items:stretch; }
     .pet-card {
       position:relative; overflow:hidden; border:1px solid rgba(20,20,22,.08); border-radius:26px;
       padding:0 0 17px; background:rgba(255,255,255,.62); color:var(--ink); text-align:left;
@@ -84,7 +84,7 @@
     }
     .pet-card:hover { transform:translateY(-5px); }
     .pet-card.selected { border-color:var(--pink); box-shadow:0 16px 36px rgba(255,79,154,.17), inset 0 0 0 2px rgba(255,79,154,.15); transform:translateY(-5px); }
-    .pet-image { width:100%; aspect-ratio:1.25/1; display:block; object-fit:cover; object-position:center 42%; }
+    .pet-image { width:100%; aspect-ratio:1.05/1; display:block; object-fit:cover; object-position:center 38%; transform:scale(1.12); transform-origin:center 60%; }
     .pet-card-copy {
       flex:1; min-width:0; padding:16px 17px 0;
       display:grid; grid-template-rows:auto auto auto; align-content:start; gap:7px;
@@ -388,8 +388,8 @@
     .hero-visual img.companion-hero {
       position: relative;
       z-index: 1;
-      width: min(480px, 96%);
-      max-height: 560px;
+      width: min(580px, 108%);
+      max-height: 640px;
       height: auto;
       object-fit: contain;
       object-position: center bottom;
@@ -622,7 +622,7 @@
       .pet-quote { min-height:56px; padding:8px 9px; font-size:11px; line-height:1.5; }
       .hero { grid-template-columns: 1fr; min-height: 0; padding: 8px 18px 24px; }
       .hero-visual { min-height: 340px; order: -1; }
-      .hero-visual img.companion-hero { width:min(360px,82%); max-height:350px; }
+      .hero-visual img.companion-hero { width:min(420px,92%); max-height:400px; }
       .companion-backdrop .nest { width: min(420px, 88%); right: 6%; bottom: 10%; }
       .path-rail { grid-template-columns: 1fr; }
       .path-tile, .path-tile.featured { min-height: 220px; }
@@ -639,7 +639,7 @@
       .hero-copy { max-width: 450px; }
       .hero h1 { font-size: clamp(38px, 5.2vw, 48px); }
       .hero-visual { min-height: 460px; order: 0; align-items: end; }
-      .hero-visual img.companion-hero { width: min(420px, 120%); max-height: 470px; }
+      .hero-visual img.companion-hero { width: min(500px, 128%); max-height: 540px; }
     }
     @media (max-width: 640px) {
       .onboarding { padding:0; display:block; }
@@ -651,8 +651,8 @@
       .field.full { grid-column:auto; }
       .pet-step { padding:28px 0 8px; }
       .pet-grid { grid-template-columns:1fr; }
-      .pet-card { display:grid; grid-template-columns:120px 1fr; padding:0; min-height:120px; }
-      .pet-image { width:120px; height:100%; aspect-ratio:auto; }
+      .pet-card { display:grid; grid-template-columns:160px 1fr; padding:0; min-height:148px; }
+      .pet-image { width:160px; height:100%; aspect-ratio:auto; transform:scale(1.18); }
       .pet-card-copy { padding:15px 14px; align-self:stretch; }
       .pet-quote { min-height:0; margin-top:2px; padding:7px 9px; }
       .pet-check { top:10px; right:10px; }
@@ -764,35 +764,25 @@
             </div>
           </div>
           <p class="form-error" id="profileError" role="alert"></p>
-          <button class="onboarding-next" type="submit">下一步 · 选择成长搭子</button>
+          <button class="onboarding-next" type="submit">下一步 · 确认小狗搭子</button>
         </form>
       </div>
 
       <div class="onboarding-step pet-step" id="petStep">
         <div class="pet-heading">
-          <h2 class="display">谁来陪你走这一程？</h2>
-          <p id="profileSummary">选择一位搭子，它会用自己的方式陪你成长。</p>
+          <h2 class="display">小狗会陪你走这一程</h2>
+          <p id="profileSummary">小狗会用自己的方式陪你成长。</p>
         </div>
         <div class="pet-grid" id="petGrid">
-          <button class="pet-card" type="button" data-pet="小猫" data-greeting="慢一点也没关系，我们先走一小步。" data-image="assets/companion-cat-transparent.png">
-            <span class="pet-check">✓</span>
-            <img class="pet-image" src="assets/companion-cat.png" alt="温柔的小猫成长搭子">
-            <span class="pet-card-copy"><h3>小猫</h3><p class="pet-personality">温柔 · 松弛</p><p class="pet-quote">“慢一点也没关系，我们先走一小步。”</p></span>
-          </button>
-          <button class="pet-card" type="button" data-pet="小狗" data-greeting="准备好了吗？我们现在就出发！" data-image="assets/companion-dog-transparent.png">
+          <button class="pet-card selected" type="button" data-pet="小狗" data-greeting="准备好了吗？我们现在就出发！" data-image="assets/companion-dog-transparent.png">
             <span class="pet-check">✓</span>
             <img class="pet-image" src="assets/companion-dog.png" alt="热情的小狗成长搭子">
             <span class="pet-card-copy"><h3>小狗</h3><p class="pet-personality">热情 · 行动派</p><p class="pet-quote">“准备好了吗？我们现在就出发！”</p></span>
           </button>
-          <button class="pet-card" type="button" data-pet="水豚" data-greeting="没完成也没关系，今天接着来。" data-image="assets/companion-capybara-transparent.png">
-            <span class="pet-check">✓</span>
-            <img class="pet-image" src="assets/companion-capybara.png" alt="稳定的水豚成长搭子">
-            <span class="pet-card-copy"><h3>水豚</h3><p class="pet-personality">稳定 · 不焦虑</p><p class="pet-quote">“没完成也没关系，今天接着来。”</p></span>
-          </button>
         </div>
         <div class="pet-actions">
           <button class="pet-back" type="button" id="petBack">← 修改资料</button>
-          <button class="start-button" type="button" id="startGrowth" disabled>选择一位搭子</button>
+          <button class="start-button" type="button" id="startGrowth">和小狗一起出发</button>
         </div>
       </div>
     </div>
@@ -858,7 +848,7 @@
           </div>
         </div>
         <div class="hero-visual">
-          <img class="companion-hero" id="heroCompanion" src="assets/companion-cat-transparent.png" alt="你的成长搭子" width="1254" height="1254">
+          <img class="companion-hero" id="heroCompanion" src="assets/companion-dog-transparent.png" alt="小狗成长搭子" width="1254" height="1254">
         </div>
         <section class="skill-workspace" id="skillWorkspace" aria-label="Skill 对话工作台">
           <aside class="task-history">
@@ -925,20 +915,34 @@
     const stepNumber = document.getElementById("stepNumber");
     const onboardingProgress = document.getElementById("onboardingProgress");
     const startGrowth = document.getElementById("startGrowth");
-    let selectedPet = null;
+    let selectedPet = document.querySelector(".pet-card");
     let draftProfile = null;
+    const DOG_COMPANION = {
+      pet: "小狗",
+      greeting: "准备好了吗？我们现在就出发！",
+      image: "assets/companion-dog-transparent.png"
+    };
+
+    function persistOnboardingProfile(profile) {
+      localStorage.setItem(ONBOARDING_PROFILE_KEY, JSON.stringify(profile));
+    }
+
+    function withDog(profile) {
+      if (!profile) return profile;
+      const next = { ...profile, ...DOG_COMPANION };
+      if (profile.pet !== "小狗" || profile.image !== next.image) {
+        persistOnboardingProfile(next);
+      }
+      return next;
+    }
 
     function readOnboardingProfile() {
       try {
         const raw = localStorage.getItem(ONBOARDING_PROFILE_KEY);
-        return raw ? JSON.parse(raw) : null;
+        return withDog(raw ? JSON.parse(raw) : null);
       } catch (_) {
         return null;
       }
-    }
-
-    function persistOnboardingProfile(profile) {
-      localStorage.setItem(ONBOARDING_PROFILE_KEY, JSON.stringify(profile));
     }
 
     function applyCompanion(profile) {
@@ -992,7 +996,11 @@
         return;
       }
       draftProfile = { school, grade, major, need };
-      document.getElementById("profileSummary").textContent = `${school} · ${grade} · ${major} · ${need}，选择一位搭子陪你出发。`;
+      document.getElementById("profileSummary").textContent = `${school} · ${grade} · ${major} · ${need}，小狗会陪你出发。`;
+      selectedPet = document.querySelector(".pet-card");
+      if (selectedPet) selectedPet.classList.add("selected");
+      startGrowth.disabled = false;
+      startGrowth.textContent = "和小狗一起出发";
       profileStep.classList.remove("active");
       petStep.classList.add("active");
       stepNumber.textContent = "02";
@@ -1023,9 +1031,7 @@
       const profile = {
         ...draftProfile,
         schoolVerified: true,
-        pet: selectedPet.dataset.pet,
-        greeting: selectedPet.dataset.greeting,
-        image: selectedPet.dataset.image,
+        ...DOG_COMPANION,
         completedAt: Date.now()
       };
       persistOnboardingProfile(profile);

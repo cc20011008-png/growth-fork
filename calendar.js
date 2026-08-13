@@ -316,8 +316,8 @@ const SKILL_CATALOG = [
     badge: "可运行",
     blurb: "把进展拆成一页一结论的幻灯片结构，适合组会汇报。",
     image: "assets/skill-icon-ppt.png?v=ls2",
-    avatar: "assets/calendar-pet-avatar.png",
-    author: "小猫计划官",
+    avatar: "assets/companion-dog-transparent.png",
+    author: "小狗计划官",
     role: "汇报结构助手",
     users: "2,960",
     rate: "81%",
@@ -332,8 +332,8 @@ const SKILL_CATALOG = [
     badge: "可运行",
     blurb: "把 PPT 收成 3 分钟口播稿，标出该强调的证据。",
     image: "assets/skill-icon-speaker.png?v=ls2",
-    avatar: "assets/calendar-pet-avatar.png",
-    author: "小猫计划官",
+    avatar: "assets/companion-dog-transparent.png",
+    author: "小狗计划官",
     role: "组会发言教练",
     users: "1,874",
     rate: "79%",
@@ -348,8 +348,8 @@ const SKILL_CATALOG = [
     badge: "可运行",
     blurb: "把模糊目标拆成可执行学习块，适合复盘和下一步安排。",
     image: "assets/skill-icon-study.png?v=ls2",
-    avatar: "assets/calendar-pet-avatar.png",
-    author: "小猫计划官",
+    avatar: "assets/companion-dog-transparent.png",
+    author: "小狗计划官",
     role: "学习拆解助手",
     users: "5,430",
     rate: "83%",
@@ -519,14 +519,15 @@ if (planRoot || gridRoot) {
     capybara: { name: "水豚", src: "assets/focus-study-capybara.png" },
   };
 
-  function readPetId() {
+  function currentFocusPet() {
     try {
       const raw = localStorage.getItem("gf-pet-demo-v3") || localStorage.getItem("gf-pet-demo-v1");
-      const parsed = raw ? JSON.parse(raw) : null;
-      return parsed?.profile?.petId || "cat";
+      const petId = raw ? JSON.parse(raw)?.profile?.petId : "";
+      if (petId && FOCUS_PETS[petId]) return FOCUS_PETS[petId];
     } catch {
-      return "cat";
+      /* pet demo store is optional */
     }
+    return FOCUS_PETS.dog;
   }
 
   function formatRemain(sec) {
@@ -561,7 +562,7 @@ if (planRoot || gridRoot) {
 
   function mountFocusRoom() {
     if (focus.root) return focus.root;
-    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const pet = currentFocusPet();
     const chips = FOCUS_DURATIONS.map((n) => (
       `<button type="button" class="focus-chip" data-mins="${n}" aria-pressed="${n === 25 ? "true" : "false"}">${n}分</button>`
     )).join("");
@@ -581,11 +582,11 @@ if (planRoot || gridRoot) {
         FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
       -->
       <div class="focus-scene">
-        <img class="focus-bg" src="assets/pet-home-room-bg.png" alt="">
+        <img class="focus-bg focus-bg-door" src="assets/focus-threshold-bg.png" alt="">
+        <img class="focus-bg focus-bg-run" src="assets/focus-session-bg.png" alt="">
         <div class="focus-window">
-          <svg class="focus-ring" viewBox="0 0 200 220" aria-hidden="true">
-            <ellipse class="focus-ring-track" cx="100" cy="110" rx="86" ry="102"/>
-            <ellipse class="focus-ring-arc" id="focus-arc" cx="100" cy="110" rx="86" ry="102" pathLength="1"/>
+          <svg class="focus-arc" viewBox="0 0 200 200" aria-hidden="true">
+            <circle class="focus-arc-stroke" id="focus-arc" cx="100" cy="100" r="94" pathLength="100"/>
           </svg>
           <div class="focus-clock-stack">
             <p class="focus-clock" id="focus-clock">25:00</p>
@@ -601,7 +602,7 @@ if (planRoot || gridRoot) {
         </button>
         <button type="button" class="focus-pill" id="focus-fs">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg>
-          全屏
+          <span>全屏</span>
         </button>
       </div>
       <div class="focus-door" id="focus-door">
@@ -640,8 +641,8 @@ if (planRoot || gridRoot) {
     });
     document.addEventListener("fullscreenchange", () => {
       focus.root?.classList.toggle("is-fs", Boolean(document.fullscreenElement));
-      const btn = document.getElementById("focus-fs");
-      if (btn) btn.lastChild.textContent = document.fullscreenElement ? " 退出全屏" : " 全屏";
+      const label = document.querySelector("#focus-fs span");
+      if (label) label.textContent = document.fullscreenElement ? "退出全屏" : "全屏";
     });
     window.addEventListener("keydown", (event) => {
       if (!focus.root?.classList.contains("show")) return;
@@ -677,7 +678,7 @@ if (planRoot || gridRoot) {
     const arc = document.getElementById("focus-arc");
     if (arc && focus.total) {
       const p = Math.max(0, Math.min(1, focus.remain / focus.total));
-      arc.style.strokeDashoffset = String(1 - p);
+      arc.style.strokeDasharray = `${(32 * p).toFixed(2)} 100`;
     }
   }
 
@@ -686,7 +687,7 @@ if (planRoot || gridRoot) {
     const item = record.todos.find((todo) => todo.id === itemId);
     if (!item || item.done) return;
     const root = mountFocusRoom();
-    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const pet = currentFocusPet();
     focus.itemId = item.id;
     selectFocusMins(25);
     document.getElementById("focus-pet").src = pet.src;
@@ -716,11 +717,6 @@ if (planRoot || gridRoot) {
     } catch {
       focus.wake = null;
     }
-    try {
-      await focus.root.requestFullscreen();
-    } catch {
-      /* user can still tap 全屏 */
-    }
   }
 
   function stopFocusTimer() {
@@ -742,7 +738,7 @@ if (planRoot || gridRoot) {
       persistDay(selected, record);
     }
     addBondMinutes(minutes);
-    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const pet = currentFocusPet();
     document.getElementById("focus-result-title").textContent = "专注完成";
     document.getElementById("focus-result-copy").textContent = `${pet.name}陪你坐完了 ${minutes} 分钟。这件事已勾进今日计划。`;
     setFocusStage("done");
@@ -752,7 +748,7 @@ if (planRoot || gridRoot) {
   function breakFocusRound(reason) {
     if (focus.stage !== "run") return;
     stopFocusTimer();
-    const pet = FOCUS_PETS[readPetId()] || FOCUS_PETS.cat;
+    const pet = currentFocusPet();
     const copy = reason === "hide"
       ? `切走页面会打断这一轮。${pet.name}还在书桌前等你回来。`
       : `中途离开会打断这一轮。任务仍留在日计划里。`;

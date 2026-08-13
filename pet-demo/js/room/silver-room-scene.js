@@ -75,7 +75,7 @@ export class SilverPetRoomScene {
     this.timeUniform = { value: 0 };
     this.clock = new THREE.Clock();
     this.raf = 0;
-    this.petMesh = null;
+    this.userMoved = false;
     this.#onResize = () => this.resize();
   }
 
@@ -102,22 +102,23 @@ export class SilverPetRoomScene {
     pmrem.dispose();
 
     this.camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 60);
-    this.camera.position.set(5.4, 2.55, 7.1);
+    this.camera.position.set(-0.35, 2.48, 7.55);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.06;
-    this.controls.target.set(0.45, 0.92, 0.15);
+    this.controls.target.set(-0.05, 1.05, 0.25);
     this.controls.minDistance = 3.4;
     this.controls.maxDistance = 11;
     this.controls.minPolarAngle = 0.38;
     this.controls.maxPolarAngle = Math.PI / 2.08;
-    this.controls.maxAzimuthAngle = Math.PI / 1.55;
-    this.controls.minAzimuthAngle = -0.2;
+    this.controls.maxAzimuthAngle = 0.85;
+    this.controls.minAzimuthAngle = -1.15;
     this.controls.autoRotate = !this.reducedMotion;
     this.controls.autoRotateSpeed = 0.35;
     this.controls.addEventListener("start", () => {
       this.controls.autoRotate = false;
+      this.userMoved = true;
     });
 
     this.#lights();
@@ -147,6 +148,15 @@ export class SilverPetRoomScene {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    if (!this.userMoved) {
+      if (width < 860) {
+        this.camera.position.set(0.6, 2.7, 6.5);
+        this.controls.target.set(0.9, 1.5, 0.25);
+      } else {
+        this.camera.position.set(-0.35, 2.48, 7.55);
+        this.controls.target.set(-0.05, 1.05, 0.25);
+      }
+    }
   }
 
   stop() {
@@ -269,53 +279,50 @@ export class SilverPetRoomScene {
 
     this.#window(room, windowMap);
     this.#blobs(room);
-    this.#art(room);
     this.#rug(room, rug);
     this.#sofa(room);
-    this.#ottoman(room);
-    this.#bed(room);
     this.#pedestal(room);
     this.#lamp(room);
     await this.#pet(room);
   }
 
   #window(room, map) {
-    const frame = new THREE.Mesh(
-      new THREE.TorusGeometry(1.28, 0.07, 16, 80),
-      new THREE.MeshPhysicalMaterial({
-        color: 0xff4f9a,
-        emissive: 0xff4f9a,
-        emissiveIntensity: 0.55,
-        roughness: 0.28,
-        metalness: 0.2,
-      }),
-    );
-    frame.position.set(0.55, 2.55, -4.08);
-    frame.scale.set(1.55, 1, 1);
+    const neon = new THREE.MeshPhysicalMaterial({
+      color: 0xff4f9a,
+      emissive: 0xff4f9a,
+      emissiveIntensity: 0.7,
+      roughness: 0.22,
+      metalness: 0.15,
+    });
+    const frame = new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.055, 18, 96), neon);
+    frame.position.set(1.7, 2.72, -4.06);
+    frame.scale.set(1.78, 1, 1);
     room.add(frame);
+    const inner = new THREE.Mesh(new THREE.TorusGeometry(1.48, 0.016, 12, 96), neon);
+    inner.position.set(1.7, 2.72, -4.05);
+    inner.scale.set(1.78, 1, 1);
+    room.add(inner);
 
     const glass = new THREE.Mesh(
-      new THREE.CircleGeometry(1.22, 64),
+      new THREE.CircleGeometry(1.48, 72),
       new THREE.MeshBasicMaterial({
         map: map || null,
         color: map ? 0xffe8f2 : 0xe8eaee,
       }),
     );
-    glass.position.set(0.55, 2.55, -4.12);
-    glass.scale.set(1.55, 1, 1);
+    glass.position.set(1.7, 2.72, -4.11);
+    glass.scale.set(1.78, 1, 1);
     room.add(glass);
 
-    const glow = new THREE.PointLight(0xff4f9a, 1.8, 8, 2);
-    glow.position.set(0.55, 2.55, -3.4);
+    const glow = new THREE.PointLight(0xff4f9a, 2.2, 9, 2);
+    glow.position.set(1.7, 2.72, -3.2);
     room.add(glow);
   }
 
   #blobs(room) {
     const spots = [
-      [-3.7, 0.55, -3.5, 1.15, 0.55, 1.05],
-      [3.6, 0.4, -3.6, 1.3, 0.42, 1.1],
-      [-3.9, 3.6, -1.2, 0.9, 0.55, 0.8],
-      [3.2, 4.3, -3.2, 1.1, 0.45, 0.9],
+      [-3.8, 0.42, -3.6, 1.05, 0.48, 0.95],
+      [3.4, 4.15, -3.3, 0.95, 0.4, 0.8],
     ];
     spots.forEach(([x, y, z, sx, sy, sz]) => {
       const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), this.liquid);
@@ -325,140 +332,120 @@ export class SilverPetRoomScene {
     });
   }
 
-  #art(room) {
-    const frame = new THREE.Mesh(
-      new RoundedBoxGeometry(1.15, 1.15, 0.08, 3, 0.04),
-      this.chrome,
-    );
-    frame.position.set(-2.45, 2.65, -4.02);
-    room.add(frame);
-    const painting = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.98, 0.98),
-      new THREE.MeshPhysicalMaterial({
-        color: 0xff7ab3,
-        roughness: 0.45,
-        metalness: 0.12,
-        emissive: 0xff4f9a,
-        emissiveIntensity: 0.08,
-      }),
-    );
-    painting.position.set(-2.45, 2.65, -3.97);
-    room.add(painting);
-  }
-
   #rug(room, map) {
     const mat = new THREE.MeshPhysicalMaterial({
       color: 0xff6aa8,
       map: map || null,
-      roughness: 0.9,
+      roughness: 0.92,
       metalness: 0,
     });
-    const rug = new THREE.Mesh(new RoundedBoxGeometry(4.4, 0.05, 3.1, 3, 0.12), mat);
-    rug.position.set(0.35, 0.03, 0.55);
+    const rug = new THREE.Mesh(new THREE.CylinderGeometry(2.05, 2.05, 0.07, 64), mat);
+    rug.position.set(1.7, 0.035, 0.55);
     rug.receiveShadow = true;
     room.add(rug);
   }
 
   #sofa(room) {
     const group = new THREE.Group();
-    group.position.set(-1.85, 0, 0.15);
-    group.rotation.y = 0.42;
+    group.position.set(-2.05, 0, 0.05);
+    group.rotation.y = 0.38;
+    const glitter = new THREE.MeshPhysicalMaterial({
+      color: 0xff7ab3,
+      metalness: 0.45,
+      roughness: 0.28,
+      sheen: 1,
+      sheenColor: new THREE.Color(0xff4f9a),
+    });
 
-    const seat = new THREE.Mesh(new RoundedBoxGeometry(2.35, 0.42, 1.15, 6, 0.16), this.pink);
-    seat.position.y = 0.42;
-    seat.castShadow = true;
-    seat.receiveShadow = true;
-    group.add(seat);
-
-    const back = new THREE.Mesh(new RoundedBoxGeometry(2.35, 0.92, 0.34, 6, 0.14), this.pink);
-    back.position.set(0, 0.92, -0.42);
-    back.castShadow = true;
-    group.add(back);
-
+    for (let i = -2; i <= 2; i += 1) {
+      const seat = new THREE.Mesh(new RoundedBoxGeometry(0.58, 0.4, 1.12, 6, 0.16), this.pink);
+      seat.position.set(i * 0.48, 0.46, Math.abs(i) * 0.06);
+      seat.rotation.y = i * 0.12;
+      seat.castShadow = true;
+      group.add(seat);
+      const back = new THREE.Mesh(new RoundedBoxGeometry(0.58, 0.86, 0.28, 6, 0.12), this.pink);
+      back.position.set(i * 0.48, 0.92, -0.4 + Math.abs(i) * 0.05);
+      back.rotation.y = i * 0.12;
+      back.castShadow = true;
+      group.add(back);
+    }
     [-1.08, 1.08].forEach((x) => {
-      const arm = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.58, 1.12, 5, 0.12), this.pink);
-      arm.position.set(x, 0.62, 0);
+      const arm = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), this.pink);
+      arm.position.set(x, 0.58, 0.05);
+      arm.scale.set(0.85, 0.7, 1.35);
       arm.castShadow = true;
       group.add(arm);
     });
+    [
+      [-0.9, -0.38],
+      [0.9, -0.38],
+      [-0.9, 0.38],
+      [0.9, 0.38],
+    ].forEach(([x, z]) => {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.28, 12), this.chrome);
+      leg.position.set(x, 0.14, z);
+      group.add(leg);
+    });
 
-    const heart = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 16), this.chrome);
-    heart.position.set(0.15, 0.78, 0.18);
-    heart.scale.set(1.15, 0.72, 1);
-    group.add(heart);
+    const lobeA = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 16), glitter);
+    lobeA.position.set(0.02, 0.78, 0.22);
+    const lobeB = lobeA.clone();
+    lobeB.position.x = 0.2;
+    group.add(lobeA, lobeB);
 
-    const shadow = contactShadow(2.4, 1.2);
-    shadow.position.set(-1.85, 0.012, 0.2);
+    const shadow = contactShadow(2.6, 1.3);
+    shadow.position.set(-2.05, 0.012, 0.1);
     room.add(shadow);
     room.add(group);
   }
 
-  #ottoman(room) {
-    const ott = new THREE.Mesh(new RoundedBoxGeometry(1.05, 0.42, 1.05, 8, 0.2), this.pink);
-    ott.position.set(2.35, 0.22, 1.15);
-    ott.castShadow = true;
-    ott.receiveShadow = true;
-    room.add(ott);
-    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 12), this.chrome);
-    tuft.position.set(2.35, 0.46, 1.15);
-    room.add(tuft);
-    const shadow = contactShadow(1.1, 1.1);
-    shadow.position.set(2.35, 0.012, 1.15);
-    room.add(shadow);
-  }
-
-  #bed(room) {
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.09, 12, 48), this.chrome);
-    rim.rotation.x = Math.PI / 2;
-    rim.position.set(2.55, 0.18, -0.55);
-    room.add(rim);
-    const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.58, 0.12, 48), this.pink);
-    pad.position.set(2.55, 0.12, -0.55);
-    pad.castShadow = true;
-    pad.receiveShadow = true;
-    room.add(pad);
-    const shadow = contactShadow(1.3, 1.3);
-    shadow.position.set(2.55, 0.012, -0.55);
-    room.add(shadow);
-  }
-
   #pedestal(room) {
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.7, 0.16, 48), this.chrome);
-    base.position.set(0.48, 0.09, 0.55);
-    base.castShadow = true;
-    room.add(base);
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.76, 0.38, 48), this.chrome);
+    drum.position.set(1.8, 0.2, 0.55);
+    drum.castShadow = true;
+    room.add(drum);
 
-    const cushion = new THREE.Mesh(new THREE.SphereGeometry(0.62, 48, 32), this.pink);
-    cushion.position.set(0.48, 0.42, 0.55);
-    cushion.scale.set(1.05, 0.42, 1.05);
+    const cushion = new THREE.Mesh(new THREE.SphereGeometry(0.7, 48, 32), this.pink);
+    cushion.position.set(1.8, 0.52, 0.55);
+    cushion.scale.set(1.08, 0.38, 1.08);
     cushion.castShadow = true;
     cushion.receiveShadow = true;
     room.add(cushion);
 
-    const shadow = contactShadow(1.4, 1.4);
-    shadow.position.set(0.48, 0.012, 0.55);
+    [
+      [0, 0],
+      [0.22, 0.12],
+      [-0.22, 0.12],
+      [0.14, -0.2],
+      [-0.14, -0.2],
+    ].forEach(([x, z]) => {
+      const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), this.chrome);
+      tuft.position.set(1.8 + x, 0.72, 0.55 + z);
+      room.add(tuft);
+    });
+
+    const shadow = contactShadow(1.6, 1.6);
+    shadow.position.set(1.8, 0.012, 0.55);
     room.add(shadow);
   }
 
   #lamp(room) {
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 1.7, 16), this.chrome);
-    stem.position.set(-3.15, 0.95, -1.55);
-    stem.castShadow = true;
+    const base = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 16), this.pink);
+    base.position.set(-3.15, 0.2, -1.35);
+    base.scale.set(1, 0.55, 1);
+    base.castShadow = true;
+    room.add(base);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 1.35, 16), this.pink);
+    stem.position.set(-3.15, 0.95, -1.35);
     room.add(stem);
     const shade = new THREE.Mesh(
-      new THREE.SphereGeometry(0.32, 32, 20, 0, Math.PI * 2, 0, Math.PI / 1.7),
-      new THREE.MeshPhysicalMaterial({
-        color: 0xff7ab3,
-        roughness: 0.4,
-        metalness: 0.08,
-        emissive: 0xff4f9a,
-        emissiveIntensity: 0.18,
-      }),
+      new THREE.SphereGeometry(0.3, 32, 20, 0, Math.PI * 2, 0, Math.PI / 1.7),
+      this.chrome,
     );
-    shade.position.set(-3.15, 1.78, -1.55);
+    shade.position.set(-3.15, 1.68, -1.35);
     room.add(shade);
     const bulb = new THREE.PointLight(0xffd0e4, 1.3, 5, 2);
-    bulb.position.set(-3.15, 1.55, -1.55);
+    bulb.position.set(-3.15, 1.48, -1.35);
     room.add(bulb);
   }
 
@@ -483,8 +470,8 @@ export class SilverPetRoomScene {
       side: THREE.DoubleSide,
       depthWrite: true,
     });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.05, 2.05), mat);
-    mesh.position.set(0.48, 1.28, 0.62);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 2.7), mat);
+    mesh.position.set(1.8, 1.52, 0.62);
     mesh.castShadow = false;
     this.petMesh = mesh;
     room.add(mesh);
@@ -495,7 +482,8 @@ export class SilverPetRoomScene {
     const t = this.clock.getElapsedTime();
     if (!this.reducedMotion) this.timeUniform.value = t;
     if (this.petMesh && !this.reducedMotion) {
-      this.petMesh.position.y = 1.28 + Math.sin(t * 1.5) * 0.028;
+      this.petMesh.position.x = 1.8;
+      this.petMesh.position.y = 1.52 + Math.sin(t * 1.5) * 0.028;
       this.petMesh.rotation.y = Math.sin(t * 0.6) * 0.06;
     }
     this.controls.update();

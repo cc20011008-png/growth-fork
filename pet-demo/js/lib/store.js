@@ -28,7 +28,7 @@ const defaultState = () => ({
   onboarded: false,
   profile: {
     name: "",
-    petId: "cat",
+    petId: "dog",
   },
   bond: {
     level: 1,
@@ -110,6 +110,7 @@ function migrate(parsed) {
     goals: Array.isArray(parsed.goals) && parsed.goals.length ? parsed.goals : base.goals,
     calendar: parsed.calendar || {},
   };
+  merged.profile.petId = "dog";
   if (merged.today?.dayKey !== toDayKey()) {
     merged.today = {
       dayKey: toDayKey(),
@@ -127,7 +128,11 @@ export function loadState() {
   try {
     const raw = localStorage.getItem(KEY) || localStorage.getItem("gf-pet-demo-v1");
     if (!raw) return seedCalendar(defaultState());
-    return seedCalendar(migrate(JSON.parse(raw)));
+    const parsed = JSON.parse(raw);
+    const needsDog = parsed?.profile?.petId !== "dog";
+    const state = seedCalendar(migrate(parsed));
+    if (needsDog) saveState(state);
+    return state;
   } catch {
     return seedCalendar(defaultState());
   }
@@ -138,7 +143,7 @@ export function saveState(state) {
 }
 
 export function getPet(state) {
-  return PETS[state.profile.petId] || PETS.cat;
+  return PETS.dog;
 }
 
 export function resetDemo() {

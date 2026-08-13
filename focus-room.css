@@ -1,9 +1,9 @@
-/* Focus room — window-clock theater. Overlay, not a nested card stack. */
+/* Focus room — desk-left / window-clock-right. Overlay, not a nested card stack. */
 .focus-room {
   --focus-ink: #141416;
   --focus-muted: #6B6E78;
   --focus-pink: #FF4F9A;
-  --focus-chrome: rgba(201, 205, 212, 0.72);
+  --focus-chrome: #C9CDD4;
   position: fixed;
   inset: 0;
   z-index: 80;
@@ -15,10 +15,6 @@
 
 .focus-room.show {
   display: block;
-}
-
-.focus-room.is-fs {
-  background: #121318;
 }
 
 .focus-scene {
@@ -33,36 +29,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 52% 42%;
-  transform: scale(1.04);
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.focus-scene::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 18%, transparent 42%, rgba(20, 20, 22, 0.18) 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(20, 20, 22, 0.22) 100%);
-}
-
-.focus-room.is-door .focus-scene::after {
-  background:
-    radial-gradient(ellipse 48% 70% at 50% 46%, transparent 36%, rgba(16, 18, 22, 0.42) 100%),
-    linear-gradient(180deg, rgba(20, 20, 22, 0.18), rgba(20, 20, 22, 0.08) 40%, rgba(20, 20, 22, 0.34) 100%);
+.focus-room.is-door .focus-bg-door,
+.focus-room.is-run .focus-bg-run,
+.focus-room.is-done .focus-bg-run,
+.focus-room.is-broke .focus-bg-run {
+  opacity: 1;
 }
 
 .focus-window {
   position: absolute;
-  top: 6%;
-  left: 50%;
+  top: 48%;
+  left: 68%;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: min(42vw, 540px);
-  aspect-ratio: 0.92;
-  transform: translateX(-50%);
+  width: min(38vw, 520px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
@@ -74,96 +62,103 @@
   opacity: 1;
 }
 
-.focus-ring {
+.focus-arc {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
   overflow: visible;
 }
 
-.focus-ring-track,
-.focus-ring-arc {
+.focus-arc-stroke {
   fill: none;
+  stroke: #FF4F9A;
+  stroke-width: 3.6;
   stroke-linecap: round;
+  stroke-dasharray: 28 100;
   transform-origin: 50% 50%;
   transform: rotate(-90deg);
+  filter: drop-shadow(0 0 8px rgba(255, 79, 154, 0.55));
+  transition: stroke-dasharray 0.8s linear;
 }
 
-.focus-ring-track {
-  stroke: rgba(255, 255, 255, 0.38);
-  stroke-width: 3.2;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35));
-}
-
-.focus-ring-arc {
-  stroke: #FF4F9A;
-  stroke-width: 4.2;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  filter: drop-shadow(0 0 10px rgba(255, 79, 154, 0.55));
-  transition: stroke-dashoffset 0.8s linear;
+.focus-arc-knob {
+  fill: #FF4F9A;
+  stroke: #fff;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px rgba(255, 79, 154, 0.7));
 }
 
 .focus-clock-stack {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   justify-items: center;
-  padding: 0 12%;
+  padding: 0 18%;
   text-align: center;
+}
+
+.focus-task-label {
+  margin: 0;
+  max-width: 18ch;
+  color: #141416;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .focus-clock {
   margin: 0;
   color: #141416;
   font-family: Outfit, "Noto Sans SC", sans-serif;
-  font-size: clamp(4.2rem, 9vw, 6rem);
+  font-size: clamp(3.6rem, 7.4vw, 5.8rem);
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: -0.045em;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.75),
     0 18px 40px rgba(20, 20, 22, 0.12);
-}
-
-.focus-task-label {
-  margin: 0;
-  max-width: 22ch;
-  color: #3A3D44;
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.35;
 }
 
 .focus-pet {
   position: absolute;
-  left: 50%;
-  bottom: 5%;
+  left: 4%;
+  bottom: 6%;
   z-index: 3;
-  width: min(36vw, 420px);
+  width: min(46vw, 560px);
   height: auto;
-  transform: translateX(-50%);
   filter: drop-shadow(0 22px 28px rgba(20, 20, 22, 0.22));
   pointer-events: none;
   animation: focus-pet-breathe 4.8s ease-in-out infinite;
 }
 
 .focus-room.is-door .focus-pet {
-  width: min(28vw, 320px);
-  bottom: 11%;
+  left: 42%;
+  bottom: 14%;
+  width: min(28vw, 340px);
+  transform: translateX(-40%);
 }
 
 .focus-hud {
   position: absolute;
-  right: 28px;
-  bottom: 28px;
-  left: 28px;
-  z-index: 5;
+  left: 50%;
+  bottom: 22px;
+  z-index: 8;
   display: none;
   align-items: center;
   justify-content: space-between;
+  width: min(640px, calc(100% - 40px));
+  min-height: 56px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 22px;
+  background: rgba(247, 248, 250, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(201, 205, 212, 0.45) inset,
+    0 18px 40px rgba(40, 46, 58, 0.16);
+  backdrop-filter: blur(22px) saturate(1.2);
+  transform: translateX(-50%);
 }
 
 .focus-room.is-run .focus-hud {
@@ -173,23 +168,22 @@
 .focus-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
-  padding: 0 18px;
+  justify-content: center;
+  gap: 6px;
+  min-width: 88px;
+  min-height: 40px;
+  border: 1px solid rgba(201, 205, 212, 0.55);
+  border-radius: 14px;
+  padding: 0 16px;
   color: #141416;
-  background: rgba(247, 248, 250, 0.62);
-  box-shadow:
-    0 10px 28px rgba(90, 96, 110, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
+  background: rgba(247, 248, 250, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   font-size: 14px;
   font-weight: 750;
 }
 
 .focus-pill:hover {
-  background: rgba(255, 255, 255, 0.82);
+  color: #FF4F9A;
 }
 
 .focus-pill:focus-visible {
@@ -200,6 +194,22 @@
 .focus-pill svg {
   width: 16px;
   height: 16px;
+}
+
+.focus-hud-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #3A3D44;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.focus-hud-status svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .focus-door {
@@ -224,7 +234,8 @@
   gap: 6px;
   border: 0;
   background: transparent;
-  color: #141416;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(20, 20, 22, 0.45);
   font-size: 14px;
   font-weight: 700;
 }
@@ -245,20 +256,21 @@
 }
 
 .focus-card {
-  width: min(100%, 440px);
-  padding: 28px 28px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 28px;
-  background: rgba(247, 248, 250, 0.72);
+  width: min(100%, 460px);
+  padding: 32px 30px 26px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 32px;
+  background: rgba(247, 248, 250, 0.58);
   box-shadow:
-    0 28px 60px rgba(40, 46, 58, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(22px) saturate(1.2);
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset,
+    0 0 0 7px rgba(201, 205, 212, 0.55),
+    0 28px 60px rgba(40, 46, 58, 0.22);
+  backdrop-filter: blur(26px) saturate(1.25);
 }
 
 .focus-card h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -274,16 +286,19 @@
 .focus-chips {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 22px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .focus-chip {
-  min-height: 52px;
-  border: 1px solid rgba(201, 205, 212, 0.8);
+  min-height: 56px;
+  border: 2px solid #C9CDD4;
   border-radius: 16px;
   color: #141416;
-  background: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, #F7F8FA 0%, #C9CDD4 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 8px 16px rgba(40, 46, 58, 0.1);
   font-family: Outfit, "Noto Sans SC", sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -293,7 +308,7 @@
   border-color: transparent;
   color: #fff;
   background: #FF4F9A;
-  box-shadow: 0 10px 20px rgba(255, 79, 154, 0.28);
+  box-shadow: 0 12px 24px rgba(255, 79, 154, 0.32);
 }
 
 .focus-chip:focus-visible {
@@ -304,10 +319,10 @@
 .focus-go {
   display: block;
   width: 100%;
-  margin-top: 18px;
+  margin-top: 20px;
   border: 0;
-  border-radius: 16px;
-  padding: 14px 18px;
+  border-radius: 999px;
+  padding: 15px 18px;
   color: #fff;
   background: #FF4F9A;
   box-shadow: 0 14px 28px rgba(255, 79, 154, 0.28);
@@ -325,7 +340,7 @@
 }
 
 .focus-warn {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   color: #6B6E78;
   text-align: center;
   font-size: 13px;
@@ -379,18 +394,28 @@
 }
 
 @keyframes focus-pet-breathe {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-6px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.focus-room.is-door .focus-pet {
+  animation-name: focus-pet-door-breathe;
+}
+
+@keyframes focus-pet-door-breathe {
+  0%, 100% { transform: translateX(-40%) translateY(0); }
+  50% { transform: translateX(-40%) translateY(-6px); }
 }
 
 @media (max-width: 860px) {
   .focus-window {
-    top: 4%;
+    top: 34%;
+    left: 50%;
     width: min(78vw, 340px);
   }
 
   .focus-clock {
-    font-size: clamp(3.2rem, 16vw, 4.6rem);
+    font-size: clamp(2.8rem, 14vw, 3.8rem);
   }
 
   .focus-task-label {
@@ -398,19 +423,32 @@
   }
 
   .focus-pet {
-    width: min(64vw, 280px);
-    bottom: 16%;
+    left: 50%;
+    width: min(88vw, 380px);
+    bottom: 18%;
+    transform: translateX(-50%);
   }
 
   .focus-room.is-door .focus-pet {
-    width: min(48vw, 220px);
+    left: 50%;
+    width: min(70vw, 280px);
     bottom: 8%;
+    transform: translateX(-50%);
   }
 
   .focus-hud {
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
+    bottom: 12px;
+    width: calc(100% - 20px);
+    padding: 8px;
+  }
+
+  .focus-pill {
+    min-width: 72px;
+    padding: 0 12px;
+  }
+
+  .focus-hud-status {
+    font-size: 12px;
   }
 
   .focus-card {
@@ -433,7 +471,16 @@
   }
 
   .focus-window,
-  .focus-ring-arc {
+  .focus-bg,
+  .focus-arc-stroke {
     transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .focus-card,
+  .focus-hud {
+    background: #F7F8FA;
+    backdrop-filter: none;
   }
 }

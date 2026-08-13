@@ -63,7 +63,8 @@
 
 .pet-pick {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: minmax(260px, 420px);
+  justify-content: center;
   gap: 12px;
   margin-top: 18px;
 }
@@ -81,8 +82,11 @@
 
 .pet-option img {
   width: 100%;
-  aspect-ratio: 1.2;
+  aspect-ratio: 1.05;
   object-fit: cover;
+  object-position: center 40%;
+  transform: scale(1.12);
+  transform-origin: center 65%;
   display: block;
 }
 

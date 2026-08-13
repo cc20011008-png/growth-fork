@@ -724,9 +724,9 @@
 
 .cal-mascot {
   position: absolute;
-  right: -28px;
-  bottom: -36px;
-  width: min(200px, 22%);
+  right: -20px;
+  bottom: -28px;
+  width: min(280px, 32%);
   pointer-events: none;
   z-index: 2;
   filter: drop-shadow(0 16px 24px rgba(70, 76, 90, 0.16));
@@ -899,9 +899,9 @@
     display: none;
   }
   .cal-mascot {
-    width: min(140px, 28%);
-    right: -16px;
-    bottom: -20px;
+    width: min(190px, 38%);
+    right: -10px;
+    bottom: -12px;
   }
   .cal-main {
     padding: 16px 14px 18px;
