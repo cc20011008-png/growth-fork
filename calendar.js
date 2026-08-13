@@ -594,7 +594,6 @@ if (planRoot || gridRoot) {
             <p class="focus-clock" id="focus-clock">25:00</p>
           </div>
         </div>
-        <img class="focus-pet" id="focus-pet" src="${pet.src}" alt="${pet.name}在书桌前学习">
       </div>
       <div class="focus-hud">
         <button type="button" class="focus-pill" id="focus-leave">离开</button>
@@ -620,6 +619,7 @@ if (planRoot || gridRoot) {
           <p class="focus-warn">中途离开会打断这一轮</p>
         </div>
       </div>
+      <img class="focus-pet" id="focus-pet" src="${pet.src}" alt="${pet.name}在书桌前学习">
       <div class="focus-result" id="focus-result" hidden>
         <div class="focus-card">
           <h2 id="focus-result-title"></h2>

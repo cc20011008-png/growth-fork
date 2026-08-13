@@ -125,7 +125,7 @@
   position: absolute;
   left: 4%;
   bottom: 6%;
-  z-index: 3;
+  z-index: 7;
   width: min(46vw, 560px);
   height: auto;
   filter: drop-shadow(0 22px 28px rgba(20, 20, 22, 0.22));
@@ -134,10 +134,15 @@
 }
 
 .focus-room.is-door .focus-pet {
-  left: 42%;
-  bottom: 14%;
-  width: min(28vw, 340px);
-  transform: translateX(-40%);
+  left: auto;
+  right: 4%;
+  bottom: 8%;
+  width: min(36vw, 460px);
+  transform: none;
+}
+
+.focus-room.is-door .focus-door {
+  padding: 24px 34% 24px 6%;
 }
 
 .focus-hud {
@@ -350,7 +355,7 @@
 .focus-result {
   position: absolute;
   inset: 0;
-  z-index: 7;
+  z-index: 9;
   display: none;
   place-items: center;
   padding: 24px;
@@ -403,8 +408,8 @@
 }
 
 @keyframes focus-pet-door-breathe {
-  0%, 100% { transform: translateX(-40%) translateY(0); }
-  50% { transform: translateX(-40%) translateY(-6px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 @media (max-width: 860px) {
@@ -429,10 +434,16 @@
     transform: translateX(-50%);
   }
 
+  .focus-room.is-door .focus-door {
+    align-content: start;
+    padding: 64px 16px 200px;
+  }
+
   .focus-room.is-door .focus-pet {
     left: 50%;
-    width: min(70vw, 280px);
-    bottom: 8%;
+    right: auto;
+    bottom: 2%;
+    width: min(72vw, 300px);
     transform: translateX(-50%);
   }
 
