@@ -4,7 +4,7 @@
 
 ## 页面
 
-- `index.html` 今日计划：添加待办 / 从目标生成清单 / Skill 门禁
+- `index.html` 首页：液态银宠物房间 + 学习对话框；每次打开会模拟宠物从市集寄回一封 Skill 推荐信
 - `goals.html` 目标管理：记录中长期目标，一键生成今日计划
 - `calendar.html` 学习日历
 - `report.html` 月度小结（侧栏「数据统计」）
@@ -21,14 +21,13 @@ npm start
 
 ```
 pet-demo/
-  css/   app-shell · today-plan · goals · …
+  css/   pet-room · …
   js/
-    components/sidebar.js
     config/ pets · skills
     lib/ store · dom · date
-    services/ planner · calendarAgent · focusTimer
-    views/ todayPlan · goalsView · …
-    app-*.js
+    services/ planner · calendarAgent · focusTimer · petAgent
+    views/ roomChat · letterSouvenir · …
+    app-room.js
 ```
 
-状态键：`gf-pet-demo-v2`
+状态键：`gf-pet-demo-v3`

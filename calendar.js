@@ -404,6 +404,31 @@ function skillById(id) {
   return SKILL_CATALOG.find((skill) => skill.id === id);
 }
 
+/** Flat line icons for plan recommendations — keeps the row quiet vs chrome PNGs */
+const SKILL_REC_ICONS = {
+  "literature-review": '<path d="M5 5.5h6.5a2 2 0 0 1 2 2V19a1.5 1.5 0 0 0-1.5-1.5H5V5.5z"/><path d="M19 5.5h-6.5a2 2 0 0 0-2 2V19a1.5 1.5 0 0 1 1.5-1.5H19V5.5z"/>',
+  "paper-notes": '<path d="M7 4.5h7l3.5 3.5V19.5H7z"/><path d="M14 4.5v3.5h3.5"/><path d="M9.5 11h5M9.5 14h5M9.5 17h3"/>',
+  research: '<circle cx="11" cy="11" r="5.5"/><path d="M16 16l3.5 3.5"/><path d="M9 11h4M11 9v4"/>',
+  "resume-polish": '<path d="M8 4.5h8a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 16 19.5H8A1.5 1.5 0 0 1 6.5 18V6A1.5 1.5 0 0 1 8 4.5z"/><path d="M9.5 9h5M9.5 12h5M9.5 15h3"/>',
+  "star-bullets": '<path d="M12 4.5l1.8 3.7 4.1.6-3 2.9.7 4.1L12 13.9 8.4 15.8l.7-4.1-3-2.9 4.1-.6z"/>',
+  "interview-drill": '<path d="M6.5 7.5h7a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H10l-2.5 2v-2H6.5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2z"/><path d="M15.5 10.5h2a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2h-1l-1.5 1.5v-1.5"/>',
+  "cold-email": '<path d="M5 8h14a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 19 18H5a1.5 1.5 0 0 1-1.5-1.5v-7A1.5 1.5 0 0 1 5 8z"/><path d="M4 9.5l8 5.5 8-5.5"/>',
+  "followup-email": '<path d="M5 8h14a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 19 18H5a1.5 1.5 0 0 1-1.5-1.5v-7A1.5 1.5 0 0 1 5 8z"/><path d="M4 9.5l8 5.5 8-5.5"/><path d="M14.5 14.5l2.5 2.5 3.5-4"/>',
+  "data-clean": '<path d="M5.5 6.5h13v11h-13z"/><path d="M5.5 10h13M5.5 13.5h13M10 6.5v11M14.5 6.5v11"/>',
+  "stats-report": '<path d="M6 18V11M12 18V7M18 18v-5"/><path d="M4.5 18.5h15"/>',
+  "ppt-outline": '<path d="M5.5 6.5h13v9h-13z"/><path d="M9 18.5h6M12 15.5v3"/>',
+  "speaker-notes": '<path d="M12 4.5a3 3 0 0 1 3 3v4a3 3 0 0 1-6 0v-4a3 3 0 0 1 3-3z"/><path d="M7.5 11.5a4.5 4.5 0 0 0 9 0M12 16v3.5"/>',
+  "study-outline": '<path d="M6 7h12M6 12h12M6 17h8"/><path d="M18 15.5l1.5 1.5 3-3"/>',
+};
+
+function skillRecIconHtml(skillId) {
+  const paths = SKILL_REC_ICONS[skillId] || SKILL_REC_ICONS.research;
+  return `
+    <span class="skill-rec-icon-wrap" aria-hidden="true">
+      <svg class="skill-rec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>
+    </span>`;
+}
+
 function recommendSkills(text) {
   if (!text) return [];
   if (SELF_COMPLETE_HINTS.some((hint) => text.includes(hint))) return [];
@@ -433,7 +458,7 @@ function skillHref(skill, taskText) {
     task: taskText,
     from: "plan",
   });
-  return `my-tasks.html?${query.toString()}`;
+  return `pet-demo/?${query.toString()}`;
 }
 
 function skillRecsHtml(text) {
@@ -447,9 +472,7 @@ function skillRecsHtml(text) {
           .map(
             (skill) => `
           <a class="skill-rec-card" href="${escapeHtml(skillHref(skill, text))}">
-            <span class="skill-rec-icon-wrap">
-              <img class="skill-rec-icon" src="${escapeHtml(skill.image)}" alt="" width="56" height="56">
-            </span>
+            ${skillRecIconHtml(skill.id)}
             <div class="skill-rec-body">
               <div class="skill-rec-meta">
                 <span class="skill-rec-type">${escapeHtml(skill.type)}</span>

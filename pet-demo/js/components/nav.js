@@ -49,7 +49,7 @@ export function renderNav({ active = "home", pet = null, userName = "同学", mo
       <a href="./index.html" class="${active === "home" ? "active" : ""}">今日对话</a>
       <a href="./calendar.html" class="${active === "calendar" ? "active" : ""}">学习日历</a>
       <a href="./report.html" class="${active === "report" ? "active" : ""}">月度小结</a>
-      <a href="../index.html">返回主站</a>
+      <a href="./index.html">返回学习</a>
     </div>
     <div class="nav-actions">
       <button class="btn btn-ghost" type="button" id="open-bond" ${pet ? "" : "hidden"}>

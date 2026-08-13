@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>语音访谈生成 Skill · 成长 Fork</title>
+  <title>语音访谈生成 Skill · Wowgrowth</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
     :root {
@@ -334,7 +334,7 @@
   <div class="grain" aria-hidden="true"></div>
   <img src="assets/hero-chrome-ornament.png" alt="" aria-hidden="true" style="position:fixed;right:-8%;top:-12%;width:min(640px,70vw);opacity:.55;pointer-events:none;z-index:0">
   <div class="topbar">
-    <a class="brand" href="index.html"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+    <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>Wowgrowth</em></span></a>
     <div class="fork-cite glass" id="forkCite" hidden></div>
     <div class="scenario glass">
       <span aria-hidden="true">▦</span>
@@ -348,7 +348,7 @@
     </div>
     <div class="top-actions">
       <button type="button" class="chip" id="captionToggle">字幕开</button>
-      <a class="chip" href="index.html">退出</a>
+      <a class="chip" href="pet-demo/">退出</a>
     </div>
   </div>
 
@@ -516,13 +516,13 @@
       document.getElementById("fDelta").hidden = false;
       const pills = document.getElementById("progressPills");
       pills.innerHTML = "<i class=\"active\"></i><i></i><i></i><i></i><i></i>";
-      document.title = `二创 ${forkTitle} · 成长 Fork`;
+      document.title = `二创 ${forkTitle} · Wowgrowth`;
       document.getElementById("previewLink").href = `skill-detail.html?id=${remixLanding[forkId] || forkId}`;
     } else if (isBounty) {
       const cite = document.getElementById("forkCite");
       cite.hidden = false;
       cite.innerHTML = `接单：为 <a href="creator.html?id=${encodeURIComponent(bountyOwner.id)}&tab=bounty">${bountyOwner.name}</a> 制作「${bounty.title}」· ${bounty.reward} 积分`;
-      document.title = `接单 ${bounty.title} · 成长 Fork`;
+      document.title = `接单 ${bounty.title} · Wowgrowth`;
       document.getElementById("statusSub").textContent = bounty.need;
     }
 
@@ -701,7 +701,7 @@
         setStatus("访谈已结束", "信息足够时可直接生成");
         notice("已结束访谈，可生成草稿");
       } else {
-        location.href = "index.html";
+        location.href = "pet-demo/";
       }
     });
 

@@ -1,6 +1,7 @@
 import { $, $$, el, toast } from "../lib/dom.js";
 import { getPet, saveState } from "../lib/store.js";
 import { SKILLS } from "../config/skills.js";
+import { pickDailyGreeting } from "../config/pets.js";
 
 const SKILL_ICON = {
   "literature-review": `<svg viewBox="0 0 24 24"><path d="M5 5h9v14H5zM14 8h5v11h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`,
@@ -121,6 +122,11 @@ export function mountRoomChat(state) {
     subEl.textContent = `${pet.name}陪你推进可验证的下一步`;
   }
 
+  function resetThread() {
+    feed.innerHTML = "";
+    conversation = [];
+  }
+
   function paintTask(task, resetChat) {
     activeTaskId = task.id;
     titleEl.textContent = task.title;
@@ -135,10 +141,10 @@ export function mountRoomChat(state) {
       renderSkills();
     }
     if (resetChat) {
-      feed.innerHTML = "";
-      conversation = [];
-      addBubble("assistant", formatText(`我们接着做「${task.title}」。把材料和卡点丢给我就行。`));
-      remember("assistant", `接着做「${task.title}」。`);
+      resetThread();
+      const line = `我们接着做「${task.title}」。把材料和卡点丢给我就行。`;
+      addBubble("assistant", formatText(line));
+      conversation.push({ role: "assistant", content: `接着做「${task.title}」。` });
     }
   }
 
@@ -206,6 +212,33 @@ export function mountRoomChat(state) {
     feed.append(row);
     feed.scrollTop = feed.scrollHeight;
     return row;
+  }
+
+  function addTyping() {
+    const row = el("div", { className: "room-msg assistant room-typing" });
+    row.append(el("img", { className: "room-msg-face", src: pet.faceImage || pet.image, alt: "" }));
+    const bubble = el("div", { className: "room-bubble typing" });
+    bubble.innerHTML = "<i></i><i></i><i></i>";
+    row.append(bubble);
+    feed.append(row);
+    feed.scrollTop = feed.scrollHeight;
+    return row;
+  }
+
+  function playDailyGreeting() {
+    const { hello, ask } = pickDailyGreeting(pet, state.profile?.name);
+    addBubble("assistant", formatText(hello));
+    remember("assistant", hello);
+    const typing = addTyping();
+    const token = conversation.length;
+    const delay = 800 + Math.floor(Math.random() * 400);
+    window.setTimeout(() => {
+      typing.remove();
+      // Skip the follow-up if the user already replied during the pause.
+      if (conversation.length !== token) return;
+      addBubble("assistant", formatText(ask));
+      remember("assistant", ask);
+    }, delay);
   }
 
   function remember(role, content) {
@@ -307,10 +340,9 @@ export function mountRoomChat(state) {
     statusEl.textContent = "待开始";
     statusEl.classList.remove("done");
     $$(".room-task-card", root).forEach((card) => card.classList.remove("active"));
-    feed.innerHTML = "";
-    conversation = [];
+    resetThread();
     addBubble("assistant", formatText("新任务开始。你现在最想完成哪一件事？"));
-    remember("assistant", "新任务开始。");
+    conversation.push({ role: "assistant", content: "新任务开始。" });
     input.focus();
   });
   document.addEventListener("keydown", (event) => {
@@ -319,15 +351,31 @@ export function mountRoomChat(state) {
 
   renderHistory();
   renderSkills();
+
+  // greetingVersion bumps when daily check-in copy changes; stale assistant-only
+  // stubs (old greeting / task clicks) are replaced so refresh shows the new hello.
+  const GREETING_VERSION = 2;
   const prior = (state.today.messages || []).filter((m) => m.role === "user" || m.role === "assistant");
-  if (prior.length) {
+  const hasUser = prior.some((m) => m.role === "user");
+  const versionOk = state.today.greetingVersion === GREETING_VERSION;
+
+  if (prior.length && versionOk) {
+    prior.forEach((msg) => {
+      conversation.push({ role: msg.role, content: msg.content });
+      addBubble(msg.role, formatText(msg.content));
+    });
+  } else if (hasUser) {
+    state.today.greetingVersion = GREETING_VERSION;
+    persist();
     prior.forEach((msg) => {
       conversation.push({ role: msg.role, content: msg.content });
       addBubble(msg.role, formatText(msg.content));
     });
   } else {
-    addBubble("assistant", formatText(pet.greeting));
-    remember("assistant", pet.greeting);
+    state.today.messages = [];
+    state.today.greetingVersion = GREETING_VERSION;
+    persist();
+    playDailyGreeting();
   }
 
   requestAnimationFrame(() => root.classList.add("in"));

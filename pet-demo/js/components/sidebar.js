@@ -25,12 +25,10 @@ export function renderSidebar(state, { active = "plan" } = {}) {
   host.innerHTML = `
     <a class="side-brand fork-brand" href="./index.html">
       <span class="side-sprout">${ICONS.sprout}</span>
-      <strong>成长 Fork</strong>
+      <strong>Wowgrowth</strong>
     </a>
     <nav class="side-nav">
-      <a class="on" href="./index.html"><span>首页</span></a>
-      <a href="../index.html"><span>市集</span></a>
-      <a href="../my-tasks.html"><span>学习</span></a>
+      <a class="on" href="./index.html"><span>学习</span></a>
       <a href="../calendar.html"><span>每日计划</span></a>
       <a href="../school-zone.html"><span>学校专区</span></a>
       <a href="../campus-map.html"><span>附近 Skill 创作者</span></a>

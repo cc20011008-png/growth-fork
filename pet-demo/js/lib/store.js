@@ -46,10 +46,18 @@ const defaultState = () => ({
     sourceGoalId: null,
     plan: null,
     messages: [],
+    greeted: false,
+    greetingVersion: 0,
     focus: null,
   },
   calendar: {},
   reports: {},
+  petAgent: {
+    status: "home", // home | away | returned
+    lastTripAt: null,
+    letter: null,
+    drawer: [],
+  },
 });
 
 function seedCalendar(state) {
@@ -109,6 +117,11 @@ function migrate(parsed) {
     today: { ...base.today, ...(parsed.today || {}) },
     goals: Array.isArray(parsed.goals) && parsed.goals.length ? parsed.goals : base.goals,
     calendar: parsed.calendar || {},
+    petAgent: {
+      ...base.petAgent,
+      ...(parsed.petAgent || {}),
+      drawer: Array.isArray(parsed.petAgent?.drawer) ? parsed.petAgent.drawer : [],
+    },
   };
   merged.profile.petId = "dog";
   if (merged.today?.dayKey !== toDayKey()) {
@@ -118,6 +131,8 @@ function migrate(parsed) {
       sourceGoalId: null,
       plan: null,
       messages: [],
+      greeted: false,
+      greetingVersion: 0,
       focus: null,
     };
   }

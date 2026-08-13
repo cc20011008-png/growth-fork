@@ -1,6 +1,8 @@
-import { loadState, getPet } from "./lib/store.js";
+import { loadState, getPet, saveState } from "./lib/store.js";
 import { mountOnboarding } from "./views/onboarding.js";
 import { mountRoomChat } from "./views/roomChat.js";
+import { mountLetterSouvenir } from "./views/letterSouvenir.js";
+import { mintReturnLetter } from "./services/petAgent.js";
 import { SilverPetRoomScene } from "./room/silver-room-scene.js";
 
 const state = loadState();
@@ -11,8 +13,20 @@ function start() {
   const stage = document.getElementById("room-stage");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Demo C: every homepage open simulates the pet just returning with one letter.
+  mintReturnLetter(state);
+  saveState(state);
+
   const bootChat = () => {
     mountRoomChat(state);
+    mountLetterSouvenir(state, {
+      onAccept: (letter) => {
+        if (!letter?.skill?.detailId) return;
+        window.setTimeout(() => {
+          location.href = `../skill-detail.html?id=${encodeURIComponent(letter.skill.detailId)}`;
+        }, 480);
+      },
+    });
   };
 
   if (!stage) {

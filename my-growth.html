@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我的成长 · 成长 Fork</title>
+  <title>我的成长 · Wowgrowth</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
     body { background: transparent; }
@@ -416,11 +416,9 @@
   <div class="grain" aria-hidden="true"></div>
   <div class="shell">
     <nav class="nav">
-      <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>Wowgrowth</em></span></a>
       <div class="nav-links">
-        <a href="pet-demo/">首页</a>
-        <a href="index.html">市集</a>
-        <a href="my-tasks.html">学习</a>
+        <a href="pet-demo/">学习</a>
         <a href="calendar.html">每日计划</a>
         <a href="school-zone.html">学校专区</a>
         <a href="campus-map.html">附近 Skill 创作者</a>
@@ -446,7 +444,7 @@
         </div>
       </div>
       <div class="id-actions">
-        <a class="btn btn-pink" href="my-tasks.html">继续成长</a>
+        <a class="btn btn-pink" href="pet-demo/">继续成长</a>
         <a class="btn btn-ghost" href="school-zone.html">学校专区</a>
         <a class="btn btn-ghost" href="create-skill.html">语音生成 Skill</a>
       </div>
@@ -931,7 +929,7 @@
                 <b>${esc(s.title)}</b>
                 <span>${esc(s.users)} 人使用 · 已收藏</span>
               </a>`).join("")
-          : `<p class="creator-empty">还没有收藏。去首页或学校专区把想试的 Skill 收进来。</p>`;
+          : `<p class="creator-empty">还没有收藏。去学校专区把想试的 Skill 收进来。</p>`;
         return;
       }
 
@@ -1075,7 +1073,7 @@
         const row = document.createElement("div");
         row.className = "skill-row";
         row.dataset.skillId = s.id;
-        row.innerHTML = `<div class="skill-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="skill-info"><b>${esc(s.title)}</b><span>来自任务匹配 · ${esc(s.author || "成长 Fork")}</span></div>${miniRingHtml(8)}<a class="text-btn" href="skill-detail.html?id=${encodeURIComponent(s.id)}">开始</a>`;
+        row.innerHTML = `<div class="skill-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="skill-info"><b>${esc(s.title)}</b><span>来自任务匹配 · ${esc(s.author || "Wowgrowth")}</span></div>${miniRingHtml(8)}<a class="text-btn" href="skill-detail.html?id=${encodeURIComponent(s.id)}">开始</a>`;
         doing.prepend(row);
         ids.add(s.id);
       });

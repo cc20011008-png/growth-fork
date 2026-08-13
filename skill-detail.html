@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skill 功能页 · 成长 Fork</title>
+  <title>Skill 功能页 · Wowgrowth</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Outfit:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="brand.css">
   <style>
     body { background: transparent; }
@@ -332,11 +332,9 @@
   <div class="grain" aria-hidden="true"></div>
   <div class="shell">
     <nav class="nav">
-      <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>成长 Fork</em></span></a>
+      <a class="brand" href="pet-demo/"><img src="assets/douyin-campus-logo.png" alt=""><span><em>Wowgrowth</em></span></a>
       <div class="nav-links">
-        <a href="pet-demo/">首页</a>
-        <a href="index.html">市集</a>
-        <a class="active" href="my-tasks.html">学习</a>
+        <a href="pet-demo/">学习</a>
         <a href="calendar.html">每日计划</a>
         <a href="school-zone.html">学校专区</a>
         <a href="campus-map.html">附近 Skill 创作者</a>
@@ -402,7 +400,7 @@
         rating: "4.8",
         ratingLabel: "优秀",
         safe: true,
-        source: "成长 Fork 认证",
+        source: "Wowgrowth 认证",
         desc: "当你提到「社团经历」「活动怎么写进简历」「没有数据怎么办」时触发。先梳理事实与贡献，再生成 STAR 项目描述与一页案例。",
         tags: ["实习求职", "简历表达", "社团经历", "单 Skill", "2 周前更新", "v1.2.0"],
         users: "2,189",
@@ -1088,7 +1086,7 @@
     });
 
     document.getElementById("getBtn").addEventListener("click", () => {
-      location.href = `my-tasks.html?skill=${encodeURIComponent(id)}&title=${encodeURIComponent(skill.title)}`;
+      location.href = `pet-demo/?skill=${encodeURIComponent(id)}&title=${encodeURIComponent(skill.title)}`;
     });
     document.getElementById("shareBtn").addEventListener("click", async () => {
       try {
@@ -1099,7 +1097,7 @@
       }
     });
 
-    document.title = `${skill.title} · 成长 Fork`;
+    document.title = `${skill.title} · Wowgrowth`;
     renderCase();
     if (location.hash === "#remixes") {
       requestAnimationFrame(jumpRemix);
